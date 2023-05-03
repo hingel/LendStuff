@@ -20,7 +20,6 @@ public class BoardGameRepository: IRepository<BoardGame>
 
 	public async Task<IEnumerable<BoardGame>> FindByKey(Func<BoardGame, bool> findFunc)
 	{
-		//Detta måste bytas ut på något sätt mot en metod nedan för det som ska hittas:
 		var result = _context.BoardGames.Where(findFunc);
 
 		return result;
@@ -48,17 +47,20 @@ public class BoardGameRepository: IRepository<BoardGame>
 
 	public async Task<BoardGame> Update(BoardGame item)
 	{
-		//delen som ska uppdateras:
+		//objektet som ska uppdateras:
 		var toUpdate = await _context.BoardGames.FirstOrDefaultAsync(b => b.Id == item.Id);
 		
-		//TODO: Kanske skulle ha en del som kollar om ett värdet behöver uppdateras eller ej.
+		//TODO: Kanske skulle ha en del som kollar om ett värdet behöver uppdateras eller ej för att ej gå igenom samtliga objekt.
 		if (toUpdate != null)
 		{
 			var propertyList = typeof(BoardGame).GetProperties();
 
 			foreach (var prop in propertyList)
 			{
-				prop.SetValue(toUpdate, prop.GetValue(item));
+				if (prop.GetValue(item) != prop.GetValue(toUpdate))
+				{
+					prop.SetValue(toUpdate, prop.GetValue(item));
+				}
 			}
 
 			await _context.SaveChangesAsync();

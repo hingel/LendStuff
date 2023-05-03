@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using LendStuff.DataAccess;
 using LendStuff.DataAccess.Repositories;
 using LendStuff.DataAccess.Repositories.Interfaces;
+using LendStuff.DataAccess.Services;
+using LendStuff.Shared;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +27,11 @@ builder.Services.AddIdentityServer()
 builder.Services.AddAuthentication()
 	.AddIdentityServerJwt();
 
+//Injectade services
 builder.Services.AddScoped<IRepository<BoardGame>, BoardGameRepository>();
+builder.Services.AddScoped<IRepository<ApplicationUser>, UserRepository>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<UserManager<ApplicationUser>>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -54,20 +61,37 @@ app.UseRouting();
 app.UseIdentityServer();
 app.UseAuthorization();
 
-app.MapGet("/all", async (IRepository<BoardGame> brepo) => await brepo.GetAll());
+
+#region Förtesting
+
+//För spelen:
+app.MapGet("/allGames", async (IRepository<BoardGame> brepo) => await brepo.GetAll());
 app.MapPost("/addGame", async (IRepository<BoardGame> brepo, BoardGame toAdd) => await brepo.AddItem(toAdd));
 app.MapPatch("/updateGame", async(IRepository<BoardGame> brepo, BoardGame newToUpdate) => await brepo.Update(newToUpdate));
 app.MapDelete("/deleteGame", async (IRepository<BoardGame> brepo, string idToDelete) => await brepo.Delete(idToDelete));
 
 app.MapGet("/getByT", async (IRepository<BoardGame> brepo, string idToFind) =>
 {
-	//Varianter på denna func kan sen finnas i en service för att leta efter titel etc.
+	//Varianter på denna func kan sen finnas i en service för att leta efter del i titel etc.
 	Func<BoardGame, bool> filterFunc = (BoardGame b) => b.Id == idToFind;
 
 	var result = await brepo.FindByKey(filterFunc);
 
 	return result;
 });
+
+//För användaren:
+
+app.MapGet("/getUsersGames", async (UserService service, string email) =>
+{
+	var response = await service.GetUsersGames(email);
+
+	return response;
+});
+
+#endregion
+
+
 
 app.MapRazorPages();
 app.MapControllers();

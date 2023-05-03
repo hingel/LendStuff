@@ -12,4 +12,6 @@ public class BoardGame
 	public string? Comment { get; set; }
 	public bool Available { get; set; }
 	public List<Genre>? Genres { get; set; } = new ();
+
+	//TODO: lägg till länk till BoardGameGeek
 }
