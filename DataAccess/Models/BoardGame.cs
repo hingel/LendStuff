@@ -4,7 +4,7 @@ namespace LendStuff.Server.Models;
 
 public class BoardGame
 {
-	public string Id { get; set; } = new Guid().ToString();
+	public string Id { get; set; } = Guid.NewGuid().ToString();
 	public string Title { get; set; }
 	public int? ReleaseYear { get; set; }
 	public string Description { get; set; }
