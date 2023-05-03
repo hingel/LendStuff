@@ -45,18 +45,18 @@ public class UserRepository : IRepository<ApplicationUser>
 		var toUpdate = await _context.Users
 			.Include(u => u.CollectionOfBoardGames)
 			.Include(u => u.Messages)
-			.FirstOrDefaultAsync(b => b.Id == item.Id);
+			.FirstOrDefaultAsync(b => b.Email == item.Email);
 
 		//TODO: Kanske skulle ha en del som kollar om ett värdet behöver uppdateras eller ej för att ej gå igenom samtliga objekt.
 		//För user finns det många som inte bör mixtras med.
 
 		if (toUpdate != null)
 		{
-			var propertyList = typeof(BoardGame).GetProperties();
+			var propertyList = typeof(ApplicationUser).GetProperties();
 
 			foreach (var prop in propertyList)
 			{
-				if (prop.GetValue(item) != prop.GetValue(toUpdate))
+				if (!prop.GetValue(item).Equals(prop.GetValue(toUpdate)))
 				{
 					prop.SetValue(toUpdate, prop.GetValue(item));
 				}

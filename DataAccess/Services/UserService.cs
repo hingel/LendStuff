@@ -32,8 +32,27 @@ public class UserService
 		};
 	}
 
-	public async Task<ServiceResponse<IEnumerable<BoardGame>>> AddBoardGameToUserCollection(BoardGame toAdd, string email)
+
+	//Denna metod borde kansek inte finnas?
+	public async Task<ServiceResponse<ApplicationUser>> AddBoardGameToUserCollection(BoardGame toAdd, string email)
 	{
-		var userToUpdate = await _userManager.FindByEmailAsync();
+		var userGames = await GetUsersGames(email);
+
+		var games = userGames.Data.ToList();
+
+		games.Add(toAdd);
+
+		var userToUpdate = await _userManager.FindByEmailAsync(email);
+
+		userToUpdate.CollectionOfBoardGames = games;
+
+		var result = await _userRepository.Update(userToUpdate);
+
+		return new ServiceResponse<ApplicationUser>()
+		{
+			Data = result,
+			Message = "Board games added hopefully",
+			Success = true
+		};
 	}
 }

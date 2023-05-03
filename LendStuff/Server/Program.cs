@@ -89,6 +89,14 @@ app.MapGet("/getUsersGames", async (UserService service, string email) =>
 	return response;
 });
 
+app.MapPatch("/patchUser", async (UserService service, IRepository<BoardGame> brepo, string email) =>
+{
+	var result = await brepo.GetAll();
+	var gameToAdd = result.FirstOrDefault();
+	
+	var response = service.AddBoardGameToUserCollection(gameToAdd, email);
+});
+
 #endregion
 
 

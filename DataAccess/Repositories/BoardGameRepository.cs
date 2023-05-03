@@ -49,15 +49,14 @@ public class BoardGameRepository: IRepository<BoardGame>
 	{
 		//objektet som ska uppdateras:
 		var toUpdate = await _context.BoardGames.FirstOrDefaultAsync(b => b.Id == item.Id);
-		
-		//TODO: Kanske skulle ha en del som kollar om ett värdet behöver uppdateras eller ej för att ej gå igenom samtliga objekt.
+
 		if (toUpdate != null)
 		{
 			var propertyList = typeof(BoardGame).GetProperties();
 
 			foreach (var prop in propertyList)
 			{
-				if (prop.GetValue(item) != prop.GetValue(toUpdate))
+				if (!prop.GetValue(item).Equals(prop.GetValue(toUpdate)))
 				{
 					prop.SetValue(toUpdate, prop.GetValue(item));
 				}
