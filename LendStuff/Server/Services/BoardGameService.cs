@@ -138,18 +138,20 @@ public class BoardGameService
 	{
 		var listOfGenres = new List<Genre>();
 
-
-		//TODO: Detta är inte färidgt ännu!!
-		//1.Kolla om genren redan existeras, isf lägg till den existerande
 		foreach (var genre in genreStrings)
 		{
-			var search = await _genreRepository.FindByKey(g => g.Name.Equals(genre));
-			listOfGenres.AddRange(search);
+			var search = await _genreRepository.FindByKey(g => g.Name.ToLower().Equals(genre)); //TODO: mer check på detta.
+
+			if (search.Count() > 0)
+			{
+				listOfGenres.AddRange(search);
+				continue;
+			}
+
+			listOfGenres.Add(new Genre() { Name = genre });
 		}
 
 		return listOfGenres;
-
-		//2. Annars skapa en ny.
 		
 	}
 
