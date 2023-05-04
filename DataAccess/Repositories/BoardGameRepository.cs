@@ -42,6 +42,8 @@ public class BoardGameRepository: IRepository<BoardGame>
 
 		await _context.SaveChangesAsync();
 
+
+		//TODO:Mer checkar här:
 		return $"{test.Entity.Title} {test.Entity.Id} removed";
 	}
 
@@ -56,7 +58,7 @@ public class BoardGameRepository: IRepository<BoardGame>
 
 			foreach (var prop in propertyList)
 			{
-				if (!prop.GetValue(item).Equals(prop.GetValue(toUpdate)))
+				if (!prop.GetValue(item).Equals(prop.GetValue(toUpdate))) //TODO: funkar inte om ett värde är null
 				{
 					prop.SetValue(toUpdate, prop.GetValue(item));
 				}

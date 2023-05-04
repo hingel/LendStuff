@@ -21,6 +21,8 @@ public class GenreRepository : IRepository<Genre>
 
 	public async Task<IEnumerable<Genre>> FindByKey(Func<Genre, bool> findFunc)
 	{
+		//Måste jag ha en koll om det finns något öht?
+
 		return _context.Genres.Where(findFunc);
 	}
 
