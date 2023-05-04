@@ -33,7 +33,7 @@ public class UserService
 	}
 
 
-	//Denna metod borde kansek inte finnas? Eller iaf kommer det en DTO från frontend.
+	//Denna metod borde kanske inte finnas? Eller iaf kommer det en DTO från frontend.
 	public async Task<ServiceResponse<ApplicationUser>> AddBoardGameToUserCollection(BoardGame toAdd, string email)
 	{
 		var userGames = await GetUsersGames(email);
