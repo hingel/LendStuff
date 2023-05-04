@@ -10,10 +10,12 @@ namespace LendStuff.DataAccess.Services;
 public class BoardGameService
 {
 	private readonly IRepository<BoardGame> _boardGameRepository;
+	private readonly IRepository<Genre> _genreRepository;
 
-	public BoardGameService(IRepository<BoardGame> boardGameRepository)
+	public BoardGameService(IRepository<BoardGame> boardGameRepository, IRepository<Genre> generRepository)
 	{
 		_boardGameRepository = boardGameRepository;
+		_genreRepository = generRepository;
 	}
 
 	public async Task<ServiceResponse<IEnumerable<BoardGameDto>>> GetAll()
@@ -48,7 +50,7 @@ public class BoardGameService
 		//Kolla först om det redan finns en liknande titel med samma namn? 
 		var result = await _boardGameRepository.FindByKey((game => game.Title.ToLower().Contains(toAdd.Title.ToLower())));
 
-		if (result is not null)
+		if (result.Count() > 0)
 		{
 			return new ServiceResponse<BoardGameDto>()
 			{
@@ -59,7 +61,7 @@ public class BoardGameService
 		}
 
 		//annars lägg till en ny titel.
-		var addResult = await _boardGameRepository.AddItem(ConvertDtoToBoardGame(toAdd));
+		var addResult = await _boardGameRepository.AddItem(await ConvertDtoToBoardGame(toAdd));
 
 		return new ServiceResponse<BoardGameDto>()
 		{
@@ -82,7 +84,7 @@ public class BoardGameService
 
 	public async Task<ServiceResponse<BoardGameDto>> UpdateBoardGame(BoardGameDto gameDto)
 	{
-		var result = await _boardGameRepository.Update(ConvertDtoToBoardGame(gameDto));
+		var result = await _boardGameRepository.Update(await ConvertDtoToBoardGame(gameDto));
 
 		if (result is null)
 		{
@@ -117,7 +119,7 @@ public class BoardGameService
 		};
 	}
 
-	private BoardGame ConvertDtoToBoardGame(BoardGameDto dtoToConvert)
+	private async Task<BoardGame> ConvertDtoToBoardGame(BoardGameDto dtoToConvert)
 	{
 		return new BoardGame()
 		{
@@ -125,16 +127,30 @@ public class BoardGameService
 			BggLink = dtoToConvert.BggLink,
 			Comment = dtoToConvert.Comment,
 			Description = dtoToConvert.Description,
-			Genres = FindGenres(dtoToConvert.Genres),
+			Genres = await FindGenres(dtoToConvert.Genres),
+			Id = dtoToConvert.Id,
+			ReleaseYear = dtoToConvert.ReleaseYear,
+			Title = dtoToConvert.Title
 		};
 	}
 
-	private List<Genre> FindGenres(List<string> GenreStrings)
+	private async Task<List<Genre>> FindGenres(List<string> genreStrings)
 	{
+		var listOfGenres = new List<Genre>();
+
+
+		//TODO: Detta är inte färidgt ännu!!
 		//1.Kolla om genren redan existeras, isf lägg till den existerande
+		foreach (var genre in genreStrings)
+		{
+			var search = await _genreRepository.FindByKey(g => g.Name.Equals(genre));
+			listOfGenres.AddRange(search);
+		}
+
+		return listOfGenres;
+
 		//2. Annars skapa en ny.
-
-
+		
 	}
 
 }

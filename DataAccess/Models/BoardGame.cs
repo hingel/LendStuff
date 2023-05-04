@@ -13,6 +13,6 @@ public class BoardGame
 	public bool Available { get; set; }
 	public List<Genre>? Genres { get; set; } = new ();
 
-	public string BggLink { get; set; }
+	public string? BggLink { get; set; }
 	public ICollection<ApplicationUser> Users { get; set; }
 }

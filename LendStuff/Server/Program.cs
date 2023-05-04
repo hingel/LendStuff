@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using LendStuff.DataAccess;
+using LendStuff.DataAccess.Models;
 using LendStuff.DataAccess.Repositories;
 using LendStuff.DataAccess.Repositories.Interfaces;
 using LendStuff.DataAccess.Services;
 using LendStuff.Shared;
+using LendStuff.Shared.DTOs;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,8 +32,10 @@ builder.Services.AddAuthentication()
 //Injectade services
 builder.Services.AddScoped<IRepository<BoardGame>, BoardGameRepository>();
 builder.Services.AddScoped<IRepository<ApplicationUser>, UserRepository>();
+builder.Services.AddScoped<IRepository<Genre>, GenreRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
+builder.Services.AddScoped<BoardGameService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -65,10 +69,10 @@ app.UseAuthorization();
 #region Förtesting
 
 //För spelen:
-app.MapGet("/allGames", async (IRepository<BoardGame> brepo) => await brepo.GetAll());
-app.MapPost("/addGame", async (IRepository<BoardGame> brepo, BoardGame toAdd) => await brepo.AddItem(toAdd));
-app.MapPatch("/updateGame", async(IRepository<BoardGame> brepo, BoardGame newToUpdate) => await brepo.Update(newToUpdate));
-app.MapDelete("/deleteGame", async (IRepository<BoardGame> brepo, string idToDelete) => await brepo.Delete(idToDelete));
+app.MapGet("/allGames", async (BoardGameService brepo) => await brepo.GetAll());
+app.MapPost("/addGame", async (BoardGameService brepo, BoardGameDto toAdd) => await brepo.AddTitle(toAdd));
+app.MapPatch("/updateGame", async(BoardGameService brepo, BoardGameDto newToUpdate) => await brepo.UpdateBoardGame(newToUpdate));
+app.MapDelete("/deleteGame", async (BoardGameService brepo, string idToDelete) => await brepo.DeleteBoardGame(idToDelete));
 
 app.MapGet("/getByT", async (IRepository<BoardGame> brepo, string idToFind) =>
 {
