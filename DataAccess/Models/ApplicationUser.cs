@@ -9,5 +9,6 @@ public class ApplicationUser : IdentityUser
 	public ICollection<BoardGame> CollectionOfBoardGames { get; set; } = new List<BoardGame>();
 	public ICollection<InternalMessage> Messages { get; set; } = new List<InternalMessage>();
 	public DateTime RegisterDate { get; set; } = DateTime.UtcNow;
+	//Friend List att lägga till
 
 }
