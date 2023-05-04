@@ -33,7 +33,7 @@ public class UserService
 	}
 
 
-	//Denna metod borde kansek inte finnas?
+	//Denna metod borde kansek inte finnas? Eller iaf kommer det en DTO från frontend.
 	public async Task<ServiceResponse<ApplicationUser>> AddBoardGameToUserCollection(BoardGame toAdd, string email)
 	{
 		var userGames = await GetUsersGames(email);
@@ -43,6 +43,8 @@ public class UserService
 		games.Add(toAdd);
 
 		var userToUpdate = await _userManager.FindByEmailAsync(email);
+
+		//Här borde jag spara databasen.
 
 		userToUpdate.CollectionOfBoardGames = games;
 
