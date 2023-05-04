@@ -10,5 +10,5 @@ public class ApplicationUser : IdentityUser
 	public ICollection<InternalMessage> Messages { get; set; } = new List<InternalMessage>();
 	public DateTime RegisterDate { get; set; } = DateTime.UtcNow;
 
-
+	//Ska det även vara med kundens ordar om jag vill länka det åt bägge håll?
 }

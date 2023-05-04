@@ -42,6 +42,8 @@ public class BoardGameRepository: IRepository<BoardGame>
 
 		await _context.SaveChangesAsync();
 
+
+		//TODO:Mer checkar här:
 		return $"{test.Entity.Title} {test.Entity.Id} removed";
 	}
 
