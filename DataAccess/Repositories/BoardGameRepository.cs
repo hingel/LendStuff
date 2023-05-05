@@ -29,8 +29,6 @@ public class BoardGameRepository: IRepository<BoardGame>
 	{
 		var result = await _context.BoardGames.AddAsync(item);
 
-		await _context.SaveChangesAsync();
-
 		return result.Entity;
 	}
 
@@ -40,15 +38,14 @@ public class BoardGameRepository: IRepository<BoardGame>
 
 		var test = _context.BoardGames.Remove(result);
 
-		await _context.SaveChangesAsync();
-
-
 		//TODO:Mer checkar här:
 		return $"{test.Entity.Title} {test.Entity.Id} removed";
 	}
 
 	public async Task<BoardGame> Update(BoardGame item)
 	{
+		//TODO: Detta kanske skulle vara en egen metod som kan kallas på av flera olika repositories. I en service.
+
 		//objektet som ska uppdateras:
 		var toUpdate = await _context.BoardGames.FirstOrDefaultAsync(b => b.Id == item.Id);
 
@@ -58,13 +55,14 @@ public class BoardGameRepository: IRepository<BoardGame>
 
 			foreach (var prop in propertyList)
 			{
+				if(prop.GetValue(item) is null) //TODO: Vet inte om denna bidrar längre?
+					continue;
+
 				if (!prop.GetValue(item).Equals(prop.GetValue(toUpdate))) //TODO: funkar inte om ett värde är null
 				{
 					prop.SetValue(toUpdate, prop.GetValue(item));
 				}
 			}
-
-			await _context.SaveChangesAsync();
 		}
 
 		return toUpdate;

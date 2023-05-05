@@ -3,8 +3,8 @@
 public class MessageDto
 {	
 	public int MessageId { get; set; }
-	public string Message { get; set; }
+	public string Message { get; set; } = string.Empty;
 	public DateTime MessageSent { get; set; } = DateTime.UtcNow;
-	public string SentFromUserGuid { get; set; }
-	public string SentToUserGuid { get; set; }
+	public string SentFromUserGuid { get; set; } = string.Empty;
+	public string SentToUserGuid { get; set; } = string.Empty;
 }

@@ -30,8 +30,6 @@ public class GenreRepository : IRepository<Genre>
 	{
 		var result = await _context.Genres.AddAsync(item);
 
-		await _context.SaveChangesAsync();
-
 		return result.Entity;
 	}
 
@@ -42,9 +40,7 @@ public class GenreRepository : IRepository<Genre>
 		if (toDelete != null)
 		{
 			var result = _context.Genres.Remove(toDelete);
-
-			await _context.SaveChangesAsync();
-
+			
 			return $"Genre: {result.Entity.Name} deleted";
 		}
 
@@ -66,8 +62,6 @@ public class GenreRepository : IRepository<Genre>
 					prop.SetValue(toUpdate, prop.GetValue(item));
 				}
 			}
-
-			await _context.SaveChangesAsync();
 		}
 
 		return toUpdate;

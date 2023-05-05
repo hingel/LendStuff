@@ -4,15 +4,15 @@ namespace LendStuff.Server.Models;
 
 public class BoardGame
 {
-	public string Id { get; set; } = Guid.NewGuid().ToString();
-	public string Title { get; set; }
-	public int? ReleaseYear { get; set; }
-	public string Description { get; set; }
+	public string Id { get; set; } = string.Empty;
+	public string Title { get; set; } = string.Empty;
+	public int ReleaseYear { get; set; }
+	public string Description { get; set; } = string.Empty;
 	public int Condition { get; set; }
-	public string? Comment { get; set; }
+	public string? Comment { get; set; } = string.Empty;
 	public bool Available { get; set; }
 	public List<Genre>? Genres { get; set; } = new ();
 
-	public string? BggLink { get; set; }
+	public string? BggLink { get; set; } = string.Empty;
 	public ICollection<ApplicationUser> Users { get; set; }
 }
