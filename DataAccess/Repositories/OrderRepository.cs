@@ -16,12 +16,22 @@ public class OrderRepository : IRepository<Order>
 
 	public async Task<IEnumerable<Order>> GetAll()
 	{
-		return _context.Orders;
+		var respons = _context
+			.Orders
+			.Include(o => o.Owner)
+			.Include(o => o.Borrower)
+			.Include(o => o.BoardGame);
+
+		return respons;
 	}
 
 	public async Task<IEnumerable<Order>> FindByKey(Func<Order, bool> findFunc)
 	{
-		return _context.Orders.Where(findFunc);
+		return _context.Orders
+			.Include(o => o.Owner)
+			.Include(o => o.Borrower)
+			.Include(o => o.BoardGame)
+			.Where(findFunc);
 	}
 
 	public async Task<Order> AddItem(Order item)

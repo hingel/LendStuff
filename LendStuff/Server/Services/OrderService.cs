@@ -55,6 +55,8 @@ public class OrderService
 	public async Task<ServiceResponse<string>> AddOrder(OrderDto newOrderDto)
 	{
 		var newOrder = await ConvertDtoToOrder(newOrderDto);
+		newOrder.LentDate = DateTime.UtcNow; //Bara för test //TODO: detta funkar inte av någon anledning.
+		newOrder.ReturnDate = DateTime.UtcNow.AddDays(7); //Bara för test
 		
 		if (!newOrder.BoardGame.Available)
 		{

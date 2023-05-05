@@ -33,10 +33,12 @@ builder.Services.AddAuthentication()
 //builder.Services.AddScoped<IRepository<BoardGame>, BoardGameRepository>();
 builder.Services.AddScoped<IRepository<ApplicationUser>, UserRepository>();
 //builder.Services.AddScoped<IRepository<Genre>, GenreRepository>();
+builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 builder.Services.AddScoped<BoardGameService>();
+builder.Services.AddScoped<OrderService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -103,6 +105,7 @@ app.MapGet("/getUsersGames", async (UserService service, string email) =>
 //});
 
 app.MapPost("/postOrder", async (OrderService service, OrderDto newOrderDto) => await service.AddOrder(newOrderDto));
+app.MapGet("/getOrders", async (OrderService service) => await service.GetAllOrders());
 
 
 #endregion
