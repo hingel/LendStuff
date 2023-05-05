@@ -49,6 +49,8 @@ public class BoardGameRepository: IRepository<BoardGame>
 
 	public async Task<BoardGame> Update(BoardGame item)
 	{
+		//TODO: Detta kanske skulle vara en egen metod som kan kallas på av flera olika repositories. I en service.
+
 		//objektet som ska uppdateras:
 		var toUpdate = await _context.BoardGames.FirstOrDefaultAsync(b => b.Id == item.Id);
 
@@ -58,6 +60,9 @@ public class BoardGameRepository: IRepository<BoardGame>
 
 			foreach (var prop in propertyList)
 			{
+				if(prop.GetValue(item) is null) //TODO: Vet inte om denna bidrar längre?
+					continue;
+
 				if (!prop.GetValue(item).Equals(prop.GetValue(toUpdate))) //TODO: funkar inte om ett värde är null
 				{
 					prop.SetValue(toUpdate, prop.GetValue(item));

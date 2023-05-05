@@ -56,7 +56,7 @@ public class BoardGameService
 			{
 				Data = ConvertBoardGameToDto(result.First()),
 				Message = "Game already exists",
-				Success = false //TODO: Vet inte om det är rätt med detta eftersom jag inte får tillbaks resultatet
+				Success = false //TODO: Vet inte om det är rätt med detta eftersom jag inte får tillbaks resultatet till front end
 			};
 		}
 
@@ -126,9 +126,10 @@ public class BoardGameService
 			Available = dtoToConvert.Available,
 			BggLink = dtoToConvert.BggLink,
 			Comment = dtoToConvert.Comment,
+			Condition = dtoToConvert.Condition,
 			Description = dtoToConvert.Description,
 			Genres = await FindGenres(dtoToConvert.Genres),
-			Id = dtoToConvert.Id,
+			Id = dtoToConvert.Id == "" ? Guid.NewGuid().ToString() : dtoToConvert.Id, 
 			ReleaseYear = dtoToConvert.ReleaseYear,
 			Title = dtoToConvert.Title
 		};

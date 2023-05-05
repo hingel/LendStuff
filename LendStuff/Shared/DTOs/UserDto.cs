@@ -2,10 +2,10 @@
 
 public class UserDto
 {
-	public string UserName { get; set; }
-	public string Street { get; set; }
-	public string City { get; set; }
-	public string PostalCode { get; set; }
+	public string UserName { get; set; } = string.Empty;
+	public string Street { get; set; } = string.Empty;
+	public string City { get; set; } = string.Empty;
+	public string PostalCode { get; set; } = string.Empty;
 	public IEnumerable<BoardGameDto> BoardGameDtos { get; set; } = new List<BoardGameDto>() { };
 	public IEnumerable<MessageDto> MessageDtosDtos { get; set; } = new List<MessageDto>() { };
 
