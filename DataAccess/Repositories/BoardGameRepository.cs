@@ -29,8 +29,6 @@ public class BoardGameRepository: IRepository<BoardGame>
 	{
 		var result = await _context.BoardGames.AddAsync(item);
 
-		await _context.SaveChangesAsync();
-
 		return result.Entity;
 	}
 
@@ -39,9 +37,6 @@ public class BoardGameRepository: IRepository<BoardGame>
 		var result = await _context.BoardGames.FirstOrDefaultAsync(b => b.Id == id);
 
 		var test = _context.BoardGames.Remove(result);
-
-		await _context.SaveChangesAsync();
-
 
 		//TODO:Mer checkar här:
 		return $"{test.Entity.Title} {test.Entity.Id} removed";
@@ -68,8 +63,6 @@ public class BoardGameRepository: IRepository<BoardGame>
 					prop.SetValue(toUpdate, prop.GetValue(item));
 				}
 			}
-
-			await _context.SaveChangesAsync();
 		}
 
 		return toUpdate;

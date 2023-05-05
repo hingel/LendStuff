@@ -30,9 +30,10 @@ builder.Services.AddAuthentication()
 	.AddIdentityServerJwt();
 
 //Injectade services
-builder.Services.AddScoped<IRepository<BoardGame>, BoardGameRepository>();
+//builder.Services.AddScoped<IRepository<BoardGame>, BoardGameRepository>();
 builder.Services.AddScoped<IRepository<ApplicationUser>, UserRepository>();
-builder.Services.AddScoped<IRepository<Genre>, GenreRepository>();
+//builder.Services.AddScoped<IRepository<Genre>, GenreRepository>();
+builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 builder.Services.AddScoped<BoardGameService>();
@@ -74,15 +75,15 @@ app.MapPost("/addGame", async (BoardGameService brepo, BoardGameDto toAdd) => aw
 app.MapPatch("/updateGame", async(BoardGameService brepo, BoardGameDto newToUpdate) => await brepo.UpdateBoardGame(newToUpdate));
 app.MapDelete("/deleteGame", async (BoardGameService brepo, string idToDelete) => await brepo.DeleteBoardGame(idToDelete));
 
-app.MapGet("/getByT", async (IRepository<BoardGame> brepo, string idToFind) =>
-{
-	//Varianter på denna func kan sen finnas i en service för att leta efter del i titel etc.
-	Func<BoardGame, bool> filterFunc = (BoardGame b) => b.Id == idToFind;
+//app.MapGet("/getByT", async (IRepository<BoardGame> brepo, string idToFind) =>
+//{
+//	//Varianter på denna func kan sen finnas i en service för att leta efter del i titel etc.
+//	Func<BoardGame, bool> filterFunc = (BoardGame b) => b.Id == idToFind;
 
-	var result = await brepo.FindByKey(filterFunc);
+//	var result = await brepo.FindByKey(filterFunc);
 
-	return result;
-});
+//	return result;
+//});
 
 //För användaren:
 
@@ -93,13 +94,16 @@ app.MapGet("/getUsersGames", async (UserService service, string email) =>
 	return response;
 });
 
-app.MapPatch("/patchUser", async (UserService service, IRepository<BoardGame> brepo, string email) =>
-{
-	var result = await brepo.GetAll();
-	var gameToAdd = result.FirstOrDefault();
+//app.MapPatch("/patchUser", async (UserService service, IRepository<BoardGame> brepo, string email) =>
+//{
+//	var result = await brepo.GetAll();
+//	var gameToAdd = result.FirstOrDefault();
 	
-	var response = service.AddBoardGameToUserCollection(gameToAdd, email);
-});
+//	var response = service.AddBoardGameToUserCollection(gameToAdd, email);
+//});
+
+app.MapPost("/postOrder", async (OrderService service, OrderDto newOrderDto) => await service.AddOrder(newOrderDto));
+
 
 #endregion
 

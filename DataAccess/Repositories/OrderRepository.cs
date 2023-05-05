@@ -57,6 +57,7 @@ public class OrderRepository : IRepository<Order>
 
 			foreach (var propertyInfo in propetyList)
 			{
+				//TODO: Kan behövas null check
 				if (!propertyInfo.GetValue(item).Equals(propertyInfo.GetValue(toUpdate)))
 				{
 					propertyInfo.SetValue(toUpdate, propertyInfo.GetValue(item));

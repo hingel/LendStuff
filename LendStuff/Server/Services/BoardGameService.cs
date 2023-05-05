@@ -9,18 +9,20 @@ namespace LendStuff.DataAccess.Services;
 
 public class BoardGameService
 {
-	private readonly IRepository<BoardGame> _boardGameRepository;
-	private readonly IRepository<Genre> _genreRepository;
+	//private readonly IRepository<BoardGame> _boardGameRepository;
+	//private readonly IRepository<Genre> _genreRepository;
+	private readonly UnitOfWork _unitOfWork;
 
-	public BoardGameService(IRepository<BoardGame> boardGameRepository, IRepository<Genre> generRepository)
+	public BoardGameService(UnitOfWork unitOfWork)//IRepository<BoardGame> boardGameRepository, IRepository<Genre> genreRepository)
 	{
-		_boardGameRepository = boardGameRepository;
-		_genreRepository = generRepository;
+		//_boardGameRepository = boardGameRepository;
+		//_genreRepository = genreRepository;
+		_unitOfWork = unitOfWork;
 	}
 
 	public async Task<ServiceResponse<IEnumerable<BoardGameDto>>> GetAll()
 	{
-		var result = await _boardGameRepository.GetAll();
+		var result = await _unitOfWork.BoardGameRepository.GetAll();
 
 		//TODO: fixa detta lite bättre:
 		return new ServiceResponse<IEnumerable<BoardGameDto>>()
@@ -34,21 +36,43 @@ public class BoardGameService
 	//TODO: Borde kunna skicka detta delegatet ifrån frontend?!
 	public async Task<ServiceResponse<IEnumerable<BoardGameDto>>> FindByTitle(string searchWord)
 	{
-		var result = await _boardGameRepository.FindByKey((game => game.Title.Contains(searchWord)));
+		var result = await _unitOfWork.BoardGameRepository.FindByKey((game => game.Title.Contains(searchWord)));
 		
 		//TODO: fixa detta lite bättre:
 		return new ServiceResponse<IEnumerable<BoardGameDto>>()
 		{
 			Data = result.Select(ConvertBoardGameToDto),
-			Message = $"{result.Count()} Boardgame {(result.Count() != 1 ? "": "s.")} found.",
+			Message = $"{result.Count()} Boardgame {(result.Count() != 1 ? "": "s")} found.",
 			Success = true
 		};
 	}
 
+	public async Task<ServiceResponse<BoardGameDto>> FindById(string id)
+	{
+		var result = await _unitOfWork.BoardGameRepository.FindByKey((game => game.Id == id));
+
+		if (result.Count() > 0)
+		{
+			return new ServiceResponse<BoardGameDto>()
+			{
+				Data = result.Select(ConvertBoardGameToDto).First(),
+				Message = $"Boardgame found.",
+				Success = true
+			};
+		}
+
+		return new ServiceResponse<BoardGameDto>()
+		{
+			Message = "No board game found",
+			Success = false
+		};
+	}
+
+
 	public async Task<ServiceResponse<BoardGameDto>> AddTitle(BoardGameDto toAdd)
 	{
 		//Kolla först om det redan finns en liknande titel med samma namn? 
-		var result = await _boardGameRepository.FindByKey((game => game.Title.ToLower().Contains(toAdd.Title.ToLower())));
+		var result = await _unitOfWork.BoardGameRepository.FindByKey((game => game.Title.ToLower().Contains(toAdd.Title.ToLower())));
 
 		if (result.Count() > 0)
 		{
@@ -61,7 +85,8 @@ public class BoardGameService
 		}
 
 		//annars lägg till en ny titel.
-		var addResult = await _boardGameRepository.AddItem(await ConvertDtoToBoardGame(toAdd));
+		var addResult = await _unitOfWork.BoardGameRepository.AddItem(await ConvertDtoToBoardGame(toAdd));
+		var saveResult = await _unitOfWork.SaveChanges();
 
 		return new ServiceResponse<BoardGameDto>()
 		{
@@ -73,7 +98,8 @@ public class BoardGameService
 
 	public async Task<ServiceResponse<string>> DeleteBoardGame(string id)
 	{
-		var result = await _boardGameRepository.Delete(id);
+		var result = await _unitOfWork.BoardGameRepository.Delete(id);
+		var saveResult = await _unitOfWork.SaveChanges();
 
 		return new ServiceResponse<string>()
 		{
@@ -84,8 +110,8 @@ public class BoardGameService
 
 	public async Task<ServiceResponse<BoardGameDto>> UpdateBoardGame(BoardGameDto gameDto)
 	{
-		var result = await _boardGameRepository.Update(await ConvertDtoToBoardGame(gameDto));
-
+		var result = await _unitOfWork.BoardGameRepository.Update(await ConvertDtoToBoardGame(gameDto));
+		
 		if (result is null)
 		{
 			return new ServiceResponse<BoardGameDto>()
@@ -94,6 +120,8 @@ public class BoardGameService
 				Success = false
 			};
 		}
+
+		var saveResult = await _unitOfWork.SaveChanges();
 
 		return new ServiceResponse<BoardGameDto>()
 		{
@@ -141,7 +169,9 @@ public class BoardGameService
 
 		foreach (var genre in genreStrings)
 		{
-			var search = await _genreRepository.FindByKey(g => g.Name.ToLower().Equals(genre)); //TODO: mer check på detta.
+			var search =
+				await _unitOfWork.GenreRepository.FindByKey(g => g.Name.ToLower().Equals(genre)); //TODO: mer check på detta. Kapa tomutrymme etc.
+			//Eller ge förslag på när användaren skriver i de ord som är liknande.
 
 			if (search.Count() > 0)
 			{
@@ -149,7 +179,9 @@ public class BoardGameService
 				continue;
 			}
 
-			listOfGenres.Add(new Genre() { Name = genre });
+			//Här skapas en ny genre om den inte redan finns.
+			listOfGenres.Add(await _unitOfWork.GenreRepository.AddItem(new Genre() { Name = genre }));
+			var saveResult = await _unitOfWork.SaveChanges();
 		}
 
 		return listOfGenres;
