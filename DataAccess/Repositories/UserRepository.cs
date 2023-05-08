@@ -56,6 +56,9 @@ public class UserRepository : IRepository<ApplicationUser>
 
 			foreach (var prop in propertyList)
 			{
+				if (prop.GetValue(item) is null) //TODO: Vet inte om denna bidrar längre?
+					continue;
+
 				if (!prop.GetValue(item).Equals(prop.GetValue(toUpdate)))
 				{
 					prop.SetValue(toUpdate, prop.GetValue(item));

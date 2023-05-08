@@ -12,5 +12,6 @@ public class InternalMessage
 	public DateTime MessageSent { get; set; } = DateTime.UtcNow;
 	public string SentFromUserGuid { get; set; }
 	public string SentToUserGuid { get; set;}
+	//lägga till om det är läst eller ej, bool
 
 }

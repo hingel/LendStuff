@@ -30,15 +30,17 @@ builder.Services.AddAuthentication()
 	.AddIdentityServerJwt();
 
 //Injectade services
-//builder.Services.AddScoped<IRepository<BoardGame>, BoardGameRepository>();
+builder.Services.AddScoped<IRepository<BoardGame>, BoardGameRepository>();
 builder.Services.AddScoped<IRepository<ApplicationUser>, UserRepository>();
 //builder.Services.AddScoped<IRepository<Genre>, GenreRepository>();
 builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
+builder.Services.AddScoped<IRepository<InternalMessage>, InternalMessageRepository>();
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 builder.Services.AddScoped<BoardGameService>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<MessageService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -76,37 +78,27 @@ app.MapGet("/allGames", async (BoardGameService brepo) => await brepo.GetAll());
 app.MapPost("/addGame", async (BoardGameService brepo, BoardGameDto toAdd) => await brepo.AddTitle(toAdd));
 app.MapPatch("/updateGame", async(BoardGameService brepo, BoardGameDto newToUpdate) => await brepo.UpdateBoardGame(newToUpdate));
 app.MapDelete("/deleteGame", async (BoardGameService brepo, string idToDelete) => await brepo.DeleteBoardGame(idToDelete));
-
-//app.MapGet("/getByT", async (IRepository<BoardGame> brepo, string idToFind) =>
-//{
-//	//Varianter på denna func kan sen finnas i en service för att leta efter del i titel etc.
-//	Func<BoardGame, bool> filterFunc = (BoardGame b) => b.Id == idToFind;
-
-//	var result = await brepo.FindByKey(filterFunc);
-
-//	return result;
-//});
+app.MapGet("/getGameByT", async (BoardGameService service, string title) => await service.FindByTitle(title));
 
 //För användaren:
+app.MapGet("/getUsersGames", async (UserService service, string email) => await service.GetUsersGames(email));
+app.MapGet("/getById", async (UserService service, string id) => await service.FindUserById(id));
+app.MapPatch("/addBoardGameToUser", async (UserService service, string boardGameToAddId, string userEmail) => await service.AddBoardGameToUserCollection(boardGameToAddId, userEmail));
 
-app.MapGet("/getUsersGames", async (UserService service, string email) =>
-{
-	var response = await service.GetUsersGames(email);
-
-	return response;
-});
-
-//app.MapPatch("/patchUser", async (UserService service, IRepository<BoardGame> brepo, string email) =>
-//{
-//	var result = await brepo.GetAll();
-//	var gameToAdd = result.FirstOrDefault();
-	
-//	var response = service.AddBoardGameToUserCollection(gameToAdd, email);
-//});
-
-app.MapPost("/postOrder", async (OrderService service, OrderDto newOrderDto) => await service.AddOrder(newOrderDto));
+//Orders:
 app.MapGet("/getOrders", async (OrderService service) => await service.GetAllOrders());
+app.MapGet("/allUserOrders", async (OrderService service, string userDtoId) => await service.GetAllUserOrders(userDtoId));
+app.MapPost("/postOrder", async (OrderService service, OrderDto newOrderDto) => await service.AddOrder(newOrderDto));
+app.MapPatch("/updateOrder", async (OrderService service, OrderDto orderToUpdate) => await service.UpdateOrder(orderToUpdate));
+app.MapDelete("/deleteOrder", async (OrderService service, string orderToDelete) => await service.DeleteOrder(orderToDelete));
 
+
+//Messages:
+//TODO: lägg till getAll. Men vet inte om den kommer att användas.
+app.MapPost("/addMessage", async (MessageService service, MessageDto newMessage) => await service.AddMessage(newMessage));
+app.MapGet("/getUsersMessages", async (MessageService service, string id) => await service.GetUserMessages(id));
+app.MapDelete("/deleteMessage", async(MessageService service, int id) => await service.DeleteMessage(id));
+app.MapPatch("/updateMessage", async (MessageService service, MessageDto messageToUpdate) => await service.UpdateMessage(messageToUpdate));
 
 #endregion
 

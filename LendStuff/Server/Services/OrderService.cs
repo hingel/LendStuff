@@ -12,17 +12,13 @@ public class OrderService
 {
 	private readonly IRepository<Order> _orderRepository;
 
-	//private readonly BoardGameService _boardGameService;
-	//private readonly UserService _userService;
 	private readonly UnitOfWork _unitOfWork;
 	private readonly UserManager<ApplicationUser> _userManager;
 
-	public OrderService(IRepository<Order> orderRepository, /*BoardGameService boardGameService, UserService userService,*/ UnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+	public OrderService(IRepository<Order> orderRepository, UnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
 	{
 		_orderRepository = orderRepository;
 		_unitOfWork = unitOfWork;
-		//_boardGameService = boardGameService;
-		//_userService = userService;
 		_userManager = userManager;
 	}
 
@@ -40,23 +36,33 @@ public class OrderService
 		return response;
 	}
 
-	public async Task<ServiceResponse<IEnumerable<OrderDto>>> GetAllUserOrders(UserDto userDto)
+	public async Task<ServiceResponse<IEnumerable<OrderDto>>> GetAllUserOrders(string id)
 	{
-		var result = await _orderRepository.FindByKey(o => o.Owner.UserName == userDto.UserName);
-		
+		var result = await _orderRepository.FindByKey(o => o.Owner.Id == id || o.Borrower.Id == id);
+
+		if (result.FirstOrDefault() is null)
+		{
+			return new ServiceResponse<IEnumerable<OrderDto>>()
+			{
+				Message = "Orders not found",
+				Success = false
+			};
+		}
+
+
 		return new ServiceResponse<IEnumerable<OrderDto>>()
 		{
 			Data = result.Select(ConvertOrderToDto),
-			Message = $"order for {userDto.UserName}",
+			Message = $"order for {id}",
 			Success = true
 		};
 	}
 
 	public async Task<ServiceResponse<string>> AddOrder(OrderDto newOrderDto)
 	{
+		newOrderDto.LentDate = DateTime.UtcNow; //Bara för test 
+		newOrderDto.ReturnDate = DateTime.UtcNow.AddDays(7); //Bara för test
 		var newOrder = await ConvertDtoToOrder(newOrderDto);
-		newOrder.LentDate = DateTime.UtcNow; //Bara för test //TODO: detta funkar inte av någon anledning.
-		newOrder.ReturnDate = DateTime.UtcNow.AddDays(7); //Bara för test
 		
 		if (!newOrder.BoardGame.Available)
 		{
@@ -67,7 +73,7 @@ public class OrderService
 			};
 		}
 
-		var result = await _orderRepository.AddItem(await ConvertDtoToOrder(newOrderDto));
+		var result = await _orderRepository.AddItem(newOrder);
 
 		return new ServiceResponse<string>()
 		{
@@ -87,6 +93,17 @@ public class OrderService
 		{
 			Data = ConvertOrderToDto(result),
 			Message = "Order sent",
+			Success = true
+		};
+	}
+
+	public async Task<ServiceResponse<string>> DeleteOrder(string orderId)
+	{
+		var result = await _orderRepository.Delete(orderId);
+
+		return new ServiceResponse<string>()
+		{
+			Message = result,
 			Success = true
 		};
 	}
