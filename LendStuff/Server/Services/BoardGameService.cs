@@ -9,14 +9,10 @@ namespace LendStuff.DataAccess.Services;
 
 public class BoardGameService
 {
-	//private readonly IRepository<BoardGame> _boardGameRepository;
-	//private readonly IRepository<Genre> _genreRepository;
 	private readonly UnitOfWork _unitOfWork;
 
-	public BoardGameService(UnitOfWork unitOfWork)//IRepository<BoardGame> boardGameRepository, IRepository<Genre> genreRepository)
+	public BoardGameService(UnitOfWork unitOfWork)
 	{
-		//_boardGameRepository = boardGameRepository;
-		//_genreRepository = genreRepository;
 		_unitOfWork = unitOfWork;
 	}
 
@@ -27,7 +23,7 @@ public class BoardGameService
 		//TODO: fixa detta lite bättre:
 		return new ServiceResponse<IEnumerable<BoardGameDto>>()
 		{
-			Data = result.Select(ConvertBoardGameToDto),
+			Data = result.Select(DtoConvert.ConvertBoardGameToDto),
 			Message = "Boardgames found",
 			Success = true
 		};
@@ -36,12 +32,12 @@ public class BoardGameService
 	//TODO: Borde kunna skicka detta delegatet ifrån frontend?!
 	public async Task<ServiceResponse<IEnumerable<BoardGameDto>>> FindByTitle(string searchWord)
 	{
-		var result = await _unitOfWork.BoardGameRepository.FindByKey((game => game.Title.Contains(searchWord)));
+		var result = await _unitOfWork.BoardGameRepository.FindByKey((game => game.Title.ToLower().Contains(searchWord.ToLower())));
 		
 		//TODO: fixa detta lite bättre:
 		return new ServiceResponse<IEnumerable<BoardGameDto>>()
 		{
-			Data = result.Select(ConvertBoardGameToDto),
+			Data = result.Select(DtoConvert.ConvertBoardGameToDto),
 			Message = $"{result.Count()} Boardgame {(result.Count() != 1 ? "": "s")} found.",
 			Success = true
 		};
@@ -55,7 +51,7 @@ public class BoardGameService
 		{
 			return new ServiceResponse<BoardGameDto>()
 			{
-				Data = result.Select(ConvertBoardGameToDto).First(),
+				Data = result.Select(DtoConvert.ConvertBoardGameToDto).First(),
 				Message = $"Boardgame found.",
 				Success = true
 			};
@@ -78,7 +74,7 @@ public class BoardGameService
 		{
 			return new ServiceResponse<BoardGameDto>()
 			{
-				Data = ConvertBoardGameToDto(result.First()),
+				Data = DtoConvert.ConvertBoardGameToDto(result.First()),
 				Message = "Game already exists",
 				Success = false //TODO: Vet inte om det är rätt med detta eftersom jag inte får tillbaks resultatet till front end
 			};
@@ -90,7 +86,7 @@ public class BoardGameService
 
 		return new ServiceResponse<BoardGameDto>()
 		{
-			Data = ConvertBoardGameToDto(addResult),
+			Data = DtoConvert.ConvertBoardGameToDto(addResult),
 			Message = "Board game added",
 			Success = true
 		};
@@ -125,25 +121,9 @@ public class BoardGameService
 
 		return new ServiceResponse<BoardGameDto>()
 		{
-			Data = ConvertBoardGameToDto(result),
+			Data = DtoConvert.ConvertBoardGameToDto(result),
 			Message = "Boardgame updated",
 			Success = true
-		};
-	}
-
-	private BoardGameDto ConvertBoardGameToDto(BoardGame boardGame)
-	{
-		return new BoardGameDto()
-		{
-			Available = boardGame.Available,
-			BggLink = boardGame.BggLink,
-			Comment = boardGame.Comment,
-			Condition = boardGame.Condition,
-			Description = boardGame.Description,
-			Genres = boardGame.Genres.Select(g => g.Name).ToList(),
-			Id = boardGame.Id,
-			ReleaseYear = boardGame.ReleaseYear,
-			Title = boardGame.Title
 		};
 	}
 

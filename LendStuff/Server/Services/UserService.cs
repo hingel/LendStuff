@@ -11,27 +11,40 @@ public class UserService
 {
 	private readonly IRepository<ApplicationUser> _userRepository;
 	private readonly UserManager<ApplicationUser> _userManager;
+	private readonly IRepository<BoardGame> _boardGamerepo;
 
-	public UserService(IRepository<ApplicationUser> userRepository, UserManager<ApplicationUser> userManager)
+	public UserService(IRepository<ApplicationUser> userRepository, UserManager<ApplicationUser> userManager, IRepository<BoardGame> boardGameRepo)
 	{
 		_userRepository = userRepository;
 		_userManager = userManager;
+		_boardGamerepo = boardGameRepo;
 	}
 
-	public async Task<ServiceResponse<IEnumerable<BoardGame>>> GetUsersGames(string email)
+	public async Task<ServiceResponse<IEnumerable<BoardGameDto>>> GetUsersGames(string email)
 	{ 
 		Func<ApplicationUser, bool> filterFunc = (u) => u.NormalizedEmail == email.ToUpper();
 		
-		var result = await _userRepository.FindByKey(filterFunc);
-		
-		return new ServiceResponse<IEnumerable<BoardGame>>()
+		var result = await _userRepository.FindByKey(filterFunc); //dessa spel borde göras om till DTO.
+
+		if (result.FirstOrDefault() is null)
 		{
-			Data = result.FirstOrDefault().CollectionOfBoardGames,
+			return new ServiceResponse<IEnumerable<BoardGameDto>>()
+			{
+				Message = "Not found",
+				Success = false
+			};
+		}
+
+			return new ServiceResponse<IEnumerable<BoardGameDto>>()
+		{
+			Data = result.FirstOrDefault().CollectionOfBoardGames.Select(DtoConvert.ConvertBoardGameToDto),
 			Message = "BoardGames found",
 			Success = true
 		};
 	}
 
+
+	//Behövs denna? För admin kanske?
 	public async Task<ServiceResponse<UserDto>> FindUserById(string id)
 	{
 		Func<ApplicationUser, bool> filterFunc = (u) => u.Id == id;
@@ -61,25 +74,27 @@ public class UserService
 
 
 	//Denna metod borde kanske inte finnas? Eller iaf kommer det en DTO från frontend.
-	public async Task<ServiceResponse<ApplicationUser>> AddBoardGameToUserCollection(BoardGame toAdd, string email)
+	public async Task<ServiceResponse<string>> AddBoardGameToUserCollection(string boardGameId, string email)
 	{
-		var userGames = await GetUsersGames(email);
+		var userToUpdate = (await _userRepository.FindByKey(u => u.Email == email)).FirstOrDefault();
 
-		var games = userGames.Data.ToList();
+		var gameToAdd = (await _boardGamerepo.FindByKey(b => b.Id == boardGameId)).FirstOrDefault();
 
-		games.Add(toAdd);
+		if (userToUpdate is null || gameToAdd is null)
+		{
+			return new ServiceResponse<string>()
+			{
+				Message = "User not found",
+				Success = false
+			};
+		}
 
-		var userToUpdate = await _userManager.FindByEmailAsync(email);
-
-		//Här borde jag spara databasen.
-
-		userToUpdate.CollectionOfBoardGames = games;
+		userToUpdate.CollectionOfBoardGames.Add(gameToAdd);
 
 		var result = await _userRepository.Update(userToUpdate);
 
-		return new ServiceResponse<ApplicationUser>()
+		return new ServiceResponse<string>()
 		{
-			Data = result,
 			Message = "Board games added hopefully",
 			Success = true
 		};
