@@ -39,7 +39,7 @@ public static class WebApplicationExtensions
 	{
 		//TODO: lägg till getAll. Men vet inte om den kommer att användas.
 		app.MapPost("/addMessage", async (MessageService service, MessageDto newMessage) => await service.AddMessage(newMessage));
-		app.MapGet("/getUsersMessages", async (MessageService service, string id) => await service.GetUserMessages(id));
+		 app.MapGet("/getUsersMessages", async (MessageService service, string name) => await service.GetUserMessages(name));
 		app.MapDelete("/deleteMessage", async (MessageService service, int id) => await service.DeleteMessage(id));
 		app.MapPatch("/updateMessage", async (MessageService service, MessageDto messageToUpdate) => await service.UpdateMessage(messageToUpdate));
 		return app;
