@@ -38,7 +38,7 @@ public class BoardGameService
 		return new ServiceResponse<IEnumerable<BoardGameDto>>()
 		{
 			Data = result.Select(DtoConvert.ConvertBoardGameToDto),
-			Message = $"{result.Count()} Boardgame {(result.Count() != 1 ? "": "s")} found.",
+			Message = $"{result.Count()} Boardgame{(result.Count() != 1 ? "s": "")} found.",
 			Success = true
 		};
 	}
@@ -112,7 +112,7 @@ public class BoardGameService
 		{
 			return new ServiceResponse<BoardGameDto>()
 			{
-				Message = "Boardgame not updated",
+				Message = "Boardgame not updated.",
 				Success = false
 			};
 		}
@@ -122,7 +122,7 @@ public class BoardGameService
 		return new ServiceResponse<BoardGameDto>()
 		{
 			Data = DtoConvert.ConvertBoardGameToDto(result),
-			Message = "Boardgame updated",
+			Message = "Boardgame updated.",
 			Success = true
 		};
 	}
@@ -150,7 +150,7 @@ public class BoardGameService
 		foreach (var genre in genreStrings)
 		{
 			var search =
-				await _unitOfWork.GenreRepository.FindByKey(g => g.Name.ToLower().Equals(genre)); //TODO: mer check på detta. Kapa tomutrymme etc.
+				await _unitOfWork.GenreRepository.FindByKey(g => g.Name.ToLower().Equals(genre.ToLower())); //TODO: mer check på detta. Kapa tomutrymme etc.
 			//Eller ge förslag på när användaren skriver i de ord som är liknande.
 
 			if (search.Count() > 0)
@@ -161,7 +161,6 @@ public class BoardGameService
 
 			//Här skapas en ny genre om den inte redan finns.
 			listOfGenres.Add(await _unitOfWork.GenreRepository.AddItem(new Genre() { Name = genre }));
-			var saveResult = await _unitOfWork.SaveChanges();
 		}
 
 		return listOfGenres;

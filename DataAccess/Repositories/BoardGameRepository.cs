@@ -55,7 +55,7 @@ public class BoardGameRepository: IRepository<BoardGame>
 
 			foreach (var prop in propertyList)
 			{
-				if(prop.GetValue(item) is null) //TODO: Vet inte om denna bidrar längre?
+				if(prop.GetValue(item) is null)
 					continue;
 
 				if (!prop.GetValue(item).Equals(prop.GetValue(toUpdate))) //TODO: funkar inte om ett värde är null
