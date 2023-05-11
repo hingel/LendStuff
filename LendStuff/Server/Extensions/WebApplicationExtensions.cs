@@ -13,7 +13,8 @@ public static class WebApplicationExtensions
 		app.MapPost("/addGame", async (BoardGameService brepo, BoardGameDto toAdd) => await brepo.AddTitle(toAdd));
 		app.MapPatch("/updateGame", async (BoardGameService brepo, BoardGameDto newToUpdate) => await brepo.UpdateBoardGame(newToUpdate));
 		app.MapDelete("/deleteGame", async (BoardGameService brepo, string idToDelete) => await brepo.DeleteBoardGame(idToDelete));
-		app.MapGet("/getGameByT", async (BoardGameService service, string title) => await service.FindByTitle(title));
+		app.MapGet("/getGameByTitle", async (BoardGameService service, string title) => await service.FindByTitle(title));
+		app.MapGet("/getGameById", async (BoardGameService service, string id) => await service.FindById(id));
 		return app;
 	}
 

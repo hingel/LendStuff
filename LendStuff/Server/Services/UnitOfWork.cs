@@ -13,8 +13,7 @@ public class UnitOfWork : IDisposable
 	
 	public UnitOfWork(ApplicationDbContext context)
 	{
-		_context = context; //TODO: Detta kommer från dependencyinjection, vet inte om det är rätt.
-		//Vill inte skapa en ny om inte all kommunikation går genom denna?? 
+		_context = context;
 	}
 
 	public IRepository<BoardGame> BoardGameRepository

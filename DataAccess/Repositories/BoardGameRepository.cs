@@ -20,7 +20,7 @@ public class BoardGameRepository: IRepository<BoardGame>
 
 	public async Task<IEnumerable<BoardGame>> FindByKey(Func<BoardGame, bool> findFunc)
 	{
-		var result = _context.BoardGames.Where(findFunc);
+		var result = _context.BoardGames.Include(b => b.Genres).Where(findFunc);
 
 		return result;
 	}
@@ -48,7 +48,7 @@ public class BoardGameRepository: IRepository<BoardGame>
 
 		//objektet som ska uppdateras:
 		var toUpdate = await _context.BoardGames.FirstOrDefaultAsync(b => b.Id == item.Id);
-
+		
 		if (toUpdate != null)
 		{
 			var propertyList = typeof(BoardGame).GetProperties();

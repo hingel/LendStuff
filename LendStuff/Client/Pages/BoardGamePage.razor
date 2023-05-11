@@ -1,0 +1,34 @@
+﻿@page "/BoardGamePage/{id}"
+@using LendStuff.Shared
+@using LendStuff.Shared.DTOs
+
+@inject HttpClient HttpClient
+<h3>BoardGamePage</h3>
+
+@if (@CurrentBoardGameDto == null)
+{
+	<p>Loading....</p>
+}
+else
+{
+	@CurrentBoardGameDto.Title
+}
+@code {
+	[Parameter]
+	public string Id { get; set; }
+
+	public BoardGameDto CurrentBoardGameDto;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var result = await HttpClient.GetFromJsonAsync<ServiceResponse<BoardGameDto>>(HttpClient.BaseAddress + $"getGameById?id={Id}");
+
+		if (result != null)
+		{
+			CurrentBoardGameDto = result.Data;
+		}
+		
+		base.OnInitializedAsync();
+	}
+
+}

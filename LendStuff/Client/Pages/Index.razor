@@ -1,7 +1,41 @@
 ﻿@page "/"
+@using LendStuff.Shared.DTOs
+@using LendStuff.Shared
+
+@inject HttpClient HttpClient
 
 <PageTitle>Index</PageTitle>
 
-<h1>Share your Boardgame</h1>
+<h1>Available Boardgames</h1>
+
+<Virtualize Items="boardGameDtos.ToList()" Context="BoardGameDto">
+	<li class="list-group-item list-group-item-action">
+		
+		<a class="nav-link" href="/boardgamePage/@BoardGameDto.Id/">link to @BoardGameDto.Title</a>
+		<!--Borde göra någon card lista eller något sådant. Eller kolumner som fyller uppdaterar sig efter bredden eller nått.
+		Vad händer när man trycker på ett spel? Komma till en egen sida eller modal eller accordian.
+		Lättast att komma till en ny sida ändå.
+		-->
+	</li>
+</Virtualize>
 
 
+@code
+{
+	//Lista upp alla spel på något bra sätt som är aktiva.
+	private IEnumerable<BoardGameDto> boardGameDtos = new List<BoardGameDto>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		var response = await HttpClient.GetFromJsonAsync<ServiceResponse<BoardGameDto[]>>(HttpClient.BaseAddress + "allGames");
+		
+
+		if (response.Success)
+		{
+			boardGameDtos = response.Data.Where(b => b.Available);
+		}
+
+		await base.OnInitializedAsync();
+	}
+
+}

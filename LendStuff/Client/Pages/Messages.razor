@@ -69,7 +69,8 @@
 
 	private async Task GetMessages()
 	{
-		var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name={SenderName}");
+		//var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name={SenderName}");
+		var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name=h@hi.se");
 
 		if (response.Success)
 		{

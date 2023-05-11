@@ -12,6 +12,7 @@ using LendStuff.Server.Extensions;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using Microsoft.AspNetCore.Identity;
+using static Duende.IdentityServer.Models.IdentityResources;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,7 +77,6 @@ app.MapBoardGameEndPoints();
 app.MapUserEndPoints();
 app.MapOrderEndPoints();
 app.MapMessageEndPoints();
-
 
 app.MapRazorPages();
 app.MapControllers();
