@@ -17,4 +17,12 @@
     <ProjectReference Include="..\Shared\LendStuff.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\UserPage.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\UserPage.razor" />
+  </ItemGroup>
+
 </Project>

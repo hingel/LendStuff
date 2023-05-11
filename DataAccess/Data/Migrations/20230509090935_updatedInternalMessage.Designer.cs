@@ -4,6 +4,7 @@ using LendStuff.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LendStuff.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230509090935_updatedInternalMessage")]
+    partial class updatedInternalMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -208,6 +211,9 @@ namespace LendStuff.Server.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MessageId"));
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -215,16 +221,9 @@ namespace LendStuff.Server.Data.Migrations
                     b.Property<DateTime>("MessageSent")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("SentFromUserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SentToUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("MessageId");
 
-                    b.HasIndex("SentToUserId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("InternalMessages");
                 });
@@ -532,11 +531,9 @@ namespace LendStuff.Server.Data.Migrations
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.InternalMessage", b =>
                 {
-                    b.HasOne("LendStuff.Server.Models.ApplicationUser", "SentToUser")
+                    b.HasOne("LendStuff.Server.Models.ApplicationUser", null)
                         .WithMany("Messages")
-                        .HasForeignKey("SentToUserId");
-
-                    b.Navigation("SentToUser");
+                        .HasForeignKey("ApplicationUserId");
                 });
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.Order", b =>

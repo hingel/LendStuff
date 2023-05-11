@@ -14,5 +14,5 @@ public class BoardGame
 	public List<Genre>? Genres { get; set; } = new ();
 
 	public string? BggLink { get; set; } = string.Empty;
-	public ICollection<ApplicationUser> Users { get; set; }
+	public ICollection<ApplicationUser> Users { get; set; } //Behövs denna vara med här?
 }

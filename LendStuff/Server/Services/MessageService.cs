@@ -1,23 +1,27 @@
 ﻿using Duende.IdentityServer.Models;
 using LendStuff.DataAccess.Models;
 using LendStuff.DataAccess.Repositories.Interfaces;
+using LendStuff.Server.Models;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
+using Microsoft.AspNetCore.Identity;
 
 namespace LendStuff.DataAccess.Services;
 
 public class MessageService
 {
 	private readonly IRepository<InternalMessage> _messageRepository;
+	private readonly UserManager<ApplicationUser> _userManager;
 
-	public MessageService(IRepository<InternalMessage> messageRepository)
+	public MessageService(IRepository<InternalMessage> messageRepository, UserManager<ApplicationUser> userManager)
 	{
 		_messageRepository = messageRepository;
+		_userManager = userManager;
 	}
 
 	public async Task<ServiceResponse<string>> AddMessage(MessageDto newMessageDto)
 	{
-		await _messageRepository.AddItem(ConvertDtoToMessage(newMessageDto));
+		await _messageRepository.AddItem(await ConvertDtoToMessage(newMessageDto)); //TODO: Ordna ett svarsmeddelande
 
 		return new ServiceResponse<string>()
 		{
@@ -26,12 +30,14 @@ public class MessageService
 		};
 	}
 
-	public async Task<ServiceResponse<IEnumerable<MessageDto>>> GetUserMessages(string userId)
+	public async Task<ServiceResponse<IEnumerable<MessageDto>>> GetUserMessages(string userName)
 	{
-		//TODO: Hur kolla att det är den aktuella användaren som skickar in userId?  
-		var result = await _messageRepository.FindByKey(m => m.SentFromUserGuid == userId || m.SentToUserGuid == userId);
+		var user = await _userManager.FindByNameAsync(userName);
 
-		if (result.Count() > 0)
+		var result = await _messageRepository
+			.FindByKey(m => m.SentFromUserName == user.UserName || m.SentToUser.Id == user.Id); //TODO: detta kan göras bättre.
+
+		 if (result.Count() > 0)
 		{
 			return new ServiceResponse<IEnumerable<MessageDto>>()
 			{
@@ -61,7 +67,7 @@ public class MessageService
 
 	public async Task<ServiceResponse<MessageDto>> UpdateMessage(MessageDto updatedMessageDto)
 	{
-		var result = await _messageRepository.Update(ConvertDtoToMessage(updatedMessageDto));
+		var result = await _messageRepository.Update(await ConvertDtoToMessage(updatedMessageDto));
 
 		if (result is null)
 		{
@@ -87,19 +93,19 @@ public class MessageService
 			MessageId = message.MessageId,
 			Message = message.Message,
 			MessageSent = message.MessageSent,
-			SentFromUserGuid = message.SentFromUserGuid,
-			SentToUserGuid = message.SentToUserGuid
+			SentFromUserName = message.SentFromUserName,
+			SentToUserName = message.SentToUser.UserName
 		};
 	}
 
-	private static InternalMessage ConvertDtoToMessage(MessageDto messageDto)
+	private async Task<InternalMessage> ConvertDtoToMessage(MessageDto messageDto)
 	{
 		return new InternalMessage()
 		{
 			MessageId = messageDto.MessageId, // == null ? 0 : messageDto.MessageId,
 			Message = messageDto.Message,
-			SentFromUserGuid = messageDto.SentFromUserGuid,
-			SentToUserGuid = messageDto.SentToUserGuid
+			SentFromUserName = messageDto.SentFromUserName,
+			SentToUser = await _userManager.FindByNameAsync(messageDto.SentToUserName)
 		};
 	}
 }

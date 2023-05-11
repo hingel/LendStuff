@@ -1,0 +1,45 @@
+﻿@page "/UserPage"
+@using Microsoft.AspNetCore.Authorization
+@using LendStuff.Shared
+@using LendStuff.Shared.DTOs
+
+@inject HttpClient HttpClient
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@attribute [Authorize]
+
+<h3>UserPage</h3>
+
+@if (@ActiveUser == null)
+{
+	<p>Loading...</p>
+}
+else
+{
+
+}
+
+@code {
+	//lista upp infom om användaren
+	//lista upp användarens spel
+	//kunna lägga till spel
+
+	public UserDto ActiveUser { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		var userAuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+		var userId = userAuthState.User.Claims.ToList()[2].Value;
+
+		var userResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + "getById");
+
+		if (userResponse.Success)
+		{
+			ActiveUser = userResponse.Data;
+		}
+
+		await base.OnInitializedAsync();
+	}
+
+}

@@ -1,9 +1,37 @@
 ﻿@page "/"
+@using LendStuff.Shared.DTOs
+@using LendStuff.Shared
+
+@inject HttpClient HttpClient
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Available Boardgames</h1>
 
-Welcome to your new app.
+<Virtualize Items="boardGameDtos.ToList()" Context="BoardGameDto">
+	<li class="list-group-item list-group-item-action">
+		
+		<a class="nav-link" href="/boardgamePage/@BoardGameDto.Id/">link to @BoardGameDto.Title</a>
+	</li>
+</Virtualize>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+@code
+{
+	//Lista upp alla spel på något bra sätt som är aktiva.
+	private IEnumerable<BoardGameDto> boardGameDtos = new List<BoardGameDto>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		var response = await HttpClient.GetFromJsonAsync<ServiceResponse<BoardGameDto[]>>(HttpClient.BaseAddress + "allGames");
+		
+
+		if (response.Success)
+		{
+			boardGameDtos = response.Data.Where(b => b.Available);
+		}
+
+		await base.OnInitializedAsync();
+	}
+
+}

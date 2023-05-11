@@ -1,0 +1,157 @@
+﻿@page "/Messages"
+@using LendStuff.Shared.DTOs
+@using LendStuff.Shared
+@using Microsoft.AspNetCore.Authorization
+
+@inject HttpClient HttpClient
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@attribute [Authorize]
+
+<h3>Messages</h3>
+
+<div class="container row">
+	<div class="container col-md-3">
+		<h5>Contacts</h5>
+		<Virtualize Items="ContactNames.ToList()" Context="name">
+			<li class="list-group-item list-group-item-action" @onclick="() => SelectActiveSender(name)">
+				@name
+			</li>
+		</Virtualize>
+	</div>
+	<div class="container col-md-9">
+		<EditForm Model="ListOfMessagesDtos" OnSubmit="SendMessage">
+			<div class="form-control">
+				<div class="row">
+					<div class="row-cols-3">
+						<InputText @bind-Value="activeMessageText"></InputText>
+					</div>
+					<div class="row-cols-6">
+						<button class="btn btn-primary">Send Message</button>
+					</div>
+				</div>
+			</div>
+		</EditForm>
+		@if (ActiveSenderMessages.Count() > 0)
+		{
+			<Virtualize Items="ActiveSenderMessages" Context="MessageDto">
+				<li class="list-group-item">
+					<p>
+						From: @MessageDto.SentFromUserName @MessageDto.Message @MessageDto.MessageSent
+					</p>
+					<button class="btn btn-close" @onclick="() => DeleteMessage(MessageDto)">Delete</button>
+				</li>
+			</Virtualize>
+		}
+	</div>
+</div>
+
+@code {
+	public  IEnumerable<MessageDto> ListOfMessagesDtos { get; set; } = new List<MessageDto>(); //lista med alla meddelande där inloggad användare förekommer.
+	private List<string> ContactNames = new List<string>(); //Listan med kontakter
+	private List<MessageDto> ActiveSenderMessages = new List<MessageDto>(); //meddelande där contactnamnet ovan ingår.
+
+	private string SenderName = string.Empty;
+	private string ReceiverName = string.Empty;
+
+	private string activeMessageText = string.Empty;
+	public MessageDto NewMessageDto = new ();
+
+	public string ResponseMessage = string.Empty;
+
+	private string senderId = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var userInfo = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+		SenderName = userInfo.User.Identity.Name;
+		var senderClaims = userInfo.User.Claims.ToList();
+
+		//senderId = userInfo.User.Claims.ToList()[2].Value; //Här kan id för användaren fås fram.
+		
+		Console.WriteLine("Här ska det skrivas ut grejer:" + senderClaims[2].Type + senderClaims[2].Value + senderClaims[2].ValueType);
+		
+		await GetMessages();
+
+		await base.OnInitializedAsync();
+	}
+
+	private async Task GetMessages()
+	{
+		var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name={SenderName}");
+		//var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name={senderId}");
+
+		if (response.Success)
+		{
+			ContactNames = FindContacts(response.Data);
+
+			ListOfMessagesDtos = response.Data;
+		};
+	}
+
+	private List<string> FindContacts(IEnumerable<MessageDto> responseData)
+	{
+		var listToReturn = new List<string>();
+
+		foreach (var message in responseData)
+		{
+			if (message.SentFromUserName == SenderName)
+				continue;
+
+			listToReturn.Add(message.SentFromUserName);
+		}
+
+		return listToReturn;
+	}
+
+	private void SelectActiveSender(string name)
+	{
+		ActiveSenderMessages = ListOfMessagesDtos.Where(m => m.SentFromUserName == name || m.SentToUserName == name).ToList();
+
+		ReceiverName = name;
+	}
+
+	private async Task SendMessage()
+	{
+		NewMessageDto.Message = activeMessageText;
+		NewMessageDto.SentFromUserName = SenderName;
+		NewMessageDto.SentToUserName = ReceiverName;
+
+		var response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "addMessage", NewMessageDto);
+		var result = await response.Content.ReadFromJsonAsync<ServiceResponse<string>>();
+
+		if (result.Success)
+		{
+			await GetMessages(); //uppdatera med alla meddelande från servern igen.
+			NewMessageDto = new MessageDto();
+			ResponseMessage = result.Message;
+			Console.WriteLine("I sent message succes:" + ResponseMessage);
+		}
+		else
+		{
+			ResponseMessage = result.Message;
+			Console.WriteLine("I sent message false:" + ResponseMessage);
+		}
+	}
+
+	private async Task DeleteMessage(MessageDto messageToDelete)
+	{
+		var response = await HttpClient.DeleteAsync(HttpClient.BaseAddress + $"deleteMessage?id={messageToDelete.MessageId}");
+		var result = await response.Content.ReadFromJsonAsync<ServiceResponse<string>>();
+
+		if (result.Success)
+		{
+			ResponseMessage = result.Message;
+			ActiveSenderMessages.Remove(messageToDelete);
+			GetMessages();
+			Console.WriteLine("I Delete message succes:" + ResponseMessage);
+		}
+		else
+		{
+			ResponseMessage = result.Message;
+			Console.WriteLine("I Delete message false:" + ResponseMessage);
+		}
+	}
+
+}

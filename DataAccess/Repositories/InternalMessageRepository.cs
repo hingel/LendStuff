@@ -23,7 +23,9 @@ public class InternalMessageRepository : IRepository<InternalMessage>
 
 	public async Task<IEnumerable<InternalMessage>> FindByKey(Func<InternalMessage, bool> findFunc)
 	{
-		return _context.InternalMessages.Where(findFunc);
+		return _context.InternalMessages
+			.Include(m => m.SentToUser)
+			.Where(findFunc);
 	}
 
 	public async Task<InternalMessage> AddItem(InternalMessage item)
@@ -51,7 +53,7 @@ public class InternalMessageRepository : IRepository<InternalMessage>
 
 	public async Task<InternalMessage> Update(InternalMessage item)
 	{
-		var toUpdate = await _context.InternalMessages.FirstOrDefaultAsync(m => m.MessageId == item.MessageId);
+		var toUpdate = await _context.InternalMessages.FirstOrDefaultAsync(m => m.MessageId == item.MessageId); //Måste jag även inkludera  properties klasser?
 
 		if (toUpdate is not null)
 		{
