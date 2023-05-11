@@ -1,9 +1,12 @@
 ﻿@page "/Messages"
 @using LendStuff.Shared.DTOs
 @using LendStuff.Shared
+@using Microsoft.AspNetCore.Authorization
 
 @inject HttpClient HttpClient
 @inject AuthenticationStateProvider AuthenticationStateProvider
+
+@attribute [Authorize]
 
 <h3>Messages</h3>
 
@@ -56,12 +59,19 @@
 
 	public string ResponseMessage = string.Empty;
 
+	private string senderId = string.Empty;
+
 	protected override async Task OnInitializedAsync()
 	{
 		var userInfo = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
 		SenderName = userInfo.User.Identity.Name;
+		var senderClaims = userInfo.User.Claims.ToList();
 
+		//senderId = userInfo.User.Claims.ToList()[2].Value; //Här kan id för användaren fås fram.
+		
+		Console.WriteLine("Här ska det skrivas ut grejer:" + senderClaims[2].Type + senderClaims[2].Value + senderClaims[2].ValueType);
+		
 		await GetMessages();
 
 		await base.OnInitializedAsync();
@@ -69,8 +79,8 @@
 
 	private async Task GetMessages()
 	{
-		//var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name={SenderName}");
-		var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name=h@hi.se");
+		var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name={SenderName}");
+		//var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name={senderId}");
 
 		if (response.Success)
 		{

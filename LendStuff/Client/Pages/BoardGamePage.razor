@@ -1,6 +1,9 @@
 ﻿@page "/BoardGamePage/{id}"
 @using LendStuff.Shared
 @using LendStuff.Shared.DTOs
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
 
 @inject HttpClient HttpClient
 <h3>BoardGamePage</h3>
