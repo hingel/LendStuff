@@ -29,7 +29,6 @@ public class BoardGameService
 		};
 	}
 
-	//TODO: Borde kunna skicka detta delegatet ifrån frontend?!
 	public async Task<ServiceResponse<IEnumerable<BoardGameDto>>> FindByTitle(string searchWord)
 	{
 		var result = await _unitOfWork.BoardGameRepository.FindByKey((game => game.Title.ToLower().Contains(searchWord.ToLower())));

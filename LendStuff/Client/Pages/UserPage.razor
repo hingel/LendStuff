@@ -10,13 +10,103 @@
 
 <h3>UserPage</h3>
 
+
+
+<h4>Boardgames</h4>
 @if (@ActiveUser == null)
 {
 	<p>Loading...</p>
 }
 else
 {
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Description</th>
+				<th>Condition</th>
+				<th>Release year</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var boardGame in UserBoardGameDtos)
+			{
+				<tr>
+					<td>@boardGame.Title</td>
+					<td>@boardGame.Description</td>
+					<td>@boardGame.Condition</td>
+					<td>@boardGame.ReleaseYear</td>
+				</tr>
+			}
+		</tbody>
+	</table>
 
+	<h4>User Info</h4>
+
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Username</th>
+				<th>City</th>
+				<th>Postal Code</th>
+				<th>Street</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>@ActiveUser.UserName</td>
+				<td>@ActiveUser.City</td>
+				<td>@ActiveUser.PostalCode</td>
+				<td>@ActiveUser.Street</td>
+			</tr>
+		</tbody>
+	</table>
+
+
+	<h5>Add New Game</h5>
+	<EditForm Model="newBoardGame" OnSubmit="SendNewGame">
+		<div class="form-control">
+			<div class="row">
+				<div class="row-cols-3">
+					<p>Title</p>
+					<InputText @bind-Value="newBoardGame.Title"></InputText>
+				</div>
+				<div class="row-cols-3">
+					<p>Description</p>
+					<InputText @bind-Value="newBoardGame.Description"></InputText>
+				</div>
+				<div class="row-cols-3">
+					<p>Condition</p>
+					<InputNumber @bind-Value="newBoardGame.Condition"></InputNumber>
+				</div>
+				<div class="row-cols-3">
+					<p>Release year</p>
+					<InputNumber @bind-Value="newBoardGame.ReleaseYear"></InputNumber>
+				</div>
+				<div class="row-cols-3">
+					<p>Comment</p>
+					<InputText @bind-Value="newBoardGame.Comment"></InputText>
+				</div>
+				<div class="row-cols-3">
+					<p>Available?</p>
+					<InputCheckbox @bind-Value="newBoardGame.Available"></InputCheckbox>
+				</div>
+				<div class="row-cols-3">
+					<p>BGG URL</p>
+					<InputText @bind-Value="newBoardGame.BggLink"></InputText>
+				</div>
+				<div class="row-cols-3">
+					<p>Genre - add list of some sort.</p>
+				</div>
+				<div class="row-cols-6">
+					<button class="btn btn-primary">Add Game</button>
+				</div>
+			</div>
+		</div>
+	</EditForm>
+
+	<p>@responseMessage</p>
 }
 
 @code {
@@ -24,7 +114,10 @@ else
 	//lista upp användarens spel
 	//kunna lägga till spel
 
-	public UserDto ActiveUser { get; set; }
+	public UserDto ActiveUser;
+	public List<BoardGameDto> UserBoardGameDtos;
+	public BoardGameDto newBoardGame = new ();
+	public string responseMessage { get; set; } = string.Empty;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -32,14 +125,47 @@ else
 
 		var userId = userAuthState.User.Claims.ToList()[2].Value;
 
-		var userResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + "getById");
+		var userResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + $"getById?id={userId}");
+		var boardGameResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<BoardGameDto[]>>(HttpClient.BaseAddress + $"getUsersGames?id={userId}");
 
 		if (userResponse.Success)
 		{
 			ActiveUser = userResponse.Data;
+			UserBoardGameDtos = userResponse.Data.BoardGameDtos.ToList();
+		}
+
+		if (boardGameResponse.Success)
+		{
+			UserBoardGameDtos.AddRange(boardGameResponse.Data);
 		}
 
 		await base.OnInitializedAsync();
+	}
+
+	private async Task SendNewGame()
+	{
+		//Checka i backenden om spelet redan finns?
+		//eller göra det i front end direkt?
+
+		var respone = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "addGame", newBoardGame);
+
+		var result = await respone.Content.ReadFromJsonAsync<ServiceResponse<BoardGameDto>>();
+
+		if (result.Success)
+		{
+			UserBoardGameDtos.Add(result.Data);
+			responseMessage = result.Message;
+
+			var userAuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+			var userId = userAuthState.User.Claims.ToList()[2].Value;
+
+			var result2 = await HttpClient.PatchAsJsonAsync<BoardGameDto>(HttpClient.BaseAddress + $"addBoardGameToUser?id={userId}", result.Data);
+
+		}
+		else 
+			responseMessage = result.Message;
+		
 	}
 
 }

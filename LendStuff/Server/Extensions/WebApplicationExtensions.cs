@@ -20,9 +20,9 @@ public static class WebApplicationExtensions
 
 	public static WebApplication MapUserEndPoints(this WebApplication app)
 	{
-		app.MapGet("/getUsersGames", async (UserService service, string email) => await service.GetUsersGames(email));
+		app.MapGet("/getUsersGames", async (UserService service, string id) => await service.GetUsersGames(id));
 		app.MapGet("/getById", async (UserService service, string id) => await service.FindUserById(id));
-		app.MapPatch("/addBoardGameToUser", async (UserService service, string boardGameToAddId, string userEmail) => await service.AddBoardGameToUserCollection(boardGameToAddId, userEmail));
+		app.MapPatch("/addBoardGameToUser", async (UserService service, BoardGameDto boardGameToAdd, string userEmail) => await service.AddBoardGameToUserCollection(boardGameToAdd, userEmail));
 		return app;
 	}
 

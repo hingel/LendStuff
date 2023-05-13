@@ -20,9 +20,9 @@ public class UserService
 		_boardGamerepo = boardGameRepo;
 	}
 
-	public async Task<ServiceResponse<IEnumerable<BoardGameDto>>> GetUsersGames(string email)
+	public async Task<ServiceResponse<IEnumerable<BoardGameDto>>> GetUsersGames(string id)
 	{ 
-		Func<ApplicationUser, bool> filterFunc = (u) => u.NormalizedEmail == email.ToUpper();
+		Func<ApplicationUser, bool> filterFunc = (u) => u.Id == id;
 		
 		var result = await _userRepository.FindByKey(filterFunc); //dessa spel borde göras om till DTO.
 
@@ -74,11 +74,11 @@ public class UserService
 
 
 	//Denna metod borde kanske inte finnas? Eller iaf kommer det en DTO från frontend.
-	public async Task<ServiceResponse<string>> AddBoardGameToUserCollection(string boardGameId, string email)
+	public async Task<ServiceResponse<string>> AddBoardGameToUserCollection(BoardGameDto boardGameDto, string email)
 	{
 		var userToUpdate = (await _userRepository.FindByKey(u => u.Email == email)).FirstOrDefault();
 
-		var gameToAdd = (await _boardGamerepo.FindByKey(b => b.Id == boardGameId)).FirstOrDefault();
+		var gameToAdd = (await _boardGamerepo.FindByKey(b => b.Id == boardGameDto.Id)).FirstOrDefault();
 
 		if (userToUpdate is null || gameToAdd is null)
 		{
