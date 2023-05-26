@@ -1,17 +1,17 @@
 ﻿using LendStuff.DataAccess.Services;
 using LendStuff.Shared.DTOs;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace LendStuff.Server.Extensions;
 
 public static class WebApplicationExtensions
 {
-	#region Förtesting
 
 	public static WebApplication MapBoardGameEndPoints(this WebApplication app)
 	{
-		app.MapGet("/allGames", async (BoardGameService brepo) => await brepo.GetAll());
-		app.MapPost("/addGame", async (BoardGameService brepo, BoardGameDto toAdd) => await brepo.AddTitle(toAdd));
-		app.MapPatch("/updateGame", async (BoardGameService brepo, BoardGameDto newToUpdate) => await brepo.UpdateBoardGame(newToUpdate));
+		app.MapGet("/allGames", GetAllGamesHandler); //.RequireAuthorization("user_access"); //.RequireAuthorization(p => p.RequireUserName("c@cr.se")); //TODO: lägg till detta senare.
+		app.MapPost("/addGame", AddGameHandler);
+		app.MapPatch("/updateGame", UpdateGameHandler);
 		app.MapDelete("/deleteGame", async (BoardGameService brepo, string idToDelete) => await brepo.DeleteBoardGame(idToDelete));
 		app.MapGet("/getGameByTitle", async (BoardGameService service, string title) => await service.FindByTitle(title));
 		app.MapGet("/getGameById", async (BoardGameService service, string id) => await service.FindById(id));
@@ -20,9 +20,9 @@ public static class WebApplicationExtensions
 
 	public static WebApplication MapUserEndPoints(this WebApplication app)
 	{
-		app.MapGet("/getUsersGames", async (UserService service, string email) => await service.GetUsersGames(email));
+		app.MapGet("/getUsersGames", async (UserService service, string id) => await service.GetUsersGames(id));
 		app.MapGet("/getById", async (UserService service, string id) => await service.FindUserById(id));
-		app.MapPatch("/addBoardGameToUser", async (UserService service, string boardGameToAddId, string userEmail) => await service.AddBoardGameToUserCollection(boardGameToAddId, userEmail));
+		app.MapPatch("/addBoardGameToUser", async (UserService service, BoardGameDto boardGameToAdd, string userEmail) => await service.AddBoardGameToUserCollection(boardGameToAdd, userEmail));
 		return app;
 	}
 
@@ -46,5 +46,25 @@ public static class WebApplicationExtensions
 		return app;
 	}
 
-	#endregion
+	private static async Task<IResult> GetAllGamesHandler(BoardGameService brepo)
+	{
+		var response = await brepo.GetAll();
+		return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+	}
+
+	private static async Task<IResult> AddGameHandler(BoardGameService brepo, BoardGameDto toAdd)
+	{
+		var response = await brepo.AddTitle(toAdd);
+
+		return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+	}
+
+	private static async Task<IResult> UpdateGameHandler(BoardGameService brepo, BoardGameDto newToUpdate)
+	{
+		var response = await brepo.UpdateBoardGame(newToUpdate);
+
+		return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+	}
+
+
 }

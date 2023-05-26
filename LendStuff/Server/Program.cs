@@ -31,8 +31,10 @@ builder.Services.AddIdentityServer()
 builder.Services.AddAuthentication()
 	.AddIdentityServerJwt();
 
+builder.Services.AddAuthorizationBuilder().AddPolicy("user_access", policy => policy.RequireUserName("c@cr.se"));
+
 //Injectade services
-builder.Services.AddScoped<IRepository<BoardGame>, BoardGameRepository>(); //Kan jag ha den injectad och även ingå i UnitofWork?
+builder.Services.AddScoped<IRepository<BoardGame>, BoardGameRepository>(); //Kan jag ha den injectad och även ingå i UnitofWork? Jepp, det är ok.
 builder.Services.AddScoped<IRepository<ApplicationUser>, UserRepository>();
 //builder.Services.AddScoped<IRepository<Genre>, GenreRepository>();
 builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
@@ -70,6 +72,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseIdentityServer();
+app.UseAuthentication();
 app.UseAuthorization();
 
 

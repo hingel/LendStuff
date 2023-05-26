@@ -7,8 +7,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddHttpClient("LendStuff.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
-	//.AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>(); //TODO: Denna borde vara aktiverad antar jag men kommer inte åt APIendpoint utan att vara inloggad.
+builder.Services.AddHttpClient("LendStuff.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)).AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>(); //TODO: Denna borde vara aktiverad antar jag men kommer inte åt APIendpoint utan att vara inloggad.
 //Får väl logga till Anonymn user-roll annars.
 
 // Supply HttpClient instances that include access tokens when making requests to the server project
