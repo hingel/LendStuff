@@ -144,12 +144,9 @@ else
 
 	private async Task SendNewGame()
 	{
-		//Checka i backenden om spelet redan finns?
-		//eller göra det i front end direkt?
+		var response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "addGame", newBoardGame);
 
-		var respone = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "addGame", newBoardGame);
-
-		var result = await respone.Content.ReadFromJsonAsync<ServiceResponse<BoardGameDto>>();
+		var result = await response.Content.ReadFromJsonAsync<ServiceResponse<BoardGameDto>>();
 
 		if (result.Success)
 		{

@@ -66,7 +66,7 @@ public class BoardGameService
 
 	public async Task<ServiceResponse<BoardGameDto>> AddTitle(BoardGameDto toAdd)
 	{
-		//Kolla först om det redan finns en liknande titel med samma namn? 
+		//Kollar först om det redan finns en liknande titel med samma namn? 
 		var result = await _unitOfWork.BoardGameRepository.FindByKey((game => game.Title.ToLower().Contains(toAdd.Title.ToLower())));
 
 		if (result.Count() > 0)

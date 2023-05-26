@@ -35,7 +35,7 @@ public class UserService
 			};
 		}
 
-			return new ServiceResponse<IEnumerable<BoardGameDto>>()
+		return new ServiceResponse<IEnumerable<BoardGameDto>>()
 		{
 			Data = result.FirstOrDefault().CollectionOfBoardGames.Select(DtoConvert.ConvertBoardGameToDto),
 			Message = "BoardGames found",
