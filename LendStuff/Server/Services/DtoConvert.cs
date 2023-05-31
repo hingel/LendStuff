@@ -1,5 +1,6 @@
 ﻿using LendStuff.Server.Models;
 using LendStuff.Shared.DTOs;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LendStuff.DataAccess.Services;
 
@@ -20,5 +21,4 @@ public static class DtoConvert
 			Title = boardGame.Title
 		};
 	}
-
 }

@@ -74,13 +74,13 @@ public class UserService
 
 
 	//Denna metod borde kanske inte finnas? Eller iaf kommer det en DTO från frontend.
-	public async Task<ServiceResponse<string>> AddBoardGameToUserCollection(BoardGameDto boardGameDto, string email)
+	//TODO Detta funkat inte som tänkt i nuläget. 
+	public async Task<ServiceResponse<string>> UpdateBoardGameUserCollection(BoardGameDto boardGameDto, string userId)
 	{
-		var userToUpdate = (await _userRepository.FindByKey(u => u.Email == email)).FirstOrDefault();
-
-		var gameToAdd = (await _boardGamerepo.FindByKey(b => b.Id == boardGameDto.Id)).FirstOrDefault();
-
-		if (userToUpdate is null || gameToAdd is null)
+		var userToUpdate = (await _userRepository.FindByKey(u => u.Id == userId)).FirstOrDefault();
+		var boardGame = (await _boardGamerepo.FindByKey(b => b.Id == boardGameDto.Id)).FirstOrDefault();
+		
+		if (userToUpdate is null || boardGame is null)
 		{
 			return new ServiceResponse<string>()
 			{
@@ -89,8 +89,15 @@ public class UserService
 			};
 		}
 
-		userToUpdate.CollectionOfBoardGames.Add(gameToAdd);
-
+		if (userToUpdate.CollectionOfBoardGames.All(b => b.Id != boardGameDto.Id))
+		{
+			userToUpdate.CollectionOfBoardGames.Add(boardGame);
+		}
+		else
+		{
+			userToUpdate.CollectionOfBoardGames.Remove(boardGame);
+		}
+		
 		var result = await _userRepository.Update(userToUpdate);
 
 		return new ServiceResponse<string>()

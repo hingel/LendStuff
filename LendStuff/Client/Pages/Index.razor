@@ -1,7 +1,9 @@
 ﻿@page "/"
 @using LendStuff.Shared.DTOs
 @using LendStuff.Shared
+@using System.Reflection.Metadata
 
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject HttpClient HttpClient
 
 <PageTitle>Index</PageTitle>
@@ -10,8 +12,19 @@
 
 <Virtualize Items="boardGameDtos.ToList()" Context="BoardGameDto">
 	<li class="list-group-item list-group-item-action">
-		
-		<a class="nav-link" href="/boardgamePage/@BoardGameDto.Id/">link to @BoardGameDto.Title</a>
+		<div class="container row">
+			<div class="container col-2">
+				<a class="nav-link" href="/boardgamePage/@BoardGameDto.Id/">link to @BoardGameDto.Title</a>
+			</div>
+			<div class="container col-2">
+				<AuthorizeView>
+					<p>In your collection?</p>
+					<div class="form-check">
+						<input type="checkbox" class="form-check-input" @onclick="() => ChangeCollection(BoardGameDto)" checked="@InCollection(BoardGameDto)"/>
+					</div>
+				</AuthorizeView>
+			</div>
+		</div>
 	</li>
 </Virtualize>
 
@@ -20,18 +33,72 @@
 {
 	//Lista upp alla spel på något bra sätt som är aktiva.
 	private IEnumerable<BoardGameDto> boardGameDtos = new List<BoardGameDto>();
+	private string _userId = String.Empty;
+	public UserDto _currentUserDto = new UserDto();
 
 	protected override async Task OnInitializedAsync()
 	{
 		var response = await HttpClient.GetFromJsonAsync<ServiceResponse<BoardGameDto[]>>(HttpClient.BaseAddress + "allGames");
-		
 
 		if (response.Success)
 		{
 			boardGameDtos = response.Data.Where(b => b.Available);
 		}
 
+		var userAuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		_userId = userAuthState.User.Claims.ToList()[2].Value;
+
+		var userResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + $"getById?id={_userId}");
+
+		if (userResponse.Success)
+			_currentUserDto = userResponse.Data;
+
+		var boardGameResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<BoardGameDto[]>>(HttpClient.BaseAddress + $"getUsersGames?id={_userId}");
+
+		if (boardGameResponse.Success)
+		{
+			_currentUserDto.BoardGameDtos = boardGameResponse.Data.ToList();
+		}
+
 		await base.OnInitializedAsync();
 	}
 
+	private async Task ChangeCollection(BoardGameDto boardGame)
+	{
+		
+
+		if (_currentUserDto.BoardGameDtos.All(b => b.Id != boardGame.Id))
+		{
+			Console.WriteLine("Should be in the add method.");
+			_currentUserDto.BoardGameDtos.Add(boardGame);
+
+			var response = await HttpClient.PatchAsJsonAsync(HttpClient.BaseAddress + $"updateBoardGameToUser?id={_userId}", boardGame);
+
+			if (response.IsSuccessStatusCode)
+			{
+				var resultText = await response.Content.ReadFromJsonAsync<ServiceResponse<string>>();
+				Console.WriteLine(resultText.Message + "Boardgame added.");
+			}
+		}
+		else
+		{
+			Console.WriteLine("Should be in the remove method.");
+			Console.WriteLine($"Number of boardgames in collection before remove: {_currentUserDto.BoardGameDtos.Count}");
+			_currentUserDto.BoardGameDtos.Remove(boardGameDtos.Where(b => b.Id == boardGame.Id).FirstOrDefault());
+			Console.WriteLine($"Number of boardgames in collection after remove: {_currentUserDto.BoardGameDtos.Count}");
+			var response = await HttpClient.PatchAsJsonAsync(HttpClient.BaseAddress + $"updateBoardGameToUser?id={_userId}", boardGame);
+
+			if (response.IsSuccessStatusCode)
+			{
+				var resultText = await response.Content.ReadFromJsonAsync<ServiceResponse<string>>();
+				Console.WriteLine(resultText.Message + "Boardgame removed.");
+			}
+			
+		}
+	}
+
+	private bool InCollection(BoardGameDto boardGameExists)
+	{
+		return _currentUserDto.BoardGameDtos.Any(b => b.Id == boardGameExists.Id);
+	}
 }
