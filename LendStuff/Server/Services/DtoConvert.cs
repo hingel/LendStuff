@@ -1,4 +1,5 @@
-﻿using LendStuff.Server.Models;
+﻿using LendStuff.DataAccess.Models;
+using LendStuff.Server.Models;
 using LendStuff.Shared.DTOs;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -19,6 +20,15 @@ public static class DtoConvert
 			Id = boardGame.Id,
 			ReleaseYear = boardGame.ReleaseYear,
 			Title = boardGame.Title
+		};
+	}
+
+	public static UserBoardGameDto ConvertUserBoardGameToDto(UserBoardGame userBoardGame)
+	{
+		return new UserBoardGameDto()
+		{
+			BoardGameDto = ConvertBoardGameToDto(userBoardGame.BoardGame),
+			ForLending = userBoardGame.ForLending,
 		};
 	}
 }

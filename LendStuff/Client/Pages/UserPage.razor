@@ -29,13 +29,13 @@ else
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var boardGame in UserBoardGameDtos)
+			@foreach (var userBoardGame in UserBoardGameDtos)
 			{
 				<tr>
-					<td>@boardGame.Title</td>
-					<td>@boardGame.Description</td>
-					<td>@boardGame.Condition</td>
-					<td>@boardGame.ReleaseYear</td>
+					<td>@userBoardGame.BoardGameDto.Title</td>
+					<td>@userBoardGame.BoardGameDto.Description</td>
+					<td>@userBoardGame.BoardGameDto.Condition</td>
+					<td>@userBoardGame.BoardGameDto.ReleaseYear</td>
 				</tr>
 			}
 		</tbody>
@@ -115,7 +115,7 @@ else
 	//kunna lägga till spel
 
 	public UserDto ActiveUser;
-	public List<BoardGameDto> UserBoardGameDtos = new List<BoardGameDto>();
+	public List<UserBoardGameDto> UserBoardGameDtos = new ();
 	public BoardGameDto newBoardGame = new ();
 	public string responseMessage { get; set; } = string.Empty;
 
@@ -126,7 +126,7 @@ else
 		var userId = userAuthState.User.Claims.ToList()[2].Value;
 
 		var userResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + $"getById?id={userId}");
-		var boardGameResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<BoardGameDto[]>>(HttpClient.BaseAddress + $"getUsersGames?id={userId}");
+		var boardGameResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserBoardGameDto[]>>(HttpClient.BaseAddress + $"getUsersGames?id={userId}");
 
 		if (userResponse.Success && boardGameResponse.Success)
 		{
@@ -145,9 +145,6 @@ else
 
 		if (result.Success)
 		{
-			UserBoardGameDtos.Add(result.Data);
-			responseMessage = result.Message;
-
 			var userAuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
 			var userId = userAuthState.User.Claims.ToList()[2].Value;

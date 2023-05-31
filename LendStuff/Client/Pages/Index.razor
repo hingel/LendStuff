@@ -53,7 +53,7 @@
 		if (userResponse.Success)
 			_currentUserDto = userResponse.Data;
 
-		var boardGameResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<BoardGameDto[]>>(HttpClient.BaseAddress + $"getUsersGames?id={_userId}");
+		var boardGameResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserBoardGameDto[]>>(HttpClient.BaseAddress + $"getUsersGames?id={_userId}");
 
 		if (boardGameResponse.Success)
 		{
@@ -67,11 +67,8 @@
 	{
 		
 
-		if (_currentUserDto.BoardGameDtos.All(b => b.Id != boardGame.Id))
+		if (_currentUserDto.BoardGameDtos.All(b => b.BoardGameDto.Id != boardGame.Id))
 		{
-			Console.WriteLine("Should be in the add method.");
-			_currentUserDto.BoardGameDtos.Add(boardGame);
-
 			var response = await HttpClient.PatchAsJsonAsync(HttpClient.BaseAddress + $"updateBoardGameToUser?id={_userId}", boardGame);
 
 			if (response.IsSuccessStatusCode)
@@ -82,10 +79,6 @@
 		}
 		else
 		{
-			Console.WriteLine("Should be in the remove method.");
-			Console.WriteLine($"Number of boardgames in collection before remove: {_currentUserDto.BoardGameDtos.Count}");
-			_currentUserDto.BoardGameDtos.Remove(boardGameDtos.Where(b => b.Id == boardGame.Id).FirstOrDefault());
-			Console.WriteLine($"Number of boardgames in collection after remove: {_currentUserDto.BoardGameDtos.Count}");
 			var response = await HttpClient.PatchAsJsonAsync(HttpClient.BaseAddress + $"updateBoardGameToUser?id={_userId}", boardGame);
 
 			if (response.IsSuccessStatusCode)
@@ -99,6 +92,6 @@
 
 	private bool InCollection(BoardGameDto boardGameExists)
 	{
-		return _currentUserDto.BoardGameDtos.Any(b => b.Id == boardGameExists.Id);
+		return _currentUserDto.BoardGameDtos.Any(b => b.BoardGameDto.Id == boardGameExists.Id);
 	}
 }
