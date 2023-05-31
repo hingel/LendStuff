@@ -1,4 +1,5 @@
-﻿using LendStuff.DataAccess.Repositories.Interfaces;
+﻿using LendStuff.DataAccess.Models;
+using LendStuff.DataAccess.Repositories.Interfaces;
 using LendStuff.Server.Models;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
@@ -20,24 +21,24 @@ public class UserService
 		_boardGamerepo = boardGameRepo;
 	}
 
-	public async Task<ServiceResponse<IEnumerable<BoardGameDto>>> GetUsersGames(string id)
+	public async Task<ServiceResponse<IEnumerable<UserBoardGameDto>>> GetUsersGames(string id)
 	{ 
 		Func<ApplicationUser, bool> filterFunc = (u) => u.Id == id;
 		
-		var result = await _userRepository.FindByKey(filterFunc); //dessa spel borde göras om till DTO.
+		var result = await _userRepository.FindByKey(filterFunc);
 
 		if (result.FirstOrDefault() is null)
 		{
-			return new ServiceResponse<IEnumerable<BoardGameDto>>()
+			return new ServiceResponse<IEnumerable<UserBoardGameDto>>()
 			{
 				Message = "Not found",
 				Success = false
 			};
 		}
 
-		return new ServiceResponse<IEnumerable<BoardGameDto>>()
+		return new ServiceResponse<IEnumerable<UserBoardGameDto>>()
 		{
-			Data = result.FirstOrDefault().CollectionOfBoardGames.Select(DtoConvert.ConvertBoardGameToDto),
+			Data = result.FirstOrDefault().CollectionOfBoardGames.Select(DtoConvert.ConvertUserBoardGameToDto),
 			Message = "BoardGames found",
 			Success = true
 		};
@@ -89,13 +90,18 @@ public class UserService
 			};
 		}
 
-		if (userToUpdate.CollectionOfBoardGames.All(b => b.Id != boardGameDto.Id))
+		if (userToUpdate.CollectionOfBoardGames.All(ub => ub.BoardGame.Id != boardGameDto.Id))
 		{
-			userToUpdate.CollectionOfBoardGames.Add(boardGame);
+			userToUpdate.CollectionOfBoardGames.Add(new UserBoardGame()
+			{
+				BoardGame = boardGame,
+				ForLending = true
+			});
 		}
 		else
 		{
-			userToUpdate.CollectionOfBoardGames.Remove(boardGame);
+			var ub = userToUpdate.CollectionOfBoardGames.FirstOrDefault(ub => ub.BoardGame.Id == boardGame.Id);
+			userToUpdate.CollectionOfBoardGames.Remove(ub);
 		}
 		
 		var result = await _userRepository.Update(userToUpdate);

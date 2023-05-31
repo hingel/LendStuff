@@ -21,6 +21,7 @@ public class UserRepository : IRepository<ApplicationUser>
 	{
 		var result = _context.Users
 			.Include(u => u.CollectionOfBoardGames)
+			.ThenInclude(ub => ub.BoardGame)
 			.Include(u => u.Messages)
 			.Where(findFunc);
 		
@@ -65,8 +66,10 @@ public class UserRepository : IRepository<ApplicationUser>
 		//		}
 		//	}
 
-			await _context.SaveChangesAsync();
+		var result = await _context.SaveChangesAsync();
 		//}
+
+		Console.WriteLine();
 
 		return item;
 	}
