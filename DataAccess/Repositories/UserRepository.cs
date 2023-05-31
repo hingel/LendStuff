@@ -42,32 +42,32 @@ public class UserRepository : IRepository<ApplicationUser>
 
 	public async Task<ApplicationUser> Update(ApplicationUser item)
 	{
-		var toUpdate = await _context.Users
-			.Include(u => u.CollectionOfBoardGames)
-			.Include(u => u.Messages)
-			.FirstOrDefaultAsync(b => b.Email == item.Email);
+		//var toUpdate = await _context.Users
+		//	.Include(u => u.CollectionOfBoardGames)
+		//	.Include(u => u.Messages)
+		//	.FirstOrDefaultAsync(b => b.Email == item.Email);
 
-		//TODO: Kanske skulle ha en del som kollar om ett värdet behöver uppdateras eller ej för att ej gå igenom samtliga objekt.
-		//För user finns det många som inte bör mixtras med.
+		////TODO: Kanske skulle ha en del som kollar om ett värdet behöver uppdateras eller ej för att ej gå igenom samtliga objekt.
+		////För user finns det många som inte bör mixtras med.
 
-		if (toUpdate != null)
-		{
-			var propertyList = typeof(ApplicationUser).GetProperties();
+		//if (toUpdate != null)
+		//{
+		//	var propertyList = typeof(ApplicationUser).GetProperties();
 
-			foreach (var prop in propertyList)
-			{
-				if (prop.GetValue(item) is null) //TODO: Vet inte om denna bidrar längre?
-					continue;
+		//	foreach (var prop in propertyList)
+		//	{
+		//		if (prop.GetValue(item) is null) //TODO: Vet inte om denna bidrar längre?
+		//			continue;
 
-				if (!prop.GetValue(item).Equals(prop.GetValue(toUpdate)))
-				{
-					prop.SetValue(toUpdate, prop.GetValue(item));
-				}
-			}
+		//		if (!prop.GetValue(item).Equals(prop.GetValue(toUpdate)))
+		//		{
+		//			prop.SetValue(toUpdate, prop.GetValue(item));
+		//		}
+		//	}
 
 			await _context.SaveChangesAsync();
-		}
+		//}
 
-		return toUpdate;
+		return item;
 	}
 }

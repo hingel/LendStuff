@@ -115,7 +115,7 @@ else
 	//kunna lägga till spel
 
 	public UserDto ActiveUser;
-	public List<BoardGameDto> UserBoardGameDtos;
+	public List<BoardGameDto> UserBoardGameDtos = new List<BoardGameDto>();
 	public BoardGameDto newBoardGame = new ();
 	public string responseMessage { get; set; } = string.Empty;
 
@@ -128,14 +128,9 @@ else
 		var userResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + $"getById?id={userId}");
 		var boardGameResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<BoardGameDto[]>>(HttpClient.BaseAddress + $"getUsersGames?id={userId}");
 
-		if (userResponse.Success)
+		if (userResponse.Success && boardGameResponse.Success)
 		{
 			ActiveUser = userResponse.Data;
-			UserBoardGameDtos = userResponse.Data.BoardGameDtos.ToList();
-		}
-
-		if (boardGameResponse.Success)
-		{
 			UserBoardGameDtos.AddRange(boardGameResponse.Data);
 		}
 
@@ -157,7 +152,7 @@ else
 
 			var userId = userAuthState.User.Claims.ToList()[2].Value;
 
-			var result2 = await HttpClient.PatchAsJsonAsync<BoardGameDto>(HttpClient.BaseAddress + $"addBoardGameToUser?id={userId}", result.Data);
+			var result2 = await HttpClient.PatchAsJsonAsync(HttpClient.BaseAddress + $"updateBoardGameToUser?id={userId}", result.Data);
 
 		}
 		else 
