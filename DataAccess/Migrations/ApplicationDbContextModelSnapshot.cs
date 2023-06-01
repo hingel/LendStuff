@@ -4,19 +4,16 @@ using LendStuff.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LendStuff.Server.Data.Migrations
+namespace LendStuff.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230502130933_addedVariousTables")]
-    partial class addedVariousTables
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,7 +182,7 @@ namespace LendStuff.Server.Data.Migrations
 
                     b.HasIndex("BoardGameId");
 
-                    b.ToTable("Genres");
+                    b.ToTable("Genres", (string)null);
                 });
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.InternalMessage", b =>
@@ -196,9 +193,6 @@ namespace LendStuff.Server.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MessageId"));
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -206,19 +200,18 @@ namespace LendStuff.Server.Data.Migrations
                     b.Property<DateTime>("MessageSent")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("SentFromUserGuid")
+                    b.Property<string>("SentFromUserName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SentToUserGuid")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("SentToUserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("MessageId");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("SentToUserId");
 
-                    b.ToTable("InternalMessages");
+                    b.ToTable("InternalMessages", (string)null);
                 });
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.Order", b =>
@@ -245,6 +238,9 @@ namespace LendStuff.Server.Data.Migrations
                     b.Property<DateTime>("ReturnDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("OrderId");
 
                     b.HasIndex("BoardGameId");
@@ -253,7 +249,32 @@ namespace LendStuff.Server.Data.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
+                });
+
+            modelBuilder.Entity("LendStuff.DataAccess.Models.UserBoardGame", b =>
+                {
+                    b.Property<Guid>("UserBoardGameId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BoardGameId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("ForLending")
+                        .HasColumnType("bit");
+
+                    b.HasKey("UserBoardGameId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("BoardGameId");
+
+                    b.ToTable("UserBoardGame", (string)null);
                 });
 
             modelBuilder.Entity("LendStuff.Server.Models.ApplicationUser", b =>
@@ -332,11 +353,11 @@ namespace LendStuff.Server.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<bool>("Available")
                         .HasColumnType("bit");
+
+                    b.Property<string>("BggLink")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
@@ -348,7 +369,7 @@ namespace LendStuff.Server.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ReleaseYear")
+                    b.Property<int>("ReleaseYear")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -357,9 +378,7 @@ namespace LendStuff.Server.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("BoardGames");
+                    b.ToTable("BoardGames", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -508,9 +527,11 @@ namespace LendStuff.Server.Data.Migrations
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.InternalMessage", b =>
                 {
-                    b.HasOne("LendStuff.Server.Models.ApplicationUser", null)
+                    b.HasOne("LendStuff.Server.Models.ApplicationUser", "SentToUser")
                         .WithMany("Messages")
-                        .HasForeignKey("ApplicationUserId");
+                        .HasForeignKey("SentToUserId");
+
+                    b.Navigation("SentToUser");
                 });
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.Order", b =>
@@ -536,11 +557,19 @@ namespace LendStuff.Server.Data.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("LendStuff.Server.Models.BoardGame", b =>
+            modelBuilder.Entity("LendStuff.DataAccess.Models.UserBoardGame", b =>
                 {
                     b.HasOne("LendStuff.Server.Models.ApplicationUser", null)
                         .WithMany("CollectionOfBoardGames")
                         .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("LendStuff.Server.Models.BoardGame", "BoardGame")
+                        .WithMany()
+                        .HasForeignKey("BoardGameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BoardGame");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

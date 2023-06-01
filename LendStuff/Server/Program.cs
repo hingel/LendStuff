@@ -1,5 +1,4 @@
 using Duende.IdentityServer.Services;
-using LendStuff.Server.Data;
 using LendStuff.Server.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.ResponseCompression;
