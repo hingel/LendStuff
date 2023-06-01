@@ -6,7 +6,7 @@ namespace LendStuff.DataAccess.Models;
 public class UserBoardGame
 {
 	[Key]
-	public Guid UserBoardGameId { get; set; } = Guid.NewGuid();
+	public Guid UserBoardGameId { get; set; }
 	public BoardGame BoardGame { get; set; }
 	public bool ForLending { get; set; }
 }

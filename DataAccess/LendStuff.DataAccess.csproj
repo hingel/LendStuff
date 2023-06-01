@@ -20,4 +20,8 @@
     <ProjectReference Include="..\LendStuff\Shared\LendStuff.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
+  </ItemGroup>
+
 </Project>
