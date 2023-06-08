@@ -28,6 +28,7 @@ public static class WebApplicationExtensions
 		{
 			return await service.UpdateBoardGameUserCollection(boardGameToAdd, userId);
 		});
+		app.MapGet("/usersOwningABoardGame", async (UserService service, [FromQuery(Name = "Id")] string boardGameId) => await service.GetUsersOwningCertainBoardGame(boardGameId)).RequireAuthorization();
 		return app;
 	}
 

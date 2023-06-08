@@ -4,6 +4,7 @@ using LendStuff.Server.Models;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace LendStuff.DataAccess.Services;
@@ -110,6 +111,30 @@ public class UserService
 		{
 			Message = "Board games added hopefully",
 			Success = true
+		};
+	}
+
+	public async Task<ServiceResponse<IEnumerable<UserDto>>> GetUsersOwningCertainBoardGame(string boardGameId)
+	{
+		Func<ApplicationUser, bool> filterFunc = (u) => u.CollectionOfBoardGames.Any(b => b.BoardGame.Id == boardGameId);
+
+		var result = await _userRepository.FindByKey(filterFunc);
+
+		return new ServiceResponse<IEnumerable<UserDto>>()
+		{
+			Data = result.Select(ConvertAppUserToDto),
+			Message = "Users boardgames",
+			Success = true
+		};
+	}
+
+	private UserDto ConvertAppUserToDto(ApplicationUser user)
+	{
+		return new UserDto()
+		{
+			Rating = user.Rating,
+			UserName = user.UserName,
+			Email = user.Email
 		};
 	}
 }

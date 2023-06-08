@@ -15,12 +15,33 @@
 else
 {
 	@CurrentBoardGameDto.Title
+
+	//Lista användare som har spelet. Borde göra som en table för att kunna sortera efter stad etc.
+	<Virtualize Items="UserOwningBoardGame.ToList()" Context="userDto">
+		<li class="list-group-item list-group-item-action">
+			<div class="container row">
+				<div class="container col-2">
+					<p>Username: @userDto.UserName</p>
+				</div>
+				<div class="container col-2">
+					<AuthorizeView>
+						<div class="form-check">
+							<button class="btn-primary" @onclick="() => SendMessage(userDto)"/>
+						</div>
+					</AuthorizeView>
+				</div>
+			</div>
+		</li>
+	</Virtualize>
+
+	//Knapp för att skicka Order förfrågan. Som ett meddelande kanske?
 }
 @code {
 	[Parameter]
 	public string Id { get; set; }
 
 	public BoardGameDto CurrentBoardGameDto;
+	public IEnumerable<UserDto> UserOwningBoardGame = new List<UserDto>();
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -30,8 +51,20 @@ else
 		{
 			CurrentBoardGameDto = result.Data;
 		}
-		
+
+		var usersOwningBoardGameResult = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<UserDto>>>(HttpClient.BaseAddress + $"usersOwningABoardGame?Id={Id}");
+
+		if (usersOwningBoardGameResult!= null && usersOwningBoardGameResult.Success)
+		{
+			UserOwningBoardGame = usersOwningBoardGameResult.Data;
+		}
+
 		base.OnInitializedAsync();
+	}
+
+	private void SendMessage(UserDto userDto)
+	{
+		throw new NotImplementedException();
 	}
 
 }
