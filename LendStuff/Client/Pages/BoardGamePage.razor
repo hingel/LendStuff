@@ -2,6 +2,7 @@
 @using LendStuff.Shared
 @using LendStuff.Shared.DTOs
 @using Microsoft.AspNetCore.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @attribute [Authorize]
 
@@ -17,6 +18,7 @@ else
 	@CurrentBoardGameDto.Title
 
 	//Lista användare som har spelet. Borde göra som en table för att kunna sortera efter stad etc.
+	//Vill inte lista sina egna spel heller:
 	<Virtualize Items="UserOwningBoardGame.ToList()" Context="userDto">
 		<li class="list-group-item list-group-item-action">
 			<div class="container row">
@@ -26,7 +28,7 @@ else
 				<div class="container col-2">
 					<AuthorizeView>
 						<div class="form-check">
-							<button class="btn-primary" @onclick="() => SendMessage(userDto)"/>
+							<button class="btn-primary" @onclick="() => SendMessage(userDto)">Send request</button>
 						</div>
 					</AuthorizeView>
 				</div>
@@ -34,7 +36,6 @@ else
 		</li>
 	</Virtualize>
 
-	//Knapp för att skicka Order förfrågan. Som ett meddelande kanske?
 }
 @code {
 	[Parameter]
@@ -45,6 +46,8 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
+		var userInfo = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
 		var result = await HttpClient.GetFromJsonAsync<ServiceResponse<BoardGameDto>>(HttpClient.BaseAddress + $"getGameById?id={Id}");
 
 		if (result != null)
@@ -56,15 +59,16 @@ else
 
 		if (usersOwningBoardGameResult!= null && usersOwningBoardGameResult.Success)
 		{
-			UserOwningBoardGame = usersOwningBoardGameResult.Data;
+			UserOwningBoardGame = usersOwningBoardGameResult.Data.Where(g => g.UserName != userInfo.User.Identity.Name);
 		}
 
-		base.OnInitializedAsync();
+		await base.OnInitializedAsync();
 	}
 
 	private void SendMessage(UserDto userDto)
 	{
 		throw new NotImplementedException();
+		//TODO: Borde komma en fråga om man verkligen vill skicka?
 	}
 
 }
