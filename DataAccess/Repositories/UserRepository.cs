@@ -43,6 +43,9 @@ public class UserRepository : IRepository<ApplicationUser>
 
 	public async Task<ApplicationUser> Update(ApplicationUser item)
 	{
+
+		//TODO: Får fixa detta snyggare på något sätt. Blir inte så bra sätt att göra det på ändå. Blir bara mer operationer jämfört med att ta in en DTO och konvertera denna.
+		//TODO: Skulle behöva Automappa detta istället.
 		//var toUpdate = await _context.Users
 		//	.Include(u => u.CollectionOfBoardGames)
 		//	.Include(u => u.Messages)
@@ -68,8 +71,6 @@ public class UserRepository : IRepository<ApplicationUser>
 
 		var result = await _context.SaveChangesAsync();
 		//}
-
-		Console.WriteLine();
 
 		return item;
 	}

@@ -128,7 +128,7 @@ public class BoardGameService
 
 	private async Task<BoardGame> ConvertDtoToBoardGame(BoardGameDto dtoToConvert)
 	{
-		return new BoardGame()
+		return new BoardGame
 		{
 			Available = dtoToConvert.Available,
 			BggLink = dtoToConvert.BggLink,

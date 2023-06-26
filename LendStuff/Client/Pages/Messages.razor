@@ -47,9 +47,9 @@
 </div>
 
 @code {
-	public  IEnumerable<MessageDto> ListOfMessagesDtos { get; set; } = new List<MessageDto>(); //lista med alla meddelande där inloggad användare förekommer.
-	private List<string> ContactNames = new List<string>(); //Listan med kontakter
-	private List<MessageDto> ActiveSenderMessages = new List<MessageDto>(); //meddelande där contactnamnet ovan ingår.
+	public IEnumerable<MessageDto> ListOfMessagesDtos { get; set; } = new List<MessageDto>(); //lista med alla meddelande där inloggad användare förekommer.
+	private List<string> ContactNames = new (); //Listan med kontakter
+	private List<MessageDto> ActiveSenderMessages = new (); //meddelande där contactnamnet ovan ingår.
 
 	private string SenderName = string.Empty;
 	private string ReceiverName = string.Empty;
