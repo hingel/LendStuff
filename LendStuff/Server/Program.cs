@@ -17,6 +17,7 @@ using static Duende.IdentityServer.Models.IdentityResources;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using LendStuff.Client;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -104,12 +105,12 @@ app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
-app.MapPost("/fillData/{userName}", async (string userName, IdentityClaimsService claimsService) =>
+app.MapPost("/fillData/{userName}", async ([FromServices] IProfileService claimsService, [FromServices] RoleManager<IdentityRole> rolemgt, [FromServices] UserManager<ApplicationUser> usrMngr, string userName) =>
 {
-	using (var scope = app.Services.CreateScope())
-	{
-		var rolemgt = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-		var usrMngr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+	//using (var scope = app.Services.CreateScope())
+	//{
+		//var rolemgt = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+		//var usrMngr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
 		var role = await rolemgt.Roles.FirstOrDefaultAsync(r => r.Name == "admin");
 		
@@ -143,7 +144,7 @@ app.MapPost("/fillData/{userName}", async (string userName, IdentityClaimsServic
 			Message = "OK",
 			Success = true
 		});
-	}
+	//}
 	
 });
 
