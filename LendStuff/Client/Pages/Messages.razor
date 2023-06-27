@@ -14,36 +14,86 @@
 	<div class="container col-md-3">
 		<h5>Contacts</h5>
 		<Virtualize Items="ContactNames.ToList()" Context="name">
-			<li class="list-group-item list-group-item-action" @onclick="() => SelectActiveSender(name)">
+			<li class="list-group-item list-group-item-action" @onclick="() => SelectActiveReceiver(name)">
 				@name
 			</li>
 		</Virtualize>
 	</div>
-	<div class="container col-md-9">
-		<EditForm Model="ListOfMessagesDtos" OnSubmit="SendMessage">
-			<div class="form-control">
-				<div class="row">
-					<div class="row-cols-3">
-						<InputText @bind-Value="activeMessageText"></InputText>
-					</div>
-					<div class="row-cols-6">
-						<button class="btn btn-primary">Send Message</button>
+	
+	<ul class="nav nav-tabs" id="myTab" role="tablist">
+		<li class="nav-item">
+			<a class="nav-link active" id="inbox-tab" data-toggle="tab" href="#inbox" role="tab" aria-controls="home" aria-selected="True" @onclick="ResetActiveMessage">Inbox</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" id="outbox-tab" data-toggle="tab" href="#outbox" role="tab" aria-controls="outbox" aria-selected="False" @onclick="ResetActiveMessage">Outbox</a>
+		</li>
+	</ul>
+	<br/>
+	<div class="tab-content"  id="myTabContent">
+		<div class="tab-pane fade show active" id="inbox" role="tabpanel" aria-labelledby="inbox-tab">
+			<div class="container">
+				<Virtualize Items="ListOfMessagesDtos.Where(m => m.SentFromUserName != SenderName).ToList()" Context="messageDto">
+					<li class="list-group-item list-group-item-action" @onclick="() => SelectActiveMessage(messageDto)">
+						@messageDto.Message.Substring(0, 10)
+					</li>
+				</Virtualize>
+			</div>
+		</div>
+		<div class="tab-pane fade" id="outbox" role="tabpanel" aria-labeledby="outbox-tab">
+			<div class="container">
+				<Virtualize Items="ListOfMessagesDtos.Where(m => m.SentFromUserName == SenderName).ToList()" Context="messageDto">
+					<li class="list-group-item list-group-item-action" @onclick="() => SelectActiveMessage(messageDto)">
+						<div>
+							@messageDto.Message.Substring(0, 15)
+						</div>
+					</li>
+				</Virtualize>
+			</div>
+		</div>
+	</div>
+</div>
+
+<br/>
+<br/>
+
+<div class="container row">
+	@if (ActiveMessageDto != null)
+	{
+		<div class="container">
+			Sent from: @ActiveMessageDto.SentFromUserName,
+			DateSent: @ActiveMessageDto.MessageSent.ToShortDateString()
+		</div>
+
+		<div class="container col-md-9">
+			<EditForm Model="ActiveMessageDto" OnSubmit="SendMessage">
+				<div class="form-control">
+					<div class="row">
+						<div class="container col-md-6">
+							<p>Send Message to:</p>
+							<InputText @bind-Value="ActiveMessageDto.SentToUserName"></InputText>
+							<p>Body:</p>
+							<InputText @bind-Value="ActiveMessageDto.Message"></InputText>
+						</div>
+						<div class="row-cols-6">
+							@if (ActiveMessageDto.Message == @activeMessageText)
+							{
+								<button class="btn btn-primary" disabled="disabled">Send Message</button>
+							}
+							else
+							{
+								<button class="btn btn-primary">Send Message</button>
+							}
+						<div class="btn" @onclick="() => DeleteMessage(ActiveMessageDto)">Delete</div>
+						</div>
 					</div>
 				</div>
-			</div>
-		</EditForm>
-		@if (ActiveSenderMessages.Count() > 0)
-		{
-			<Virtualize Items="ActiveSenderMessages" Context="MessageDto">
-				<li class="list-group-item">
-					<p>
-						From: @MessageDto.SentFromUserName @MessageDto.Message @MessageDto.MessageSent
-					</p>
-					<button class="btn btn-close" @onclick="() => DeleteMessage(MessageDto)">Delete</button>
-				</li>
-			</Virtualize>
-		}
-	</div>
+			</EditForm>
+		</div>
+	}
+	
+	
+
+	<p>@ResponseMessage</p>
 </div>
 
 @code {
@@ -55,11 +105,9 @@
 	private string ReceiverName = string.Empty;
 
 	private string activeMessageText = string.Empty;
-	public MessageDto NewMessageDto = new ();
+	public MessageDto ActiveMessageDto = null;
 
 	public string ResponseMessage = string.Empty;
-
-	private string senderId = string.Empty;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -70,7 +118,7 @@
 
 		//senderId = userInfo.User.Claims.ToList()[2].Value; //Här kan id för användaren fås fram.
 		
-		Console.WriteLine("Här ska det skrivas ut grejer:" + senderClaims[2].Type + senderClaims[2].Value + senderClaims[2].ValueType);
+		//Console.WriteLine("Här ska det skrivas ut grejer:" + senderClaims[2].Type + senderClaims[2].Value + senderClaims[2].ValueType);
 		
 		await GetMessages();
 
@@ -81,6 +129,8 @@
 	{
 		var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name={SenderName}");
 		//var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name={senderId}");
+
+		Console.WriteLine(response.Message);
 
 		if (response.Success)
 		{
@@ -96,16 +146,18 @@
 
 		foreach (var message in responseData)
 		{
-			if (message.SentFromUserName == SenderName)
-				continue;
+			if (message.SentFromUserName != SenderName && listToReturn.All(m => m != SenderName))
+				listToReturn.Add(message.SentFromUserName);
+			
 
-			listToReturn.Add(message.SentFromUserName);
+			if (message.SentToUserName != SenderName && listToReturn.All(m => m != SenderName))
+				listToReturn.Add(message.SentToUserName);
 		}
 
 		return listToReturn;
 	}
 
-	private void SelectActiveSender(string name)
+	private void SelectActiveReceiver(string name)
 	{
 		ActiveSenderMessages = ListOfMessagesDtos.Where(m => m.SentFromUserName == name || m.SentToUserName == name).ToList();
 
@@ -114,17 +166,15 @@
 
 	private async Task SendMessage()
 	{
-		NewMessageDto.Message = activeMessageText;
-		NewMessageDto.SentFromUserName = SenderName;
-		NewMessageDto.SentToUserName = ReceiverName;
+		ActiveMessageDto.SentFromUserName = SenderName;
 
-		var response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "addMessage", NewMessageDto);
+		var response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "addMessage", ActiveMessageDto);
 		var result = await response.Content.ReadFromJsonAsync<ServiceResponse<string>>();
 
 		if (result.Success)
 		{
 			await GetMessages(); //uppdatera med alla meddelande från servern igen.
-			NewMessageDto = new MessageDto();
+			ActiveMessageDto = null;
 			ResponseMessage = result.Message;
 			Console.WriteLine("I sent message succes:" + ResponseMessage);
 		}
@@ -152,6 +202,17 @@
 			ResponseMessage = result.Message;
 			Console.WriteLine("I Delete message false:" + ResponseMessage);
 		}
+	}
+
+	private void SelectActiveMessage(MessageDto activeMessageDto)
+	{
+		ActiveMessageDto = activeMessageDto;
+		activeMessageText = activeMessageDto.Message;
+	}
+
+	private void ResetActiveMessage()
+	{
+		ActiveMessageDto = null;
 	}
 
 }

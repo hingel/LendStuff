@@ -7,4 +7,5 @@ public class MessageDto
 	public DateTime MessageSent { get; set; } = DateTime.UtcNow;
 	public string SentFromUserName { get; set; } = string.Empty;
 	public string SentToUserName { get; set; } = string.Empty;
+	public bool IsRead { get; set; } = false;
 }
