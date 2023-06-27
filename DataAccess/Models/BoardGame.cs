@@ -1,12 +1,17 @@
-﻿using LendStuff.DataAccess.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using LendStuff.DataAccess.Models;
 
 namespace LendStuff.Server.Models;
 
 public class BoardGame
 {
+	[Required]
 	public string Id { get; set; } = string.Empty;
+	[Required]
 	public string Title { get; set; } = string.Empty;
+	[Required]
 	public int ReleaseYear { get; set; }
+	[Required]
 	public string Description { get; set; } = string.Empty;
 	public int Condition { get; set; }
 	public string? Comment { get; set; } = string.Empty;

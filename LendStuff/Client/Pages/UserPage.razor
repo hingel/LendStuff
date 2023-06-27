@@ -125,6 +125,8 @@ else
 
 		var userId = userAuthState.User.Claims.ToList()[2].Value;
 
+		Console.WriteLine(userId);
+
 		var userResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + $"getById?id={userId}");
 		var boardGameResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserBoardGameDto[]>>(HttpClient.BaseAddress + $"getUsersGames?id={userId}");
 

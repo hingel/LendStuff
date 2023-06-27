@@ -1,7 +1,8 @@
 ﻿@page "/"
 @using LendStuff.Shared.DTOs
 @using LendStuff.Shared
-@using System.Reflection.Metadata
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject HttpClient HttpClient
@@ -36,6 +37,8 @@
 	private string _userId = String.Empty;
 	public UserDto _currentUserDto = new UserDto();
 
+	
+
 	protected override async Task OnInitializedAsync()
 	{
 		var response = await HttpClient.GetFromJsonAsync<ServiceResponse<BoardGameDto[]>>(HttpClient.BaseAddress + "allGames");
@@ -48,16 +51,19 @@
 		var userAuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 		_userId = userAuthState.User.Claims.ToList()[2].Value;
 
-		var userResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + $"getById?id={_userId}");
-
-		if (userResponse.Success)
-			_currentUserDto = userResponse.Data;
-
-		var boardGameResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserBoardGameDto[]>>(HttpClient.BaseAddress + $"getUsersGames?id={_userId}");
-
-		if (boardGameResponse.Success)
+		if (!string.IsNullOrEmpty(_userId))
 		{
-			_currentUserDto.BoardGameDtos = boardGameResponse.Data.ToList();
+			var userResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + $"getById?id={_userId}");
+
+			if (userResponse.Success)
+				_currentUserDto = userResponse.Data;
+
+			var boardGameResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserBoardGameDto[]>>(HttpClient.BaseAddress + $"getUsersGames?id={_userId}");
+
+			if (boardGameResponse.Success)
+			{
+				_currentUserDto.BoardGameDtos = boardGameResponse.Data.ToList();
+			}
 		}
 
 		await base.OnInitializedAsync();

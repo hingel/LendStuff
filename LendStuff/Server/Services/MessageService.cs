@@ -21,11 +21,34 @@ public class MessageService
 
 	public async Task<ServiceResponse<string>> AddMessage(MessageDto newMessageDto)
 	{
-		await _messageRepository.AddItem(await ConvertDtoToMessage(newMessageDto)); //TODO: Ordna ett svarsmeddelande
+		var result = await _messageRepository.FindByKey(m => m.MessageId == newMessageDto.MessageId && m.SentToUser.UserName == newMessageDto.SentToUserName);
+
+		if (result.Any())
+		{
+			await _messageRepository.Update(await ConvertDtoToMessage(newMessageDto));
+
+			return new ServiceResponse<string>()
+			{
+				Message = "Message sent.",
+				Success = false
+			};
+		}
+
+		result = await _messageRepository.FindByKey(m => m.SentToUser.UserName == newMessageDto.SentToUserName);
+		if (result.Any())
+		{
+			await _messageRepository.AddItem(await ConvertDtoToMessage(newMessageDto)); //TODO: Ordna ett svarsmeddelande
+
+			return new ServiceResponse<string>()
+			{
+				Message = "Message sent.",
+				Success = true
+			};
+		}
 
 		return new ServiceResponse<string>()
 		{
-			Message = "Message sent.",
+			Message = "Message not sent. No user found.",
 			Success = true
 		};
 	}
@@ -94,7 +117,8 @@ public class MessageService
 			Message = message.Message,
 			MessageSent = message.MessageSent,
 			SentFromUserName = message.SentFromUserName,
-			SentToUserName = message.SentToUser.UserName
+			SentToUserName = message.SentToUser.UserName,
+			IsRead = message.IsRead
 		};
 	}
 
@@ -105,7 +129,8 @@ public class MessageService
 			MessageId = messageDto.MessageId, // == null ? 0 : messageDto.MessageId,
 			Message = messageDto.Message,
 			SentFromUserName = messageDto.SentFromUserName,
-			SentToUser = await _userManager.FindByNameAsync(messageDto.SentToUserName)
+			SentToUser = await _userManager.FindByNameAsync(messageDto.SentToUserName),
+			IsRead = messageDto.IsRead
 		};
 	}
 }

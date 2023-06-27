@@ -36,6 +36,8 @@ else
 		</li>
 	</Virtualize>
 
+	<p>@ResponseMessage</p>	
+
 }
 @code {
 	[Parameter]
@@ -43,6 +45,7 @@ else
 
 	public BoardGameDto CurrentBoardGameDto;
 	public IEnumerable<UserDto> UserOwningBoardGame = new List<UserDto>();
+	public string ResponseMessage = string.Empty;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -65,10 +68,25 @@ else
 		await base.OnInitializedAsync();
 	}
 
-	private void SendMessage(UserDto userDto)
+	private async Task SendMessage(UserDto userDto)
 	{
-		throw new NotImplementedException();
+		var userInfo = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		
+		//TODO: Lägg till mer info för användaren i meddelandet. Kanske en länk till användarens sida?
+
+		var newRequstDto = new MessageDto()
+		{
+			Message = $"{userInfo.User.Identity.Name} wants to borrow {CurrentBoardGameDto.Title} from you. Please send a respons if game is available or not.",
+			SentFromUserName = $"{userInfo.User.Identity.Name}",
+			SentToUserName = userDto.UserName
+		};
 		//TODO: Borde komma en fråga om man verkligen vill skicka?
+
+		var response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "addMessage", newRequstDto);
+
+		var result = await response.Content.ReadFromJsonAsync<ServiceResponse<MessageDto>>();
+
+		ResponseMessage = result.Message;
 	}
 
 }
