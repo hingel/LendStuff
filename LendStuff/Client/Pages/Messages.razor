@@ -34,7 +34,7 @@
 			<div class="container">
 				<Virtualize Items="ListOfMessagesDtos.Where(m => m.SentFromUserName != SenderName).ToList()" Context="messageDto">
 					<li class="list-group-item list-group-item-action" @onclick="() => SelectActiveMessage(messageDto)">
-						@messageDto.Message.Substring(0, 10)
+						@messageDto.Message.Substring(0, 2)
 					</li>
 				</Virtualize>
 			</div>
@@ -44,7 +44,7 @@
 				<Virtualize Items="ListOfMessagesDtos.Where(m => m.SentFromUserName == SenderName).ToList()" Context="messageDto">
 					<li class="list-group-item list-group-item-action" @onclick="() => SelectActiveMessage(messageDto)">
 						<div>
-							@messageDto.Message.Substring(0, 15)
+							@messageDto.Message.Substring(0, 2)
 						</div>
 					</li>
 				</Virtualize>
@@ -83,15 +83,13 @@
 							{
 								<button class="btn btn-primary">Send Message</button>
 							}
-						<div class="btn" @onclick="() => DeleteMessage(ActiveMessageDto)">Delete</div>
+						<div class="btn btn-danger" @onclick="() => DeleteMessage(ActiveMessageDto)">Delete</div>
 						</div>
 					</div>
 				</div>
 			</EditForm>
 		</div>
 	}
-	
-	
 
 	<p>@ResponseMessage</p>
 </div>
@@ -128,12 +126,12 @@
 	private async Task GetMessages()
 	{
 		var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name={SenderName}");
-		//var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name={senderId}");
 
 		Console.WriteLine(response.Message);
 
 		if (response.Success)
 		{
+			ContactNames.Clear();
 			ContactNames = FindContacts(response.Data);
 
 			ListOfMessagesDtos = response.Data;
@@ -146,11 +144,11 @@
 
 		foreach (var message in responseData)
 		{
-			if (message.SentFromUserName != SenderName && listToReturn.All(m => m != SenderName))
+			if (message.SentFromUserName != SenderName && listToReturn.All(m => m != message.SentFromUserName))
 				listToReturn.Add(message.SentFromUserName);
 			
 
-			if (message.SentToUserName != SenderName && listToReturn.All(m => m != SenderName))
+			if (message.SentToUserName != SenderName && listToReturn.All(m => m != message.SentToUserName))
 				listToReturn.Add(message.SentToUserName);
 		}
 
@@ -160,7 +158,8 @@
 	private void SelectActiveReceiver(string name)
 	{
 		ActiveSenderMessages = ListOfMessagesDtos.Where(m => m.SentFromUserName == name || m.SentToUserName == name).ToList();
-
+		ActiveMessageDto = new MessageDto() {SentToUserName = name, Message = "Enter text...", SentFromUserName = SenderName};
+		
 		ReceiverName = name;
 	}
 
