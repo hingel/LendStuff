@@ -28,20 +28,20 @@ public class IdentityClaimsService : IProfileService
 		var claimsPrincipal = await _claimsFactory.CreateAsync(user);
 		var claims = claimsPrincipal.Claims.ToList();
 
-		//var userClaimsDb = await _userManager.GetClaimsAsync(user);
+		var userClaimsDb = await _userManager.GetClaimsAsync(user);
 		var mappedClaims = new List<Claim>();
 
-		//foreach (var claim in userClaimsDb)
-		//{
-		//	if (claim.Type == ClaimTypes.Role)
-		//	{
-		//		mappedClaims.Add(new Claim(JwtClaimTypes.Role, claim.Value));
-		//	}
-		//	else
-		//	{
-		//		mappedClaims.Add(claim);
-		//	}
-		//}
+		foreach (var claim in userClaimsDb)
+		{
+			if (claim.Type == ClaimTypes.Role)
+			{
+				mappedClaims.Add(new Claim(JwtClaimTypes.Role, claim.Value));
+			}
+			else
+			{
+				mappedClaims.Add(claim);
+			}
+		}
 
 		claims.AddRange(mappedClaims);
 		context.IssuedClaims = claims;

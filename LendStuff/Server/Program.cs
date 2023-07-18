@@ -27,6 +27,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddCors(options => 
+{
+	options.AddPolicy("myCorsSpec",
+		policy =>
+		{
+			policy.WithOrigins("http://localhost:5173")
+				.AllowAnyHeader()
+				.AllowAnyMethod();
+		});
+}); //TODO: Detta måste styras upp på något annat sätt.
+
+
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
 	.AddRoles<IdentityRole>()
 	.AddEntityFrameworkStores<ApplicationDbContext>();
@@ -40,11 +52,14 @@ options =>
 	options.IdentityResources["openid"].UserClaims.Add("role");
 	options.ApiResources.Single().UserClaims.Add("role");
 });
+//TODO: Vilken typ av roll genererare är aktiv?
 
-//JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("role");
+//JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("role"); //Ståd nedan
 
 builder.Services.AddAuthentication()
 	.AddIdentityServerJwt();
+
+builder.Services.AddAuthentication().AddJwtBearer();
 
 builder.Services.AddAuthorizationBuilder()
 	//.AddPolicy("admin_access", policy => policy.RequireUserName("c@cr.se"));
@@ -63,7 +78,7 @@ builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<MessageService>();
 
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
-builder.Services.AddScoped<IProfileService, IdentityClaimsService>(); //Detta är tillagd för test med rollerna och namn.
+//builder.Services.AddScoped<IProfileService, IdentityClaimsService>(); //Detta är tillagd för test med rollerna och namn.
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("role"); //Behövdes för att den inte ska mapp om rollen igen eller liknande.
 
 builder.Services.AddControllersWithViews();
@@ -90,6 +105,8 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseCors();
 
 app.UseIdentityServer();
 app.UseAuthentication();

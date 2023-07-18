@@ -1,15 +1,23 @@
-﻿namespace LendStuff.Shared.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace LendStuff.Shared.DTOs;
 
 public class BoardGameDto
 {
 	public string Id { get; set; } = string.Empty;
+	[Required]
 	public string Title { get; set; } = string.Empty;
+	[Required]
+	[Range(1970, 2050, ErrorMessage = "Latest 1970")]
 	public int ReleaseYear { get; set; }
+	[Required]
 	public string Description { get; set; } = string.Empty;
+	[Required]
+	[Range(1, 5, ErrorMessage = "Range 1 - 5. 5 equals mint condition.")]
 	public int Condition { get; set; }
 	public string? Comment { get; set; } = string.Empty;
+	[Required]
 	public bool Available { get; set; }
 	public List<string> Genres { get; set; } = new(); //Testa att ha detta som en lisa med strängar enbart.
-	public string BggLink { get; set; } = string.Empty;
-	//public ICollection<ApplicationUserDto> Users { get; set; } //Tror inte denna behövs i front end. Kan leta upp användarna som har spelet i backend.
+	public string? BggLink { get; set; } = string.Empty;
 }

@@ -31,7 +31,7 @@ else
 		<tbody>
 			@foreach (var userBoardGame in UserBoardGameDtos)
 			{
-				<tr>
+				<tr @onclick="() => SelectActiveGame(userBoardGame)">
 					<td>@userBoardGame.BoardGameDto.Title</td>
 					<td>@userBoardGame.BoardGameDto.Description</td>
 					<td>@userBoardGame.BoardGameDto.Condition</td>
@@ -64,8 +64,10 @@ else
 	</table>
 
 
-	<h5>Add New Game</h5>
-	<EditForm Model="newBoardGame" OnSubmit="SendNewGame">
+	<h5>Add New Game or modify existing:</h5>
+	<EditForm Model="newBoardGame" OnValidSubmit="SendNewGame">
+		<DataAnnotationsValidator/>
+		<ValidationSummary/>
 		<div class="form-control">
 			<div class="row">
 				<div class="row-cols-3">
@@ -89,7 +91,7 @@ else
 					<InputText @bind-Value="newBoardGame.Comment"></InputText>
 				</div>
 				<div class="row-cols-3">
-					<p>Available?</p>
+					<p>Available for other to lend?</p>
 					<InputCheckbox @bind-Value="newBoardGame.Available"></InputCheckbox>
 				</div>
 				<div class="row-cols-3">
@@ -141,11 +143,20 @@ else
 
 	private async Task SendNewGame()
 	{
-		var response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "addGame", newBoardGame);
+		HttpResponseMessage response;
+
+		var updateOwning = string.IsNullOrEmpty(newBoardGame.Id);
+
+		if (!updateOwning)
+			response = await HttpClient.PatchAsJsonAsync(HttpClient.BaseAddress + "updateGame", newBoardGame);
+		else
+			response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "addGame", newBoardGame);
 
 		var result = await response.Content.ReadFromJsonAsync<ServiceResponse<BoardGameDto>>();
 
-		if (result.Success)
+
+		//ska inte gå in här om den bara uppdaterat.
+		if (result.Success && updateOwning)
 		{
 			var userAuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
@@ -157,6 +168,12 @@ else
 		else 
 			responseMessage = result.Message;
 		
+	}
+
+
+	private void SelectActiveGame(UserBoardGameDto userBoardGame)
+	{
+		newBoardGame = userBoardGame.BoardGameDto;
 	}
 
 }
