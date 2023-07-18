@@ -1,4 +1,4 @@
-﻿@page "/BoardGamePage/{id}"
+﻿@page "/BoardGamePage/{Id}"
 @using LendStuff.Shared
 @using LendStuff.Shared.DTOs
 @using Microsoft.AspNetCore.Authorization
@@ -16,6 +16,8 @@
 else
 {
 	@CurrentBoardGameDto.Title
+	@CurrentBoardGameDto.Description
+	@CurrentBoardGameDto.Comment
 
 	//Lista användare som har spelet. Borde göra som en table för att kunna sortera efter stad etc.
 	//Vill inte lista sina egna spel heller:
@@ -28,7 +30,7 @@ else
 				<div class="container col-2">
 					<AuthorizeView>
 						<div class="form-check">
-							<button class="btn-primary" @onclick="() => SendMessage(userDto)">Send request</button>
+							<button class="btn-primary" @onclick="() => SendMessage(userDto)">Send request to borrow.</button>
 						</div>
 					</AuthorizeView>
 				</div>
@@ -46,10 +48,11 @@ else
 	public BoardGameDto CurrentBoardGameDto;
 	public IEnumerable<UserDto> UserOwningBoardGame = new List<UserDto>();
 	public string ResponseMessage = string.Empty;
+	//private string _userId = string.Empty;
 
 	protected override async Task OnInitializedAsync()
 	{
-		var userInfo = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var userAuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
 		var result = await HttpClient.GetFromJsonAsync<ServiceResponse<BoardGameDto>>(HttpClient.BaseAddress + $"getGameById?id={Id}");
 
@@ -58,11 +61,15 @@ else
 			CurrentBoardGameDto = result.Data;
 		}
 
-		var usersOwningBoardGameResult = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<UserDto>>>(HttpClient.BaseAddress + $"usersOwningABoardGame?Id={Id}");
+		//if (userAuthState.User.Claims.Count() > 1)
+		//	_userId = userAuthState.User.Claims.ToList()[2].Value;
 
-		if (usersOwningBoardGameResult!= null && usersOwningBoardGameResult.Success)
+		var usersOwningBoardGameResult = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<UserDto>>>(HttpClient.BaseAddress + $"usersOwningBoardGame?boardGameId={Id}");
+
+		if (usersOwningBoardGameResult != null && usersOwningBoardGameResult.Success)
 		{
-			UserOwningBoardGame = usersOwningBoardGameResult.Data.Where(g => g.UserName != userInfo.User.Identity.Name);
+			UserOwningBoardGame = usersOwningBoardGameResult.Data.Where(g => g.UserName != userAuthState.User.Identity.Name);
+			var listgame = UserOwningBoardGame.Where(u => u.BoardGameDtos.Where(b => b.BoardGameDto.Id == CurrentBoardGameDto.Id).Any(b => b.ForLending));
 		}
 
 		await base.OnInitializedAsync();
@@ -76,7 +83,7 @@ else
 
 		var newRequstDto = new MessageDto()
 		{
-			Message = $"{userInfo.User.Identity.Name} wants to borrow {CurrentBoardGameDto.Title} from you. Please send a respons if game is available or not.",
+			Message = $"{userInfo.User.Identity.Name} wants to borrow {CurrentBoardGameDto.Title} from you. Please send a response if game is available or not.",
 			SentFromUserName = $"{userInfo.User.Identity.Name}",
 			SentToUserName = userDto.UserName
 		};

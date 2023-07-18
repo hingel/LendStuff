@@ -34,7 +34,7 @@
 			<div class="container">
 				<Virtualize Items="ListOfMessagesDtos.Where(m => m.SentFromUserName != SenderName).ToList()" Context="messageDto">
 					<li class="list-group-item list-group-item-action" @onclick="() => SelectActiveMessage(messageDto)">
-						@messageDto.Message.Substring(0, 10)
+						From: @messageDto.SentFromUserName @messageDto.Message.Substring(0, 2) @messageDto.MessageSent
 					</li>
 				</Virtualize>
 			</div>
@@ -44,7 +44,7 @@
 				<Virtualize Items="ListOfMessagesDtos.Where(m => m.SentFromUserName == SenderName).ToList()" Context="messageDto">
 					<li class="list-group-item list-group-item-action" @onclick="() => SelectActiveMessage(messageDto)">
 						<div>
-							@messageDto.Message.Substring(0, 15)
+							Sent To: @messageDto.SentToUserName @messageDto.Message.Substring(0, 2) @messageDto.MessageSent
 						</div>
 					</li>
 				</Virtualize>
@@ -65,33 +65,29 @@
 		</div>
 
 		<div class="container col-md-9">
-			<EditForm Model="ActiveMessageDto" OnSubmit="SendMessage">
+			<EditForm Model="ActiveMessageDto" OnValidSubmit="SendMessage">
+				<DataAnnotationsValidator/>
+				<ValidationSummary/>
 				<div class="form-control">
-					<div class="row">
-						<div class="container col-md-6">
-							<p>Send Message to:</p>
-							<InputText @bind-Value="ActiveMessageDto.SentToUserName"></InputText>
-							<p>Body:</p>
-							<InputText @bind-Value="ActiveMessageDto.Message"></InputText>
-						</div>
-						<div class="row-cols-6">
-							@if (ActiveMessageDto.Message == @activeMessageText)
-							{
-								<button class="btn btn-primary" disabled="disabled">Send Message</button>
-							}
-							else
-							{
-								<button class="btn btn-primary">Send Message</button>
-							}
-						<div class="btn" @onclick="() => DeleteMessage(ActiveMessageDto)">Delete</div>
-						</div>
+					<p>Send Message to:</p>
+						<InputText @bind-Value="ActiveMessageDto.SentToUserName"></InputText>
+						<p>Body:</p>
+						<InputTextArea @bind-Value="ActiveMessageDto.Message"></InputTextArea>
 					</div>
-				</div>
+					<div class="container col-auto">
+						@if (ActiveMessageDto.Message == @activeMessageText)
+						{
+							<button class="btn btn-primary" disabled="disabled">Send Message</button>
+						}
+						else
+						{
+							<button class="btn btn-primary">Send Message</button>
+						}
+						<div class="btn btn-danger" @onclick="() => DeleteMessage(ActiveMessageDto)">Delete</div>
+					</div>
 			</EditForm>
 		</div>
 	}
-	
-	
 
 	<p>@ResponseMessage</p>
 </div>
@@ -128,12 +124,12 @@
 	private async Task GetMessages()
 	{
 		var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name={SenderName}");
-		//var response = await HttpClient.GetFromJsonAsync<ServiceResponse<IEnumerable<MessageDto>>>(HttpClient.BaseAddress + $"getUsersMessages?name={senderId}");
 
 		Console.WriteLine(response.Message);
 
 		if (response.Success)
 		{
+			ContactNames.Clear();
 			ContactNames = FindContacts(response.Data);
 
 			ListOfMessagesDtos = response.Data;
@@ -146,11 +142,11 @@
 
 		foreach (var message in responseData)
 		{
-			if (message.SentFromUserName != SenderName && listToReturn.All(m => m != SenderName))
+			if (message.SentFromUserName != SenderName && listToReturn.All(m => m != message.SentFromUserName))
 				listToReturn.Add(message.SentFromUserName);
 			
 
-			if (message.SentToUserName != SenderName && listToReturn.All(m => m != SenderName))
+			if (message.SentToUserName != SenderName && listToReturn.All(m => m != message.SentToUserName))
 				listToReturn.Add(message.SentToUserName);
 		}
 
@@ -160,7 +156,8 @@
 	private void SelectActiveReceiver(string name)
 	{
 		ActiveSenderMessages = ListOfMessagesDtos.Where(m => m.SentFromUserName == name || m.SentToUserName == name).ToList();
-
+		ActiveMessageDto = new MessageDto() {SentToUserName = name, Message = "Enter text...", SentFromUserName = SenderName};
+		
 		ReceiverName = name;
 	}
 
