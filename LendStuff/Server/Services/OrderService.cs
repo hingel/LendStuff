@@ -1,4 +1,5 @@
-﻿using LendStuff.DataAccess.Models;
+﻿using Duende.IdentityServer.Models;
+using LendStuff.DataAccess.Models;
 using LendStuff.DataAccess.Repositories.Interfaces;
 using LendStuff.Server.Models;
 using LendStuff.Shared;
@@ -11,15 +12,15 @@ namespace LendStuff.DataAccess.Services;
 public class OrderService
 {
 	private readonly IRepository<Order> _orderRepository;
-
 	private readonly UnitOfWork _unitOfWork;
 	private readonly UserManager<ApplicationUser> _userManager;
-
-	public OrderService(IRepository<Order> orderRepository, UnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+	private readonly IRepository<InternalMessage> _messageRepository;
+	public OrderService(IRepository<Order> orderRepository, UnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IRepository<InternalMessage> messageRepository)
 	{
 		_orderRepository = orderRepository;
 		_unitOfWork = unitOfWork;
 		_userManager = userManager;
+		_messageRepository = messageRepository;
 	}
 
 	public async Task<ServiceResponse<IEnumerable<OrderDto>>> GetAllOrders()
@@ -36,9 +37,9 @@ public class OrderService
 		return response;
 	}
 
-	public async Task<ServiceResponse<IEnumerable<OrderDto>>> GetAllUserOrders(string id)
+	public async Task<ServiceResponse<IEnumerable<OrderDto>>> GetAllUserOrders(string userId)
 	{
-		var result = await _orderRepository.FindByKey(o => o.Owner.Id == id || o.Borrower.Id == id);
+		var result = await _orderRepository.FindByKey(o => o.Owner.Id == userId || o.Borrower.Id == userId);
 
 		if (result.FirstOrDefault() is null)
 		{
@@ -49,11 +50,10 @@ public class OrderService
 			};
 		}
 
-
 		return new ServiceResponse<IEnumerable<OrderDto>>()
 		{
 			Data = result.Select(ConvertOrderToDto),
-			Message = $"order for {id}",
+			Message = $"order for {userId}",
 			Success = true
 		};
 	}
@@ -117,9 +117,13 @@ public class OrderService
 			LentDate = newOrder.LentDate,
 			Owner = await _userManager.FindByIdAsync(newOrder.OwnerUserId),
 			ReturnDate = newOrder.ReturnDate,
-			Status = newOrder.Status
+			Status = newOrder.Status,
+			OrderMessages = await Task.WhenAll(newOrder.OrderMessageDtos.Select(FindMessage).ToList()) //TODO: Funkar detta?
 		};
 	}
+
+	private async Task<InternalMessage> FindMessage(MessageDto messageToFind) =>
+		(await _messageRepository.FindByKey(m => m.MessageId == messageToFind.MessageId)).FirstOrDefault();
 
 	private OrderDto ConvertOrderToDto(Order o)
 	{
@@ -133,7 +137,22 @@ public class OrderService
 			OrderId = o.OrderId,
 			OwnerUserId = o.Owner.Id, //(await _userService.FindUserById(o.Owner.Id)).Data, //Hitta ägaren.
 			ReturnDate = o.ReturnDate,
-			Status = o.Status
+			Status = o.Status,
+			OrderMessageDtos = o.OrderMessages.Select(ConvertMessageToDto).ToList()
+		};
+	}
+
+	//TODO: Denna ska flyttas ihop till DtoConvertServicen.
+	private MessageDto ConvertMessageToDto(InternalMessage messageToConvert)
+	{
+		return new MessageDto()
+		{
+			MessageId = messageToConvert.MessageId,
+			Message = messageToConvert.Message,
+			MessageSent = messageToConvert.MessageSent,
+			SentFromUserName = messageToConvert.SentFromUserName,
+			SentToUserName = messageToConvert.SentToUser.UserName,
+			IsRead = messageToConvert.IsRead
 		};
 	}
 }

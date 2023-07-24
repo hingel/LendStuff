@@ -40,25 +40,18 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		var userAuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-
 		//Skapar en client för oregistrerade användare:
-		var client = ClientFactory.CreateClient("NonLoggedIdUser");
+		var unRegisteredClient = ClientFactory.CreateClient("NonLoggedIdUser");
 
-		var unregisteredResponse = await client.GetFromJsonAsync<ServiceResponse<BoardGameDto[]>>(HttpClient.BaseAddress + "allGames");
+		//som går till APIet genom denna istället för HTTPClienten som är injected från startsidan.
+		var unregisteredResponse = await unRegisteredClient.GetFromJsonAsync<ServiceResponse<BoardGameDto[]>>(HttpClient.BaseAddress + "allGames");
 
 		if (unregisteredResponse.Success)
 		{
 			boardGameDtos = unregisteredResponse.Data.Where(b => b.Available);
 		}
-
-		//var response = await HttpClient.GetFromJsonAsync<ServiceResponse<BoardGameDto[]>>(HttpClient.BaseAddress + "allGames");
-
-		//if (response.Success)
-		//{
-		//	boardGameDtos = response.Data.Where(b => b.Available);
-		//}
-
+		
+		var userAuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
 		if (userAuthState.User.Claims.Count() > 1)
 			_userId = userAuthState.User.Claims.ToList()[2].Value;

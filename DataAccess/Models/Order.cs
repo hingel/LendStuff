@@ -18,4 +18,5 @@ public class Order
 	public DateTime LentDate { get; set; }
 	public DateTime ReturnDate { get; set; }
 	public OrderStatus Status { get; set; }
+	public ICollection<InternalMessage> OrderMessages { get; set; } = new List<InternalMessage>();
 }
