@@ -39,7 +39,7 @@ public class OrderService
 
 	public async Task<ServiceResponse<IEnumerable<OrderDto>>> GetAllUserOrders(string userId)
 	{
-		var result = await _orderRepository.FindByKey(o => o.Owner.Id == userId || o.Borrower.Id == userId);
+		var result = await _orderRepository.FindByKey(o => o.Owner.Id == userId || o.BorrowerId == userId);
 
 		if (result.FirstOrDefault() is null)
 		{
@@ -113,9 +113,9 @@ public class OrderService
 		return new Order()
 		{
 			BoardGame = (await _unitOfWork.BoardGameRepository.FindByKey(b => b.Id == newOrder.BoardGameId)).FirstOrDefault(),
-			Borrower = await _userManager.FindByIdAsync(newOrder.BorrowerUserId),
+			BorrowerId = newOrder.BorrowerUserId,
 			LentDate = newOrder.LentDate,
-			Owner = await _userManager.FindByIdAsync(newOrder.OwnerUserId),
+			Owner = await _userManager.FindByNameAsync(newOrder.OwnerUserName),
 			ReturnDate = newOrder.ReturnDate,
 			Status = newOrder.Status,
 			OrderMessages = await Task.WhenAll(newOrder.OrderMessageDtos.Select(FindMessage).ToList()) //TODO: Funkar detta?
@@ -132,10 +132,10 @@ public class OrderService
 			BoardGameId =
 				o.BoardGame.Id, // (await _boardGameService.FindById(o.BoardGame.Id.ToString())).Data.Title,
 			BorrowerUserId =
-				o.Borrower.Id, // (await _userService.FindUserById(o.Borrower.Id)).Data, //hitta användaren o konvertera
+				o.BorrowerId, // (await _userService.FindUserById(o.Borrower.Id)).Data, //hitta användaren o konvertera
 			LentDate = o.LentDate,
 			OrderId = o.OrderId,
-			OwnerUserId = o.Owner.Id, //(await _userService.FindUserById(o.Owner.Id)).Data, //Hitta ägaren.
+			OwnerUserName = o.Owner.UserName, //(await _userService.FindUserById(o.Owner.Id)).Data, //Hitta ägaren.
 			ReturnDate = o.ReturnDate,
 			Status = o.Status,
 			OrderMessageDtos = o.OrderMessages.Select(ConvertMessageToDto).ToList()

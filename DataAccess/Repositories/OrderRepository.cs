@@ -19,7 +19,6 @@ public class OrderRepository : IRepository<Order>
 		var respons = _context
 			.Orders
 			.Include(o => o.Owner)
-			.Include(o => o.Borrower)
 			.Include(o => o.BoardGame);
 
 		return respons;
@@ -29,8 +28,8 @@ public class OrderRepository : IRepository<Order>
 	{
 		return _context.Orders
 			.Include(o => o.Owner)
-			.Include(o => o.Borrower)
 			.Include(o => o.BoardGame)
+			.Include(o => o.OrderMessages)
 			.Where(findFunc);
 	}
 
