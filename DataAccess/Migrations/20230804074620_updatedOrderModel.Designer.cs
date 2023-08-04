@@ -4,6 +4,7 @@ using LendStuff.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LendStuff.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230804074620_updatedOrderModel")]
+    partial class updatedOrderModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,7 +185,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasIndex("BoardGameId");
 
-                    b.ToTable("Genres", (string)null);
+                    b.ToTable("Genres");
                 });
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.InternalMessage", b =>
@@ -221,7 +224,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasIndex("SentToUserId");
 
-                    b.ToTable("InternalMessages", (string)null);
+                    b.ToTable("InternalMessages");
                 });
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.Order", b =>
@@ -259,7 +262,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.UserBoardGame", b =>
@@ -284,7 +287,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasIndex("BoardGameId");
 
-                    b.ToTable("UserBoardGame", (string)null);
+                    b.ToTable("UserBoardGame");
                 });
 
             modelBuilder.Entity("LendStuff.Server.Models.ApplicationUser", b =>
@@ -388,7 +391,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BoardGames", (string)null);
+                    b.ToTable("BoardGames");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

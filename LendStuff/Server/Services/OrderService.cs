@@ -1,4 +1,5 @@
-﻿using LendStuff.DataAccess.Models;
+﻿using Duende.IdentityServer.Models;
+using LendStuff.DataAccess.Models;
 using LendStuff.DataAccess.Repositories.Interfaces;
 using LendStuff.Server.Models;
 using LendStuff.Shared;
@@ -11,15 +12,17 @@ namespace LendStuff.DataAccess.Services;
 public class OrderService
 {
 	private readonly IRepository<Order> _orderRepository;
-
 	private readonly UnitOfWork _unitOfWork;
 	private readonly UserManager<ApplicationUser> _userManager;
-
-	public OrderService(IRepository<Order> orderRepository, UnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+	private readonly IRepository<InternalMessage> _messageRepository;
+	private readonly MessageService _messageService;
+	public OrderService(IRepository<Order> orderRepository, UnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IRepository<InternalMessage> messageRepository, MessageService messageService)
 	{
 		_orderRepository = orderRepository;
 		_unitOfWork = unitOfWork;
 		_userManager = userManager;
+		_messageRepository = messageRepository;
+		_messageService = messageService;
 	}
 
 	public async Task<ServiceResponse<IEnumerable<OrderDto>>> GetAllOrders()
@@ -36,9 +39,9 @@ public class OrderService
 		return response;
 	}
 
-	public async Task<ServiceResponse<IEnumerable<OrderDto>>> GetAllUserOrders(string id)
+	public async Task<ServiceResponse<IEnumerable<OrderDto>>> GetAllUserOrders(string userId)
 	{
-		var result = await _orderRepository.FindByKey(o => o.Owner.Id == id || o.Borrower.Id == id);
+		var result = await _orderRepository.FindByKey(o => o.Owner.Id == userId || o.BorrowerId == userId);
 
 		if (result.FirstOrDefault() is null)
 		{
@@ -49,11 +52,10 @@ public class OrderService
 			};
 		}
 
-
 		return new ServiceResponse<IEnumerable<OrderDto>>()
 		{
 			Data = result.Select(ConvertOrderToDto),
-			Message = $"order for {id}",
+			Message = $"order for {userId}",
 			Success = true
 		};
 	}
@@ -77,8 +79,8 @@ public class OrderService
 
 		return new ServiceResponse<string>()
 		{
-			Data = $"{result.OrderId} added",
-			Message = $"{result.OrderId} added",
+			Data = $"Order with nr: {result.OrderId} added",
+			Message = $"Order with nr: {result.OrderId} added",
 			Success = true
 		};
 	}
@@ -113,27 +115,97 @@ public class OrderService
 		return new Order()
 		{
 			BoardGame = (await _unitOfWork.BoardGameRepository.FindByKey(b => b.Id == newOrder.BoardGameId)).FirstOrDefault(),
-			Borrower = await _userManager.FindByIdAsync(newOrder.BorrowerUserId),
+			BorrowerId = newOrder.BorrowerUserId,
 			LentDate = newOrder.LentDate,
-			Owner = await _userManager.FindByIdAsync(newOrder.OwnerUserId),
+			Owner = await _userManager.FindByNameAsync(newOrder.OwnerUserName),
 			ReturnDate = newOrder.ReturnDate,
-			Status = newOrder.Status
+			Status = newOrder.Status,
+			//OrderMessages = await FindMessage(newOrder.OrderMessageDtos)
+			OrderMessages = await Task.WhenAll(newOrder.OrderMessageDtos.Select(FindOneMessage)) //TODO: Funkar detta jepp.
 		};
 	}
 
-	private OrderDto ConvertOrderToDto(Order o)
+	private async Task<List<InternalMessage>> FindMessage(List<MessageDto> messageDtosToFind)
+	{
+		var listWithMessages = new List<InternalMessage>();
+
+		foreach (var messageDto in messageDtosToFind)
+		{
+			var foundMessage = (await _messageRepository.FindByKey(m => m.MessageId == messageDto.MessageId)).FirstOrDefault();
+
+			if (foundMessage is null)
+			{
+				var newAddedMessage = await _messageRepository.AddItem(new InternalMessage()
+				{
+					Message = messageDto.Message,
+					IsRead = messageDto.IsRead,
+					MessageSent = messageDto.MessageSent,
+					SentFromUserName = messageDto.SentFromUserName,
+					SentToUser = await _userManager.FindByNameAsync(messageDto.SentToUserName)
+				});
+
+				listWithMessages.Add(newAddedMessage);
+			}
+
+			else
+			{
+				listWithMessages.Add(foundMessage);
+			}
+		}
+
+		return listWithMessages;
+	}
+
+	private async Task<InternalMessage> FindOneMessage(MessageDto messageToFind)
+	{
+		var internalMessage = (await _messageRepository.FindByKey(m => m.MessageId == messageToFind.MessageId))
+			.FirstOrDefault();
+
+		if (internalMessage is not null) 
+			return internalMessage;
+	
+
+		var newMessage = await _messageRepository.AddItem(new InternalMessage()
+		{
+			Message = messageToFind.Message,
+			IsRead = messageToFind.IsRead,
+			MessageSent = messageToFind.MessageSent,
+			SentFromUserName = messageToFind.SentFromUserName,
+			SentToUser = await _userManager.FindByNameAsync(messageToFind.SentToUserName)
+		});
+		
+		return newMessage;
+	}
+
+
+private OrderDto ConvertOrderToDto(Order o)
 	{
 		return new OrderDto()
 		{
 			BoardGameId =
-				o.BoardGame.Id, // (await _boardGameService.FindById(o.BoardGame.Id.ToString())).Data.Title,
+				o.BoardGame.Id,
 			BorrowerUserId =
-				o.Borrower.Id, // (await _userService.FindUserById(o.Borrower.Id)).Data, //hitta användaren o konvertera
+				o.BorrowerId,
 			LentDate = o.LentDate,
 			OrderId = o.OrderId,
-			OwnerUserId = o.Owner.Id, //(await _userService.FindUserById(o.Owner.Id)).Data, //Hitta ägaren.
+			OwnerUserName = o.Owner.UserName,
 			ReturnDate = o.ReturnDate,
-			Status = o.Status
+			Status = o.Status,
+			OrderMessageDtos = o.OrderMessages.Select(ConvertMessageToDto).ToList()
+		};
+	}
+
+	//TODO: Denna ska flyttas ihop till DtoConvertServicen.
+	private MessageDto ConvertMessageToDto(InternalMessage messageToConvert)
+	{
+		return new MessageDto()
+		{
+			MessageId = messageToConvert.MessageId,
+			Message = messageToConvert.Message,
+			MessageSent = messageToConvert.MessageSent,
+			SentFromUserName = messageToConvert.SentFromUserName,
+			SentToUserName = messageToConvert.SentToUser.UserName,
+			IsRead = messageToConvert.IsRead
 		};
 	}
 }

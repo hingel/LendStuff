@@ -34,7 +34,7 @@ public static class WebApplicationExtensions
 
 	public static WebApplication MapOrderEndPoints(this WebApplication app)
 	{
-		app.MapGet("/getOrders", async (OrderService service) => await service.GetAllOrders()).RequireAuthorization("admin_access");
+		app.MapGet("/getOrders", async (OrderService service) => await service.GetAllOrders()); //.RequireAuthorization("admin_access"); //TODO: Lägga itll admin access
 		app.MapGet("/allUserOrders", async (OrderService service, string userDtoId) => await service.GetAllUserOrders(userDtoId)).RequireAuthorization();
 		app.MapPost("/postOrder", async (OrderService service, OrderDto newOrderDto) => await service.AddOrder(newOrderDto)).RequireAuthorization();
 		app.MapPatch("/updateOrder", async (OrderService service, OrderDto orderToUpdate) => await service.UpdateOrder(orderToUpdate)).RequireAuthorization();

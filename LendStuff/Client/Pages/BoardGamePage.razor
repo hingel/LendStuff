@@ -79,21 +79,33 @@ else
 	{
 		var userInfo = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 		
+		//TODO: Här ska det även läggas till ordernumret till en nystartad order. Eller läggs detta när det skapas i databasen.
+
 		//TODO: Lägg till mer info för användaren i meddelandet. Kanske en länk till användarens sida?
 
+		//TODO: detta ska meddelande ska läggas till i en ny order.
 		var newRequstDto = new MessageDto()
 		{
 			Message = $"{userInfo.User.Identity.Name} wants to borrow {CurrentBoardGameDto.Title} from you. Please send a response if game is available or not.",
 			SentFromUserName = $"{userInfo.User.Identity.Name}",
 			SentToUserName = userDto.UserName
 		};
-		//TODO: Borde komma en fråga om man verkligen vill skicka?
+		//TODO: Borde komma en fråga om man verkligen vill skicka? Ok eller bekräftelse
 
-		var response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "addMessage", newRequstDto);
+		var newOrderDto = new OrderDto()
+		{
+			OwnerUserName = userDto.UserName,
+			BorrowerUserId = userInfo.User.Claims.ToArray()[2].Value,
+			BoardGameId = Id,
+			LentDate = DateTime.UtcNow,
+			ReturnDate = DateTime.UtcNow.AddDays(21),
+			Status = OrderStatus.Inquiry,
+			OrderMessageDtos = new List<MessageDto>(){newRequstDto}
+		};
 
-		var result = await response.Content.ReadFromJsonAsync<ServiceResponse<MessageDto>>();
-
-		ResponseMessage = result.Message;
+		var response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "postOrder", newOrderDto);
+		var result = await response.Content.ReadFromJsonAsync<ServiceResponse<string>>();
+		var responseMessage = result.Message;
 	}
 
 }
