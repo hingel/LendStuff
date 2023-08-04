@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LendStuff.Server.Models;
 using LendStuff.Shared;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 
 namespace LendStuff.DataAccess.Models;

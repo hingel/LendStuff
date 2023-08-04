@@ -37,7 +37,7 @@ public class MessageService
 		var resultPerson = await _userManager.FindByNameAsync(newMessageDto.SentToUserName);
 		if (resultPerson is not null)
 		{
-			await _messageRepository.AddItem(await ConvertDtoToMessage(newMessageDto)); //TODO: Ordna ett svarsmeddelande
+			var newAddedMessage = await _messageRepository.AddItem(await ConvertDtoToMessage(newMessageDto)); //TODO: Ordna ett svarsmeddelande
 
 			return new ServiceResponse<string>()
 			{

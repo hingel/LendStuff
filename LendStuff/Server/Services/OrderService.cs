@@ -15,12 +15,14 @@ public class OrderService
 	private readonly UnitOfWork _unitOfWork;
 	private readonly UserManager<ApplicationUser> _userManager;
 	private readonly IRepository<InternalMessage> _messageRepository;
-	public OrderService(IRepository<Order> orderRepository, UnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IRepository<InternalMessage> messageRepository)
+	private readonly MessageService _messageService;
+	public OrderService(IRepository<Order> orderRepository, UnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IRepository<InternalMessage> messageRepository, MessageService messageService)
 	{
 		_orderRepository = orderRepository;
 		_unitOfWork = unitOfWork;
 		_userManager = userManager;
 		_messageRepository = messageRepository;
+		_messageService = messageService;
 	}
 
 	public async Task<ServiceResponse<IEnumerable<OrderDto>>> GetAllOrders()
@@ -77,8 +79,8 @@ public class OrderService
 
 		return new ServiceResponse<string>()
 		{
-			Data = $"{result.OrderId} added",
-			Message = $"{result.OrderId} added",
+			Data = $"Order with nr: {result.OrderId} added",
+			Message = $"Order with nr: {result.OrderId} added",
 			Success = true
 		};
 	}
@@ -118,24 +120,75 @@ public class OrderService
 			Owner = await _userManager.FindByNameAsync(newOrder.OwnerUserName),
 			ReturnDate = newOrder.ReturnDate,
 			Status = newOrder.Status,
-			OrderMessages = await Task.WhenAll(newOrder.OrderMessageDtos.Select(FindMessage).ToList()) //TODO: Funkar detta?
+			//OrderMessages = await FindMessage(newOrder.OrderMessageDtos)
+			OrderMessages = await Task.WhenAll(newOrder.OrderMessageDtos.Select(FindOneMessage)) //TODO: Funkar detta jepp.
 		};
 	}
 
-	private async Task<InternalMessage> FindMessage(MessageDto messageToFind) =>
-		(await _messageRepository.FindByKey(m => m.MessageId == messageToFind.MessageId)).FirstOrDefault();
+	private async Task<List<InternalMessage>> FindMessage(List<MessageDto> messageDtosToFind)
+	{
+		var listWithMessages = new List<InternalMessage>();
 
-	private OrderDto ConvertOrderToDto(Order o)
+		foreach (var messageDto in messageDtosToFind)
+		{
+			var foundMessage = (await _messageRepository.FindByKey(m => m.MessageId == messageDto.MessageId)).FirstOrDefault();
+
+			if (foundMessage is null)
+			{
+				var newAddedMessage = await _messageRepository.AddItem(new InternalMessage()
+				{
+					Message = messageDto.Message,
+					IsRead = messageDto.IsRead,
+					MessageSent = messageDto.MessageSent,
+					SentFromUserName = messageDto.SentFromUserName,
+					SentToUser = await _userManager.FindByNameAsync(messageDto.SentToUserName)
+				});
+
+				listWithMessages.Add(newAddedMessage);
+			}
+
+			else
+			{
+				listWithMessages.Add(foundMessage);
+			}
+		}
+
+		return listWithMessages;
+	}
+
+	private async Task<InternalMessage> FindOneMessage(MessageDto messageToFind)
+	{
+		var internalMessage = (await _messageRepository.FindByKey(m => m.MessageId == messageToFind.MessageId))
+			.FirstOrDefault();
+
+		if (internalMessage is not null) 
+			return internalMessage;
+	
+
+		var newMessage = await _messageRepository.AddItem(new InternalMessage()
+		{
+			Message = messageToFind.Message,
+			IsRead = messageToFind.IsRead,
+			MessageSent = messageToFind.MessageSent,
+			SentFromUserName = messageToFind.SentFromUserName,
+			SentToUser = await _userManager.FindByNameAsync(messageToFind.SentToUserName)
+		});
+		
+		return newMessage;
+	}
+
+
+private OrderDto ConvertOrderToDto(Order o)
 	{
 		return new OrderDto()
 		{
 			BoardGameId =
-				o.BoardGame.Id, // (await _boardGameService.FindById(o.BoardGame.Id.ToString())).Data.Title,
+				o.BoardGame.Id,
 			BorrowerUserId =
-				o.BorrowerId, // (await _userService.FindUserById(o.Borrower.Id)).Data, //hitta användaren o konvertera
+				o.BorrowerId,
 			LentDate = o.LentDate,
 			OrderId = o.OrderId,
-			OwnerUserName = o.Owner.UserName, //(await _userService.FindUserById(o.Owner.Id)).Data, //Hitta ägaren.
+			OwnerUserName = o.Owner.UserName,
 			ReturnDate = o.ReturnDate,
 			Status = o.Status,
 			OrderMessageDtos = o.OrderMessages.Select(ConvertMessageToDto).ToList()

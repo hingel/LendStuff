@@ -182,7 +182,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasIndex("BoardGameId");
 
-                    b.ToTable("Genres");
+                    b.ToTable("Genres", (string)null);
                 });
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.InternalMessage", b =>
@@ -221,7 +221,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasIndex("SentToUserId");
 
-                    b.ToTable("InternalMessages");
+                    b.ToTable("InternalMessages", (string)null);
                 });
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.Order", b =>
@@ -259,7 +259,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.UserBoardGame", b =>
@@ -284,7 +284,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasIndex("BoardGameId");
 
-                    b.ToTable("UserBoardGame");
+                    b.ToTable("UserBoardGame", (string)null);
                 });
 
             modelBuilder.Entity("LendStuff.Server.Models.ApplicationUser", b =>
@@ -388,7 +388,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BoardGames");
+                    b.ToTable("BoardGames", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

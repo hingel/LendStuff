@@ -90,11 +90,10 @@ else
 			SentFromUserName = $"{userInfo.User.Identity.Name}",
 			SentToUserName = userDto.UserName
 		};
-		//TODO: Borde komma en fråga om man verkligen vill skicka?
+		//TODO: Borde komma en fråga om man verkligen vill skicka? Ok eller bekräftelse
 
 		var newOrderDto = new OrderDto()
 		{
-			//OrderId =, //Detta borde skapas på server sidan när det sparas in i databasen.
 			OwnerUserName = userDto.UserName,
 			BorrowerUserId = userInfo.User.Claims.ToArray()[2].Value,
 			BoardGameId = Id,
@@ -105,7 +104,7 @@ else
 		};
 
 		var response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "postOrder", newOrderDto);
-		var result = await response.Content.ReadFromJsonAsync<ServiceResponse<MessageDto>>();
+		var result = await response.Content.ReadFromJsonAsync<ServiceResponse<string>>();
 		var responseMessage = result.Message;
 	}
 
