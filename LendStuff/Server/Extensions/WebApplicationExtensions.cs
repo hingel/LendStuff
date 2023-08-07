@@ -39,6 +39,7 @@ public static class WebApplicationExtensions
 		app.MapPost("/postOrder", async (OrderService service, OrderDto newOrderDto) => await service.AddOrder(newOrderDto)).RequireAuthorization();
 		app.MapPatch("/updateOrder", async (OrderService service, OrderDto orderToUpdate) => await service.UpdateOrder(orderToUpdate)).RequireAuthorization();
 		app.MapDelete("/deleteOrder", async (OrderService service, string orderToDelete) => await service.DeleteOrder(orderToDelete)).RequireAuthorization("admin_access");
+		app.MapGet("/getByOrderId", async (OrderService service, int orderId) => await service.GetOrderById(orderId)).RequireAuthorization();
 		return app;
 	}
 

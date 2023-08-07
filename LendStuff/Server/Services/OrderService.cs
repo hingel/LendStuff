@@ -60,6 +60,27 @@ public class OrderService
 		};
 	}
 
+	public async Task<ServiceResponse<OrderDto>> GetOrderById(int orderId)
+	{
+		var result = (await _orderRepository.FindByKey(o => o.OrderId == orderId)).FirstOrDefault();
+
+		if (result is not null)
+		{
+			return new ServiceResponse<OrderDto>()
+			{
+				Data = ConvertOrderToDto(result),
+				Message = $"Order with id: {orderId} found.",
+				Success = true
+			};
+		}
+
+		return new ServiceResponse<OrderDto>()
+		{
+			Message = $"Order with id: {orderId} not found",
+			Success = false
+		};
+	}
+
 	public async Task<ServiceResponse<string>> AddOrder(OrderDto newOrderDto)
 	{
 		newOrderDto.LentDate = DateTime.UtcNow; //Bara för test 
@@ -120,12 +141,12 @@ public class OrderService
 			Owner = await _userManager.FindByNameAsync(newOrder.OwnerUserName),
 			ReturnDate = newOrder.ReturnDate,
 			Status = newOrder.Status,
-			//OrderMessages = await FindMessage(newOrder.OrderMessageDtos)
+			//OrderMessages = await FindMessages(newOrder.OrderMessageDtos)
 			OrderMessages = await Task.WhenAll(newOrder.OrderMessageDtos.Select(FindOneMessage)) //TODO: Funkar detta jepp.
 		};
 	}
 
-	private async Task<List<InternalMessage>> FindMessage(List<MessageDto> messageDtosToFind)
+	private async Task<List<InternalMessage>> FindMessages(List<MessageDto> messageDtosToFind)
 	{
 		var listWithMessages = new List<InternalMessage>();
 

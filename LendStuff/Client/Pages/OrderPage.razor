@@ -1,0 +1,71 @@
+﻿@page "/OrderPage/{Id}"
+@using LendStuff.Shared
+@using LendStuff.Shared.DTOs
+@using System.Net
+
+@inject HttpClient HttpClient
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<h3>OrderPage</h3>
+
+@if (CurrentOrder is not null)
+{
+	<div class="container">
+		Hittar en order och Id är: @CurrentOrder.OrderId BoardgameId: @CurrentOrder.BoardGameId
+		Status: @CurrentOrder.Status
+	</div>
+
+	@if (Owner != null && Borrower != null)
+	{
+		<div class="container">
+			Owner: @Owner.UserName
+			Borrower: @Borrower.UserName
+		</div>
+	}
+}
+else
+{
+	<div class="container">Laddar... </div>
+}
+
+
+
+@code {
+	[Parameter]
+	public string Id { get; set; }
+
+	public OrderDto CurrentOrder { get; set; } = null;
+	public UserDto Owner { get; set; } = null;
+	public UserDto Borrower { get; set; } = null;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var result = await HttpClient.GetFromJsonAsync<ServiceResponse<OrderDto>>(HttpClient.BaseAddress + $"getByOrderId?orderId={Id}");
+		
+		var userInfo = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+		var senderId = userInfo.User.Claims.ToList()[2].Value; //Här kan id för användaren fås fram.
+
+		if (result.Success)
+		{
+			CurrentOrder = result.Data;
+			await GetUserInfo(senderId);
+		}
+
+		await base.OnInitializedAsync();
+	}
+
+	private async Task GetUserInfo(string senderId)
+	{
+		var resultOwner = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + $"getById?id={senderId}");
+
+		if (resultOwner.Success)
+			Owner = resultOwner.Data;
+
+		var resultBorrower = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + $"getById?id={CurrentOrder.BorrowerUserId}");
+
+		if (resultBorrower.Success)
+			Borrower = resultBorrower.Data;
+	}
+
+}
