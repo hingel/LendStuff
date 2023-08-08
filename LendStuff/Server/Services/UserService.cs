@@ -60,10 +60,13 @@ public class UserService
 				Data = new UserDto()
 				{
 					UserName = result.UserName,
+					Rating = result.Rating,
+					Email = result.Email,
+					MessageDtos = result.Messages.Select(ConvertMessageToDto),
+					//TODO: Fyll på ytterligare info här:
 				},
 				Message = "User found",
 				Success = true
-
 			};
 		}
 
@@ -137,4 +140,46 @@ public class UserService
 			Email = user.Email
 		};
 	}
+
+    public async Task<ServiceResponse<UserDto>> FindUserByName(string userName)
+    {
+        Func<ApplicationUser, bool> filterFunc = (u) => u.UserName == userName;
+
+        var result = (await _userRepository.FindByKey(filterFunc)).FirstOrDefault();
+
+        if (result is not null)
+        {
+            return new ServiceResponse<UserDto>()
+            {
+                Data = new UserDto()
+                {
+                    UserName = result.UserName,
+					Rating = result.Rating,
+					Email = result.Email,
+					MessageDtos = result.Messages.Select(ConvertMessageToDto),
+					//TODO: Fyll på ytterligare info här:
+                },
+                Message = "User found",
+                Success = true
+            };
+        }
+
+        return new ServiceResponse<UserDto>()
+        {
+            Message = "user not found",
+            Success = false
+        };
+    }
+
+    private MessageDto ConvertMessageToDto(InternalMessage messageToConvert)
+    {
+        return new MessageDto()
+        {
+			Message = messageToConvert.Message,
+			IsRead = messageToConvert.IsRead,
+			MessageSent = messageToConvert.MessageSent,
+			SentFromUserName = messageToConvert.SentFromUserName,
+			SentToUserName = messageToConvert.SentToUser.UserName
+        };
+    }
 }

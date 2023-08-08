@@ -29,8 +29,9 @@ public static class WebApplicationExtensions
 			return await service.UpdateBoardGameUserCollection(boardGameToAdd, userId);
 		});
 		app.MapGet("/usersOwningBoardGame", async (UserService service, [FromQuery(Name = "boardGameId")] string boardGameId) => await service.GetUsersOwningCertainBoardGame(boardGameId)).RequireAuthorization();
+        app.MapGet("/getUserByUserName", async (UserService service, string userName) => await service.FindUserByName(userName)).RequireAuthorization();
 		return app;
-	}
+    }
 
 	public static WebApplication MapOrderEndPoints(this WebApplication app)
 	{
