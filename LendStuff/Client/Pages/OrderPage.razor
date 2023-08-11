@@ -1,18 +1,34 @@
 ﻿@page "/OrderPage/{Id}"
 @using LendStuff.Shared
 @using LendStuff.Shared.DTOs
-@using System.Net
+@using Microsoft.AspNetCore.Authorization
 
 @inject HttpClient HttpClient
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<h3>OrderPage</h3>
+@attribute [Authorize]
+
+<h3>Ordernumber: @Id</h3>
 
 @if (CurrentOrder is not null)
 {
 	<div class="container">
 		Hittar en order och Id är: @CurrentOrder.OrderId BoardgameId: @CurrentOrder.BoardGameId
 		Status: @CurrentOrder.Status
+		
+		<p>
+			<label>
+				Order Status is:
+				<InputSelect @bind-Value="CurrentOrder.Status">
+					<option value="">Select status...</option>
+					<option value="@OrderStatus.Inquiry">Inquiry</option>
+					<option value="@OrderStatus.Active">Active</option>
+					<option value="@OrderStatus.Terminated">Terminated</option>
+				</InputSelect>
+			</label>
+		</p>
+		
+		<button class="btn">Knapp för att uppdatera ordern ej implementerad ännu:</button>
 	</div>
 
 	@if (Owner != null && Borrower != null)
@@ -21,6 +37,32 @@
 			Owner: @Owner.UserName
 			Borrower: @Borrower.UserName
 		</div>
+
+		<p>Order messages:</p>
+		<Virtualize Items="CurrentOrder.OrderMessageDtos" Context="messageDto">
+			<li class="list-group-item list-group-item-action">
+				From: @messageDto.SentFromUserName @messageDto.Message @messageDto.MessageSent
+			</li>
+			
+		</Virtualize>
+
+
+			<EditForm Model="NewMessageDto" OnSubmit="AddMessageToOrder">
+				<DataAnnotationsValidator />
+				<ValidationSummary />
+				<div class="form-control">
+					<p>Send Message to här borde det vara en check vem det skickas till: @Borrower.Email @Owner.Email</p>
+					<p>Body:</p>
+					<InputTextArea @bind-Value="NewMessageDto.Message"></InputTextArea>
+				</div>
+				<button class="btn btn-primary">Send Message</button>
+			</EditForm>
+		
+		@*
+			* Knapp för att ändra status på ordern: 
+		*@
+
+
 	}
 }
 else
@@ -28,7 +70,9 @@ else
 	<div class="container">Laddar... </div>
 }
 
-
+<p>
+	Svarsmeddelande: @ResponseMessage
+</p>
 
 @code {
 	[Parameter]
@@ -38,26 +82,27 @@ else
 	public UserDto Owner { get; set; } = null;
 	public UserDto Borrower { get; set; } = null;
 
+	public MessageDto NewMessageDto { get; set; } = new();
+
+	public string ResponseMessage = "Inget svar ännu.";
+
 	protected override async Task OnInitializedAsync()
 	{
 		var result = await HttpClient.GetFromJsonAsync<ServiceResponse<OrderDto>>(HttpClient.BaseAddress + $"getByOrderId?orderId={Id}");
-		
-		var userInfo = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-
-		var senderId = userInfo.User.Claims.ToList()[2].Value; //Här kan id för användaren fås fram.
 
 		if (result.Success)
 		{
 			CurrentOrder = result.Data;
-			await GetUserInfo(senderId);
+
+			await GetUserInfo();
 		}
 
 		await base.OnInitializedAsync();
 	}
 
-	private async Task GetUserInfo(string senderId)
+	private async Task GetUserInfo()
 	{
-		var resultOwner = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + $"getById?id={senderId}");
+		var resultOwner = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + $"getUserByUserName?userName={CurrentOrder.OwnerUserName}");
 
 		if (resultOwner.Success)
 			Owner = resultOwner.Data;
@@ -68,4 +113,26 @@ else
 			Borrower = resultBorrower.Data;
 	}
 
+	private async Task AddMessageToOrder()
+	{
+		//Lägga till meddelande till ordern
+		NewMessageDto.SentFromUserName = Borrower.UserName;
+		NewMessageDto.SentToUserName = Owner.UserName;
+		NewMessageDto.IsRead = false;
+
+		CurrentOrder.OrderMessageDtos.Add(NewMessageDto);
+
+		Console.WriteLine("Uppdatera ordern.");
+
+		var response = await HttpClient.PatchAsJsonAsync(HttpClient.BaseAddress + "updateOrder", CurrentOrder);
+
+		var result = await response.Content.ReadFromJsonAsync<ServiceResponse<OrderDto>>();
+
+		if (result.Success)
+		{
+			CurrentOrder = result.Data;
+			ResponseMessage = result.Message;
+			NewMessageDto = new();
+		}
+	}
 }

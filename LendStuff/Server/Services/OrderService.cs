@@ -141,11 +141,14 @@ public class OrderService
 			Owner = await _userManager.FindByNameAsync(newOrder.OwnerUserName),
 			ReturnDate = newOrder.ReturnDate,
 			Status = newOrder.Status,
-			//OrderMessages = await FindMessages(newOrder.OrderMessageDtos)
-			OrderMessages = await Task.WhenAll(newOrder.OrderMessageDtos.Select(FindOneMessage)) //TODO: Funkar detta jepp.
+			//OrderMessages = await FindMessages(newOrder.OrderMessageDtos) //Kopplat till Funktion 1:
+			OrderMessages = await Task.WhenAll(newOrder.OrderMessageDtos.Select(FindOneMessage)), //Kopplat till Funktion 2:
+			OrderId = newOrder.OrderId
 		};
 	}
 
+
+	//Funktion 1:
 	private async Task<List<InternalMessage>> FindMessages(List<MessageDto> messageDtosToFind)
 	{
 		var listWithMessages = new List<InternalMessage>();
@@ -177,6 +180,7 @@ public class OrderService
 		return listWithMessages;
 	}
 
+	//Funktion 2:
 	private async Task<InternalMessage> FindOneMessage(MessageDto messageToFind)
 	{
 		var internalMessage = (await _messageRepository.FindByKey(m => m.MessageId == messageToFind.MessageId))
@@ -184,7 +188,6 @@ public class OrderService
 
 		if (internalMessage is not null) 
 			return internalMessage;
-	
 
 		var newMessage = await _messageRepository.AddItem(new InternalMessage()
 		{
@@ -199,7 +202,7 @@ public class OrderService
 	}
 
 
-private OrderDto ConvertOrderToDto(Order o)
+	private OrderDto ConvertOrderToDto(Order o)
 	{
 		return new OrderDto()
 		{
@@ -216,7 +219,7 @@ private OrderDto ConvertOrderToDto(Order o)
 		};
 	}
 
-	//TODO: Denna ska flyttas ihop till DtoConvertServicen.
+	//TODO: Denna ska flyttas ihop till DtoConvertServicen, förkommer två ggr. Och i MessageService.
 	private MessageDto ConvertMessageToDto(InternalMessage messageToConvert)
 	{
 		return new MessageDto()

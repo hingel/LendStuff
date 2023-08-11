@@ -8,7 +8,7 @@ public class UserDto
 	public string PostalCode { get; set; } = string.Empty;
 	public string Email { get; set; } = string.Empty;
 	public List<UserBoardGameDto> BoardGameDtos { get; set; } = new () { };
-	public IEnumerable<MessageDto> MessageDtosDtos { get; set; } = new List<MessageDto>() { };
+	public IEnumerable<MessageDto> MessageDtos { get; set; } = new List<MessageDto>() { };
 	public int Rating {get; set; }
 
 }
