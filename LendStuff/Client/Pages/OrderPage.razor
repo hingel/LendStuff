@@ -39,13 +39,36 @@
 		</div>
 
 		<p>Order messages:</p>
-		<Virtualize Items="CurrentOrder.OrderMessageDtos" Context="messageDto">
-			<li class="list-group-item list-group-item-action">
-				From: @messageDto.SentFromUserName @messageDto.Message @messageDto.MessageSent
-			</li>
-			
-		</Virtualize>
 
+		<div class="" id="MessageAccordion">
+			<Virtualize Items="CurrentOrder.OrderMessageDtos" Context="messageDto">
+				<div class="accordion-item">
+					<div class="accordion-header" id="heading_@messageDto.MessageId">
+						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@messageDto.MessageId" aria-expanded="true" aria-controls="collapse_@messageDto.MessageId" @onclick="() => IsReadMethod(messageDto)">
+							@if (!messageDto.IsRead)
+							{
+								<div class="container" style="font-weight: bold">
+									Time Sent: @messageDto.MessageSent Sent From: @messageDto.SentFromUserName
+								</div>
+							}
+							else
+							{
+								<div class="container">
+									Time Sent: @messageDto.MessageSent Sent From: @messageDto.SentFromUserName
+								</div>
+							}
+						</button>
+					</div>
+					<div id="collapse_@messageDto.MessageId" class="accordion-collapse collapse" aria-labbeledby="#heading_@messageDto.MessageId" data-bs-parent="#MessageAccordion">
+						<div class="accordion-body">
+							<p>Sent From: @messageDto.SentFromUserName</p>
+							<p>Message sent: @messageDto.MessageSent</p>
+							<p>@messageDto.Message</p>
+						</div>
+					</div>
+				</div>
+			</Virtualize>
+		</div>
 
 			<EditForm Model="NewMessageDto" OnSubmit="AddMessageToOrder">
 				<DataAnnotationsValidator />
@@ -116,13 +139,24 @@ else
 	private async Task AddMessageToOrder()
 	{
 		//Lägga till meddelande till ordern
-		NewMessageDto.SentFromUserName = Borrower.UserName;
-		NewMessageDto.SentToUserName = Owner.UserName;
+		var userInfo = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var currentUserName = userInfo.User.Identity.Name;
+
+		NewMessageDto.SentFromUserName = currentUserName; //Detta ska vara den aktiva användaren.
+
+		//Välja namnet som inte är currentUser
+		if (Owner.UserName == currentUserName)
+		{
+			NewMessageDto.SentToUserName = Borrower.UserName;
+		}
+		else
+		{
+			NewMessageDto.SentToUserName = Owner.UserName;
+		}
+
 		NewMessageDto.IsRead = false;
 
 		CurrentOrder.OrderMessageDtos.Add(NewMessageDto);
-
-		Console.WriteLine("Uppdatera ordern.");
 
 		var response = await HttpClient.PatchAsJsonAsync(HttpClient.BaseAddress + "updateOrder", CurrentOrder);
 
@@ -135,4 +169,19 @@ else
 			NewMessageDto = new();
 		}
 	}
+
+	private async Task IsReadMethod(MessageDto messageDto)
+	{
+		Console.WriteLine("är meddelande läst:" + messageDto.IsRead);
+
+
+		if (!messageDto.IsRead)
+		{
+			messageDto.IsRead = true;
+			var response = await HttpClient.PatchAsJsonAsync(HttpClient.BaseAddress + "updateMessage", messageDto);
+			ResponseMessage = response.ReasonPhrase;
+		}
+
+	}
+
 }
