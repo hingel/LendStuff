@@ -15,14 +15,13 @@ public class OrderService
 	private readonly UnitOfWork _unitOfWork;
 	private readonly UserManager<ApplicationUser> _userManager;
 	private readonly IRepository<InternalMessage> _messageRepository;
-	private readonly MessageService _messageService;
-	public OrderService(IRepository<Order> orderRepository, UnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IRepository<InternalMessage> messageRepository, MessageService messageService)
+	public OrderService(IRepository<Order> orderRepository, UnitOfWork unitOfWork,
+		UserManager<ApplicationUser> userManager, IRepository<InternalMessage> messageRepository)
 	{
 		_orderRepository = orderRepository;
 		_unitOfWork = unitOfWork;
 		_userManager = userManager;
 		_messageRepository = messageRepository;
-		_messageService = messageService;
 	}
 
 	public async Task<ServiceResponse<IEnumerable<OrderDto>>> GetAllOrders()
@@ -83,8 +82,8 @@ public class OrderService
 
 	public async Task<ServiceResponse<string>> AddOrder(OrderDto newOrderDto)
 	{
-		newOrderDto.LentDate = DateTime.UtcNow; //Bara för test 
-		newOrderDto.ReturnDate = DateTime.UtcNow.AddDays(7); //Bara för test
+		//newOrderDto.LentDate = DateTime.UtcNow; //TODO Bara för test ta bort
+		//newOrderDto.ReturnDate = DateTime.UtcNow.AddDays(7); //TODO: Bara för test ta bort
 		var newOrder = await ConvertDtoToOrder(newOrderDto);
 		
 		if (!newOrder.BoardGame.Available)
