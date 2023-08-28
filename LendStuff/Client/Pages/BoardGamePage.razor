@@ -78,12 +78,9 @@ else
 	private async Task SendMessage(UserDto userDto)
 	{
 		var userInfo = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-		
-		//TODO: Här ska det även läggas till ordernumret till en nystartad order. Eller läggs detta när det skapas i databasen.
 
 		//TODO: Lägg till mer info för användaren i meddelandet. Kanske en länk till användarens sida?
 
-		//TODO: detta ska meddelande ska läggas till i en ny order.
 		var newRequstDto = new MessageDto()
 		{
 			Message = $"{userInfo.User.Identity.Name} wants to borrow {CurrentBoardGameDto.Title} from you. Please send a response if game is available or not.",
