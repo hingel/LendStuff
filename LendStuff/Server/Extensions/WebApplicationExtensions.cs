@@ -1,5 +1,7 @@
 ﻿using LendStuff.DataAccess.Services;
+using LendStuff.Server.Queries;
 using LendStuff.Shared.DTOs;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -54,9 +56,17 @@ public static class WebApplicationExtensions
 		return app;
 	}
 
-	private static async Task<IResult> GetAllGamesHandler(BoardGameService brepo)
+	//Gamla sättet:
+	//private static async Task<IResult> GetAllGamesHandler(BoardGameService brepo)
+	//{
+	//	var response = await brepo.GetAll();
+	//	return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+	//}
+
+	//Med mediator
+	private static async Task<IResult> GetAllGamesHandler(IMediator mediator)
 	{
-		var response = await brepo.GetAll();
+		var response = await mediator.Send(new GetAllGamesQuery());
 		return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 	}
 

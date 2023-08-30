@@ -1,23 +1,19 @@
 using Duende.IdentityServer.Services;
 using LendStuff.Server.Models;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using LendStuff.DataAccess;
 using LendStuff.DataAccess.Models;
 using LendStuff.DataAccess.Repositories;
 using LendStuff.DataAccess.Repositories.Interfaces;
 using LendStuff.DataAccess.Services;
-using LendStuff.Server;
 using LendStuff.Server.Extensions;
 using LendStuff.Shared;
-using LendStuff.Shared.DTOs;
 using Microsoft.AspNetCore.Identity;
-using static Duende.IdentityServer.Models.IdentityResources;
-using System.Data;
 using System.IdentityModel.Tokens.Jwt;
-using LendStuff.Client;
-using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
+
+//using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +62,9 @@ builder.Services.AddAuthorizationBuilder()
 	.AddPolicy("admin_access", policy => policy.RequireRole("admin"));
 
 //Injectade services
+
+builder.Services.AddMediatR(o => o.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
 builder.Services.AddScoped<IRepository<BoardGame>, BoardGameRepository>(); //Kan jag ha den injectad och även ingå i UnitofWork? Jepp, det är ok.
 builder.Services.AddScoped<IRepository<ApplicationUser>, UserRepository>();
 //builder.Services.AddScoped<IRepository<Genre>, GenreRepository>();
@@ -112,7 +111,6 @@ app.UseIdentityServer();
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.MapBoardGameEndPoints();
 app.MapUserEndPoints();
 app.MapOrderEndPoints();
@@ -122,48 +120,48 @@ app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
-app.MapPost("/fillData/{userName}", async ([FromServices] IProfileService claimsService, [FromServices] RoleManager<IdentityRole> rolemgt, [FromServices] UserManager<ApplicationUser> usrMngr, string userName) =>
-{
-	//using (var scope = app.Services.CreateScope())
-	//{
-		//var rolemgt = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-		//var usrMngr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+//app.MapPost("/fillData/{userName}", async ([FromServices] IProfileService claimsService, [FromServices] RoleManager<IdentityRole> rolemgt, [FromServices] UserManager<ApplicationUser> usrMngr, string userName) =>
+//{
+//	//using (var scope = app.Services.CreateScope())
+//	//{
+//		//var rolemgt = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+//		//var usrMngr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-		var role = await rolemgt.Roles.FirstOrDefaultAsync(r => r.Name == "admin");
+//		var role = await rolemgt.Roles.FirstOrDefaultAsync(r => r.Name == "admin");
 		
-		await rolemgt.CreateAsync(new IdentityRole() { Name = "admin" });
-		role = await rolemgt.Roles.FirstOrDefaultAsync(r => r.Name == "admin");
+//		await rolemgt.CreateAsync(new IdentityRole() { Name = "admin" });
+//		role = await rolemgt.Roles.FirstOrDefaultAsync(r => r.Name == "admin");
 
-		var user = await usrMngr.FindByNameAsync(userName);
+//		var user = await usrMngr.FindByNameAsync(userName);
 
-		if (user is null)
-		{
-			return Results.Ok(new ServiceResponse<List<string>>()
-			{
-				Message = "User not found",
-				Success = false
-			});
-		}
+//		if (user is null)
+//		{
+//			return Results.Ok(new ServiceResponse<List<string>>()
+//			{
+//				Message = "User not found",
+//				Success = false
+//			});
+//		}
 
-		if (await usrMngr.IsInRoleAsync(user, role.Name))
-		{
-			return Results.Ok(new ServiceResponse<List<string>>()
-			{
-				Message = "User already is in role",
-				Success = false
-			});
-		}
+//		if (await usrMngr.IsInRoleAsync(user, role.Name))
+//		{
+//			return Results.Ok(new ServiceResponse<List<string>>()
+//			{
+//				Message = "User already is in role",
+//				Success = false
+//			});
+//		}
 
-		await usrMngr.AddToRoleAsync(user, role.Name);
+//		await usrMngr.AddToRoleAsync(user, role.Name);
 
-		return Results.Ok(new ServiceResponse<List<string>>()
-		{
-			Message = "OK",
-			Success = true
-		});
-	//}
+//		return Results.Ok(new ServiceResponse<List<string>>()
+//		{
+//			Message = "OK",
+//			Success = true
+//		});
+//	//}
 	
-});
+//});
 
 
 
