@@ -31,4 +31,7 @@ public static class DtoConvert
 			ForLending = userBoardGame.ForLending,
 		};
 	}
+
+
+
 }

@@ -1,4 +1,5 @@
 ﻿using LendStuff.DataAccess.Services;
+using LendStuff.Server.Commands;
 using LendStuff.Server.Queries;
 using LendStuff.Shared.DTOs;
 using MediatR;
@@ -70,9 +71,16 @@ public static class WebApplicationExtensions
 		return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 	}
 
-	private static async Task<IResult> AddGameHandler(BoardGameService brepo, BoardGameDto toAdd)
+	//Gammla sättet:
+	//private static async Task<IResult> AddGameHandler(BoardGameService brepo, BoardGameDto toAdd)
+	//{
+	//	var response = await brepo.AddTitle(toAdd);
+
+	//	return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+	//}
+	private static async Task<IResult> AddGameHandler(IMediator mediator, BoardGameDto toAdd)
 	{
-		var response = await brepo.AddTitle(toAdd);
+		var response = await mediator.Send(new AddGameCommand(toAdd));
 
 		return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 	}

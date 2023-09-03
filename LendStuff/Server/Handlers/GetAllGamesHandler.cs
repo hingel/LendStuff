@@ -20,7 +20,6 @@ public class GetAllGamesHandler : IRequestHandler<GetAllGamesQuery, ServiceRespo
 	{
 		var result = await _boardGameRepository.GetAll();
 
-		//TODO: fixa detta lite bättre:
 		return new ServiceResponse<IEnumerable<BoardGameDto>>()
 		{
 			Data = result.Select(DtoConvert.ConvertBoardGameToDto),
