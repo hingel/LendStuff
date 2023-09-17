@@ -182,7 +182,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasIndex("BoardGameId");
 
-                    b.ToTable("Genres", (string)null);
+                    b.ToTable("Genres");
                 });
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.InternalMessage", b =>
@@ -221,7 +221,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasIndex("SentToUserId");
 
-                    b.ToTable("InternalMessages", (string)null);
+                    b.ToTable("InternalMessages");
                 });
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.Order", b =>
@@ -259,7 +259,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("LendStuff.DataAccess.Models.UserBoardGame", b =>
@@ -275,6 +275,12 @@ namespace LendStuff.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Condition")
+                        .HasColumnType("int");
+
                     b.Property<bool>("ForLending")
                         .HasColumnType("bit");
 
@@ -284,7 +290,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasIndex("BoardGameId");
 
-                    b.ToTable("UserBoardGame", (string)null);
+                    b.ToTable("UserBoardGame");
                 });
 
             modelBuilder.Entity("LendStuff.Server.Models.ApplicationUser", b =>
@@ -369,12 +375,6 @@ namespace LendStuff.DataAccess.Migrations
                     b.Property<string>("BggLink")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Condition")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -388,7 +388,7 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BoardGames", (string)null);
+                    b.ToTable("BoardGames");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

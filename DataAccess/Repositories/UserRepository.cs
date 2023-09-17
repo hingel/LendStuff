@@ -14,7 +14,7 @@ public class UserRepository : IRepository<ApplicationUser>
 
 	public async Task<IEnumerable<ApplicationUser>> GetAll()
 	{
-		return _context.Users;
+		return await _context.Users.ToArrayAsync();
 	}
 
 	public async Task<IEnumerable<ApplicationUser>> FindByKey(Func<ApplicationUser, bool> findFunc)

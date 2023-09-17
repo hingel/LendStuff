@@ -13,10 +13,6 @@ public class BoardGameDto
 	[Required]
 	public string Description { get; set; } = string.Empty;
 	[Required]
-	[Range(1, 5, ErrorMessage = "Range 1 - 5. 5 equals mint condition.")]
-	public int Condition { get; set; }
-	public string? Comment { get; set; } = string.Empty;
-	[Required]
 	public bool Available { get; set; }
 	public List<string> Genres { get; set; } = new(); //Testa att ha detta som en lisa med strängar enbart.
 	public string? BggLink { get; set; } = string.Empty;

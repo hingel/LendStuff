@@ -15,7 +15,11 @@ public static class WebApplicationExtensions
 	{
 		app.MapGet("/allGames", GetAllGamesHandler).RequireCors("myCorsSpec"); //.AllowAnonymous(); //p => p.RequireUserName("c@cr.se")); //TODO: lägg till detta senare.
 		app.MapPost("/addGame", AddGameHandler).RequireAuthorization();
-		app.MapPatch("/updateGame", UpdateGameHandler).RequireAuthorization();
+		app.MapPatch("/updateGame", async (IMediator mediator, BoardGameDto boardGameToUpdate) =>
+		{
+			var response = await mediator.Send(new UpdateGameCommand(boardGameToUpdate));
+			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+		}).RequireAuthorization();
 		app.MapDelete("/deleteGame", async (BoardGameService brepo, string idToDelete) => await brepo.DeleteBoardGame(idToDelete)).RequireAuthorization("admin_access");
 		app.MapGet("/getGameByTitle", async (BoardGameService service, string title) => await service.FindByTitle(title));
 		app.MapGet("/getGameById", async (BoardGameService service, string id) => await service.FindById(id));
@@ -84,13 +88,4 @@ public static class WebApplicationExtensions
 
 		return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 	}
-
-	private static async Task<IResult> UpdateGameHandler(BoardGameService brepo, BoardGameDto newToUpdate)
-	{
-		var response = await brepo.UpdateBoardGame(newToUpdate);
-
-		return response.Success ? Results.Ok(response) : Results.BadRequest(response);
-	}
-
-
 }

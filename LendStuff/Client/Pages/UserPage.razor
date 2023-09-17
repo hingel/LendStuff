@@ -34,7 +34,7 @@ else
 				<tr @onclick="() => SelectActiveGame(userBoardGame)">
 					<td>@userBoardGame.BoardGameDto.Title</td>
 					<td>@userBoardGame.BoardGameDto.Description</td>
-					<td>@userBoardGame.BoardGameDto.Condition</td>
+					<td>@userBoardGame.Condition</td>
 					<td>@userBoardGame.BoardGameDto.ReleaseYear</td>
 				</tr>
 			}
@@ -79,16 +79,8 @@ else
 					<InputText @bind-Value="newBoardGame.Description"></InputText>
 				</div>
 				<div class="row-cols-3">
-					<p>Condition</p>
-					<InputNumber @bind-Value="newBoardGame.Condition"></InputNumber>
-				</div>
-				<div class="row-cols-3">
 					<p>Release year</p>
 					<InputNumber @bind-Value="newBoardGame.ReleaseYear"></InputNumber>
-				</div>
-				<div class="row-cols-3">
-					<p>Comment</p>
-					<InputText @bind-Value="newBoardGame.Comment"></InputText>
 				</div>
 				<div class="row-cols-3">
 					<p>Available for other to lend?</p>

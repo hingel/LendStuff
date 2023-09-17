@@ -16,12 +16,10 @@ public class OrderRepository : IRepository<Order>
 
 	public async Task<IEnumerable<Order>> GetAll()
 	{
-		var respons = _context
+		return await _context
 			.Orders
 			.Include(o => o.Owner)
-			.Include(o => o.BoardGame);
-
-		return respons;
+			.Include(o => o.BoardGame).ToArrayAsync();
 	}
 
 	public async Task<IEnumerable<Order>> FindByKey(Func<Order, bool> findFunc)
@@ -56,7 +54,7 @@ public class OrderRepository : IRepository<Order>
 		return $"Order {id} not found";
 	}
 
-	public async Task<Order> Update(Order item)
+	public async Task<Order?> Update(Order item)
 	{
 		var toUpdate = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId.Equals(item.OrderId));
 

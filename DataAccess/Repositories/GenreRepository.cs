@@ -1,8 +1,6 @@
 ﻿using LendStuff.DataAccess.Models;
 using LendStuff.DataAccess.Repositories.Interfaces;
-using LendStuff.Server.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
 namespace LendStuff.DataAccess.Repositories;
 
@@ -16,7 +14,7 @@ public class GenreRepository : IRepository<Genre>
 
 	public async Task<IEnumerable<Genre>> GetAll()
 	{
-		return _context.Genres;
+		return await _context.Genres.ToArrayAsync();
 	}
 
 	public async Task<IEnumerable<Genre>> FindByKey(Func<Genre, bool> findFunc)
@@ -47,7 +45,7 @@ public class GenreRepository : IRepository<Genre>
 		return "Genre not found.";
 	}
 
-	public async Task<Genre> Update(Genre item)
+	public async Task<Genre?> Update(Genre item)
 	{
 		var toUpdate = await _context.Genres.FirstOrDefaultAsync(g => g.Id == item.Id);
 

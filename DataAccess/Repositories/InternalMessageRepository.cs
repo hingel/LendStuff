@@ -18,7 +18,7 @@ public class InternalMessageRepository : IRepository<InternalMessage>
 	//Denna metoden borde ju typ aldrig användas?!
 	public async Task<IEnumerable<InternalMessage>> GetAll()
 	{
-		return _context.InternalMessages;
+		return await _context.InternalMessages.ToArrayAsync();
 	}
 
 	public async Task<IEnumerable<InternalMessage>> FindByKey(Func<InternalMessage, bool> findFunc)
@@ -51,7 +51,7 @@ public class InternalMessageRepository : IRepository<InternalMessage>
 		return $"Message with ID: {id} not found";
 	}
 
-	public async Task<InternalMessage> Update(InternalMessage item)
+	public async Task<InternalMessage?> Update(InternalMessage item)
 	{
 		var toUpdate = await _context.InternalMessages.FirstOrDefaultAsync(m => m.MessageId == item.MessageId); //Måste jag även inkludera  properties klasser?
 
@@ -61,7 +61,7 @@ public class InternalMessageRepository : IRepository<InternalMessage>
 
 			foreach (var property in listOfProperties)
 			{
-				if (!property.GetValue(item).Equals(property.GetValue(toUpdate)))
+				if (!property.GetValue(item)!.Equals(property.GetValue(toUpdate)))
 				{
 					property.SetValue(toUpdate, property.GetValue(item));
 				}

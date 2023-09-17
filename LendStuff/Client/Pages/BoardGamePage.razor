@@ -17,7 +17,6 @@ else
 {
 	@CurrentBoardGameDto.Title
 	@CurrentBoardGameDto.Description
-	@CurrentBoardGameDto.Comment
 
 	//Lista användare som har spelet. Borde göra som en table för att kunna sortera efter stad etc.
 	//Vill inte lista sina egna spel heller:
@@ -58,7 +57,7 @@ else
 
 		if (result != null)
 		{
-			CurrentBoardGameDto = result.Data;
+			CurrentBoardGameDto = result.Data!;
 		}
 
 		//if (userAuthState.User.Claims.Count() > 1)
@@ -68,7 +67,7 @@ else
 
 		if (usersOwningBoardGameResult != null && usersOwningBoardGameResult.Success)
 		{
-			UserOwningBoardGame = usersOwningBoardGameResult.Data.Where(g => g.UserName != userAuthState.User.Identity.Name);
+			UserOwningBoardGame = usersOwningBoardGameResult.Data!.Where(g => g.UserName != userAuthState.User.Identity!.Name);
 			var listgame = UserOwningBoardGame.Where(u => u.BoardGameDtos.Where(b => b.BoardGameDto.Id == CurrentBoardGameDto.Id).Any(b => b.ForLending));
 		}
 

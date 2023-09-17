@@ -132,8 +132,6 @@ public class BoardGameService
 		{
 			Available = dtoToConvert.Available,
 			BggLink = dtoToConvert.BggLink,
-			Comment = dtoToConvert.Comment,
-			Condition = dtoToConvert.Condition,
 			Description = dtoToConvert.Description,
 			Genres = await FindGenres(dtoToConvert.Genres),
 			Id = dtoToConvert.Id == "" ? Guid.NewGuid().ToString() : dtoToConvert.Id, 
