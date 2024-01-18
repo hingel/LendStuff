@@ -3,4 +3,4 @@ using MediatR;
 
 namespace BoardGame.API.CommandsAndQueries;
 
-public record DeleteBoardGameCommand(string BoardGameId) : IRequest<ServiceResponse<string>>;
+public record DeleteBoardGameCommand(Guid Id) : IRequest<ServiceResponse<string>>;

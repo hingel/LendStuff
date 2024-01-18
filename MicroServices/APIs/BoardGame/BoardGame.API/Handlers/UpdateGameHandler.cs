@@ -47,7 +47,7 @@ public class UpdateGameHandler : IRequestHandler<UpdateGameCommand, ServiceRespo
 			BggLink = dtoToConvert.BggLink,
 			Description = dtoToConvert.Description,
 			Genres = await FindGenres(dtoToConvert.Genres),
-			Id = dtoToConvert.Id == "" ? Guid.NewGuid().ToString() : dtoToConvert.Id,
+			Id = Guid.NewGuid(),
 			ReleaseYear = dtoToConvert.ReleaseYear,
 			Title = dtoToConvert.Title
 		};

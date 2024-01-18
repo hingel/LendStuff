@@ -2,9 +2,9 @@
 
 namespace LendStuff.Shared.DTOs;
 
-public class BoardGameDto
+public class BoardGameDto //Gör om till record?
 {
-	public string Id { get; set; } = string.Empty;
+	public Guid Id { get; set; }
 	[Required]
 	public string Title { get; set; } = string.Empty;
 	[Required]

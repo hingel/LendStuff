@@ -15,7 +15,7 @@ public static class WebApplicationExtensions
 			var response = await mediator.Send(new UpdateGameCommand(boardGameToUpdate));
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 		}).RequireAuthorization();
-		app.MapDelete("/deleteGame", async (IMediator mediator, string idToDelete) =>
+		app.MapDelete("/deleteGame", async (IMediator mediator, Guid idToDelete) =>
 		{
 			var response = await mediator.Send(new DeleteBoardGameCommand(idToDelete));
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
@@ -26,7 +26,7 @@ public static class WebApplicationExtensions
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 
 		});
-		app.MapGet("/getGameById", async (IMediator mediator, string id) =>
+		app.MapGet("/getGameById", async (IMediator mediator, Guid id) =>
 		{
 			var response = await mediator.Send(new GetGameByIdQuery(id));
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);

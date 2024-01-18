@@ -29,8 +29,8 @@ public class BoardGameRepository: IRepository<Models.BoardGame>
 
 		return result.Entity;
 	}
-
-	public async Task<string> Delete(string id)
+	
+	public async Task<string> Delete(Guid id)
 	{
 		var result = await _context.BoardGames.FirstOrDefaultAsync(b => b.Id == id);
 

@@ -41,15 +41,15 @@ public class AddGameHandler : IRequestHandler<AddGameCommand, ServiceResponse<Bo
 		return new ServiceResponse<BoardGameDto>() { Message = "BoardGame not added", Success = false };
 	}
 
-	private async Task<BoardGame.DataAccess.Models.BoardGame> ConvertDtoToBoardGame(BoardGameDto dtoToConvert)
+	private async Task<DataAccess.Models.BoardGame> ConvertDtoToBoardGame(BoardGameDto dtoToConvert)
 	{
-		return new BoardGame.DataAccess.Models.BoardGame
+		return new DataAccess.Models.BoardGame
 		{
 			Available = dtoToConvert.Available,
 			BggLink = dtoToConvert.BggLink,
 			Description = dtoToConvert.Description,
 			Genres = await FindGenres(dtoToConvert.Genres),
-			Id = dtoToConvert.Id == "" ? Guid.NewGuid().ToString() : dtoToConvert.Id,
+			Id = Guid.NewGuid(),
 			ReleaseYear = dtoToConvert.ReleaseYear,
 			Title = dtoToConvert.Title
 		};

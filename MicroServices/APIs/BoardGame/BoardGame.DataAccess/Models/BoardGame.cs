@@ -1,14 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using BoardGame.DataAccess.Repository;
 
 namespace BoardGame.DataAccess.Models;
 
-public class BoardGame
+public class BoardGame : IEntity
 {
-	public string Id { get; set; } = string.Empty;
+	public Guid Id { get; init; } = Guid.NewGuid();
 	public string Title { get; set; } = string.Empty;
 	public int ReleaseYear { get; set; }
 	public string Description { get; set; } = string.Empty;
 	public bool Available { get; set; }
-	public List<Genre>? Genres { get; set; } = new ();
+	public ICollection<Genre>? Genres { get; set; } = new List<Genre>();
 	public string? BggLink { get; set; } = string.Empty;
 }

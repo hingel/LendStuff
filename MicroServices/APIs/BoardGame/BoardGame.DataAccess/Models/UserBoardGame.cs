@@ -1,9 +1,11 @@
-﻿namespace BoardGame.DataAccess.Models;
+﻿using BoardGame.DataAccess.Repository;
 
-public class UserBoardGame //Skulle kunna ärva av Boardgame. Så att den får dess klasser.
+namespace BoardGame.DataAccess.Models;
+
+public class UserBoardGame : IEntity
 {
-	public Guid UserBoardGameId { get; set; }
-	public BoardGame BoardGame { get; set; }
+	public Guid Id { get; init; }
+	public BoardGame BoardGame { get; set; } = null!;
 	public int Condition { get; set; }
 	public string? Comment { get; set; } = string.Empty;
 	public bool ForLending { get; set; }

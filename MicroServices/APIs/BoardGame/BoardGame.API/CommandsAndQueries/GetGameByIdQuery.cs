@@ -4,4 +4,4 @@ using MediatR;
 
 namespace BoardGame.API.CommandsAndQueries;
 
-public record GetGameByIdQuery(string Id) : IRequest<ServiceResponse<BoardGameDto>>;
+public record GetGameByIdQuery(Guid Id) : IRequest<ServiceResponse<BoardGameDto>>;

@@ -30,7 +30,7 @@ public class GenreRepository : IRepository<Genre>
 		return result.Entity;
 	}
 
-	public async Task<string> Delete(string id)
+	public async Task<string> Delete(Guid id)
 	{
 		var toDelete = await _context.Genres.FirstOrDefaultAsync(g => g.Id.Equals(id));
 
