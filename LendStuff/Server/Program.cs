@@ -72,7 +72,6 @@ builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
 builder.Services.AddScoped<IRepository<InternalMessage>, InternalMessageRepository>();
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<BoardGameService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<MessageService>();
 

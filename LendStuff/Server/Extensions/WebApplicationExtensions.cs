@@ -3,14 +3,12 @@ using LendStuff.Server.Commands;
 using LendStuff.Server.Queries;
 using LendStuff.Shared.DTOs;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LendStuff.Server.Extensions;
 
 public static class WebApplicationExtensions
 {
-
 	public static WebApplication MapBoardGameEndPoints(this WebApplication app)
 	{
 		app.MapGet("/allGames", GetAllGamesHandler).RequireCors("myCorsSpec"); //.AllowAnonymous(); //p => p.RequireUserName("c@cr.se")); //TODO: lägg till detta senare.
@@ -25,8 +23,17 @@ public static class WebApplicationExtensions
 			var response = await mediator.Send(new DeleteBoardGameCommand(idToDelete));
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 		}).RequireAuthorization("admin_access");
-		app.MapGet("/getGameByTitle", async (BoardGameService service, string title) => await service.FindByTitle(title));
-		app.MapGet("/getGameById", async (BoardGameService service, string id) => await service.FindById(id));
+		app.MapGet("/getGameByTitle", async (IMediator mediator, string title) =>
+		{
+			var response = await mediator.Send(new GetGameByTitleRequest(title));
+			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+
+		});
+		app.MapGet("/getGameById", async (IMediator mediator, string id) =>
+		{
+			var response = await mediator.Send(new GetGameByIdQuery(id));
+			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+		});
 		return app;
 	}
 
