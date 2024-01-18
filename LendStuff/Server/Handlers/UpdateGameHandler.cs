@@ -20,7 +20,7 @@ public class UpdateGameHandler : IRequestHandler<UpdateGameCommand, ServiceRespo
 
 	public async Task<ServiceResponse<BoardGameDto>> Handle(UpdateGameCommand request, CancellationToken cancellationToken)
 	{
-		var result = await _unitOfWork.BoardGameRepository.Update(await ConvertDtoToBoardGame(request.gameToUpdate));
+		var result = await _unitOfWork.BoardGameRepository.Update(await ConvertDtoToBoardGame(request.GameToUpdate));
 
 		if (result is null)
 		{

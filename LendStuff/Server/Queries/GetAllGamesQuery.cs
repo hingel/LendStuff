@@ -1,5 +1,4 @@
-﻿using Duende.IdentityServer.Stores;
-using LendStuff.Shared;
+﻿using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using MediatR;
 

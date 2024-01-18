@@ -20,7 +20,11 @@ public static class WebApplicationExtensions
 			var response = await mediator.Send(new UpdateGameCommand(boardGameToUpdate));
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 		}).RequireAuthorization();
-		app.MapDelete("/deleteGame", async (BoardGameService brepo, string idToDelete) => await brepo.DeleteBoardGame(idToDelete)).RequireAuthorization("admin_access");
+		app.MapDelete("/deleteGame", async (IMediator mediator, string idToDelete) =>
+		{
+			var response = await mediator.Send(new DeleteBoardGameCommand(idToDelete));
+			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+		}).RequireAuthorization("admin_access");
 		app.MapGet("/getGameByTitle", async (BoardGameService service, string title) => await service.FindByTitle(title));
 		app.MapGet("/getGameById", async (BoardGameService service, string id) => await service.FindById(id));
 		return app;
@@ -61,27 +65,12 @@ public static class WebApplicationExtensions
 		return app;
 	}
 
-	//Gamla sättet:
-	//private static async Task<IResult> GetAllGamesHandler(BoardGameService brepo)
-	//{
-	//	var response = await brepo.GetAll();
-	//	return response.Success ? Results.Ok(response) : Results.BadRequest(response);
-	//}
-
-	//Med mediator
 	private static async Task<IResult> GetAllGamesHandler(IMediator mediator)
 	{
 		var response = await mediator.Send(new GetAllGamesQuery());
 		return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 	}
 
-	//Gammla sättet:
-	//private static async Task<IResult> AddGameHandler(BoardGameService brepo, BoardGameDto toAdd)
-	//{
-	//	var response = await brepo.AddTitle(toAdd);
-
-	//	return response.Success ? Results.Ok(response) : Results.BadRequest(response);
-	//}
 	private static async Task<IResult> AddGameHandler(IMediator mediator, BoardGameDto toAdd)
 	{
 		var response = await mediator.Send(new AddGameCommand(toAdd));

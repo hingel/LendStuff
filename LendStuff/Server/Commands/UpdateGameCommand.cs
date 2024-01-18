@@ -4,4 +4,4 @@ using MediatR;
 
 namespace LendStuff.Server.Commands;
 
-public record UpdateGameCommand(BoardGameDto gameToUpdate) : IRequest<ServiceResponse<BoardGameDto>>;
+public record UpdateGameCommand(BoardGameDto GameToUpdate) : IRequest<ServiceResponse<BoardGameDto>>;
