@@ -1,22 +1,21 @@
-﻿using LendStuff.DataAccess.Models;
-using LendStuff.DataAccess.Repositories;
-using LendStuff.DataAccess.Repositories.Interfaces;
-using LendStuff.Server.Models;
+﻿using BoardGame.DataAccess;
+using BoardGame.DataAccess.Models;
+using BoardGame.DataAccess.Repository;
 
-namespace LendStuff.DataAccess.Services;
+namespace BoardGame.API.Helpers;
 
 public class UnitOfWork : IDisposable
 {
-	private IRepository<BoardGame> _boardGameRepository;
+	private IRepository<BoardGame.DataAccess.Models.BoardGame> _boardGameRepository;
 	private IRepository<Genre> _genreRepository;
-	private readonly ApplicationDbContext _context;
+	private readonly BoardGameDbContext _context;
 	
-	public UnitOfWork(ApplicationDbContext context)
+	public UnitOfWork(BoardGameDbContext context)
 	{
 		_context = context;
 	}
 
-	public IRepository<BoardGame> BoardGameRepository
+	public IRepository<BoardGame.DataAccess.Models.BoardGame> BoardGameRepository
 	{
 		get
 		{

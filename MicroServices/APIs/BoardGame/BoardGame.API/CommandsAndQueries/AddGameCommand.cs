@@ -2,6 +2,6 @@
 using LendStuff.Shared.DTOs;
 using MediatR;
 
-namespace LendStuff.Server.Commands;
+namespace BoardGame.API.CommandsAndQueries;
 
 public record AddGameCommand(BoardGameDto BoardGameToAdd) : IRequest<ServiceResponse<BoardGameDto>>;

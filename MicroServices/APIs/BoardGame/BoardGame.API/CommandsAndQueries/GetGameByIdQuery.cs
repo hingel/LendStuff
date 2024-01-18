@@ -2,6 +2,6 @@
 using LendStuff.Shared.DTOs;
 using MediatR;
 
-namespace LendStuff.Server.Queries;
+namespace BoardGame.API.CommandsAndQueries;
 
 public record GetGameByIdQuery(string Id) : IRequest<ServiceResponse<BoardGameDto>>;

@@ -1,18 +1,17 @@
-﻿using LendStuff.DataAccess.Repositories.Interfaces;
-using LendStuff.DataAccess.Services;
-using LendStuff.Server.Models;
-using LendStuff.Server.Queries;
+﻿using BoardGame.API.CommandsAndQueries;
+using BoardGame.API.Helpers;
+using BoardGame.DataAccess.Repository;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using MediatR;
 
-namespace LendStuff.Server.Handlers;
+namespace BoardGame.API.Handlers;
 
 public class GetAllGamesHandler : IRequestHandler<GetAllGamesQuery, ServiceResponse<IEnumerable<BoardGameDto>>>
 {
-	private readonly IRepository<BoardGame> _boardGameRepository;
+	private readonly IRepository<DataAccess.Models.BoardGame> _boardGameRepository;
 
-	public GetAllGamesHandler(IRepository<BoardGame> boardgameRepository)
+	public GetAllGamesHandler(IRepository<DataAccess.Models.BoardGame> boardgameRepository)
 	{
 		_boardGameRepository = boardgameRepository; //TODO: Detta borde då gå direkt mot databasen tror jag när det är CQRS.
 	}

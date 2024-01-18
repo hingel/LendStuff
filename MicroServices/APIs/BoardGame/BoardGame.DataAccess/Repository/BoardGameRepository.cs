@@ -1,31 +1,29 @@
-﻿using LendStuff.DataAccess.Repositories.Interfaces;
-using LendStuff.Server.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace LendStuff.DataAccess.Repositories;
+namespace BoardGame.DataAccess.Repository;
 
-public class BoardGameRepository: IRepository<BoardGame>
+public class BoardGameRepository: IRepository<Models.BoardGame>
 {
-	private readonly ApplicationDbContext _context;
+	private readonly BoardGameDbContext _context;
 
-	public BoardGameRepository(ApplicationDbContext context)
+	public BoardGameRepository(BoardGameDbContext context)
 	{
 		_context = context;
 	}
 
-	public async Task<IEnumerable<BoardGame>> GetAll()
+	public async Task<IEnumerable<Models.BoardGame>> GetAll()
 	{
 		return await _context.BoardGames.ToArrayAsync();
 	}
 
-	public async Task<IEnumerable<BoardGame>> FindByKey(Func<BoardGame, bool> findFunc)
+	public async Task<IEnumerable<Models.BoardGame>> FindByKey(Func<Models.BoardGame, bool> findFunc)
 	{
 		var result = _context.BoardGames.Include(b => b.Genres).Where(findFunc);
 
 		return result;
 	}
 
-	public async Task<BoardGame> AddItem(BoardGame item)
+	public async Task<Models.BoardGame> AddItem(Models.BoardGame item)
 	{
 		var result = await _context.BoardGames.AddAsync(item);
 
@@ -42,14 +40,14 @@ public class BoardGameRepository: IRepository<BoardGame>
 		return $"{test.Entity.Title} {test.Entity.Id} removed";
 	}
 
-	public async Task<BoardGame?> Update(BoardGame item)
+	public async Task<Models.BoardGame?> Update(Models.BoardGame item)
 	{
 		//objektet som ska uppdateras:
 		var toUpdate = await _context.BoardGames.FirstOrDefaultAsync(b => b.Id == item.Id);
 		
 		if (toUpdate != null)
 		{
-			var propertyList = typeof(BoardGame).GetProperties();
+			var propertyList = typeof(Models.BoardGame).GetProperties();
 
 			foreach (var prop in propertyList)
 			{

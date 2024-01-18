@@ -1,13 +1,11 @@
-﻿using LendStuff.DataAccess.Models;
-using LendStuff.DataAccess.Services;
-using LendStuff.Server.Commands;
-using LendStuff.Server.Models;
+﻿using BoardGame.API.CommandsAndQueries;
+using BoardGame.API.Helpers;
+using BoardGame.DataAccess.Models;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using MediatR;
-using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 
-namespace LendStuff.Server.Handlers;
+namespace BoardGame.API.Handlers;
 
 public class UpdateGameHandler : IRequestHandler<UpdateGameCommand, ServiceResponse<BoardGameDto>>
 {
@@ -41,9 +39,9 @@ public class UpdateGameHandler : IRequestHandler<UpdateGameCommand, ServiceRespo
 		};
 	}
 
-	private async Task<BoardGame> ConvertDtoToBoardGame(BoardGameDto dtoToConvert)
+	private async Task<DataAccess.Models.BoardGame> ConvertDtoToBoardGame(BoardGameDto dtoToConvert)
 	{
-		return new BoardGame
+		return new DataAccess.Models.BoardGame
 		{
 			Available = dtoToConvert.Available,
 			BggLink = dtoToConvert.BggLink,

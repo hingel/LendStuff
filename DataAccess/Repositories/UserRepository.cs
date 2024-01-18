@@ -20,8 +20,7 @@ public class UserRepository : IRepository<ApplicationUser>
 	public async Task<IEnumerable<ApplicationUser>> FindByKey(Func<ApplicationUser, bool> findFunc)
 	{
 		var result = _context.Users
-			.Include(u => u.CollectionOfBoardGames)
-			.ThenInclude(ub => ub.BoardGame)
+			.Include(u => u.CollectionOfBoardGameIds)
 			.Include(u => u.Messages)
 			.Where(findFunc);
 		

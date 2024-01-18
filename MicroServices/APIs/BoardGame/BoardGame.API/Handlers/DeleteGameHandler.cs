@@ -1,10 +1,10 @@
-﻿using LendStuff.DataAccess.Repositories;
-using LendStuff.DataAccess.Services;
-using LendStuff.Server.Commands;
+﻿using BoardGame.API.CommandsAndQueries;
+using BoardGame.API.Helpers;
+using BoardGame.DataAccess.Repository;
 using LendStuff.Shared;
 using MediatR;
 
-namespace LendStuff.Server.Handlers;
+namespace BoardGame.API.Handlers;
 
 public class DeleteGameHandler : IRequestHandler<DeleteBoardGameCommand, ServiceResponse<string>>
 {

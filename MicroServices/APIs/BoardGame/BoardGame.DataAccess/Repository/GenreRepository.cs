@@ -1,13 +1,12 @@
-﻿using LendStuff.DataAccess.Models;
-using LendStuff.DataAccess.Repositories.Interfaces;
+﻿using BoardGame.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LendStuff.DataAccess.Repositories;
+namespace BoardGame.DataAccess.Repository;
 
 public class GenreRepository : IRepository<Genre>
 {
-	private readonly ApplicationDbContext _context;
-	public GenreRepository(ApplicationDbContext context)
+	private readonly BoardGameDbContext _context;
+	public GenreRepository(BoardGameDbContext context)
 	{
 		_context = context;
 	}

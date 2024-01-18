@@ -1,6 +1,6 @@
 ﻿using LendStuff.Shared;
 using MediatR;
 
-namespace LendStuff.Server.Commands;
+namespace BoardGame.API.CommandsAndQueries;
 
 public record DeleteBoardGameCommand(string BoardGameId) : IRequest<ServiceResponse<string>>;

@@ -1,21 +1,19 @@
-﻿using LendStuff.DataAccess.Models;
-using LendStuff.DataAccess.Repositories;
-using LendStuff.DataAccess.Repositories.Interfaces;
-using LendStuff.DataAccess.Services;
-using LendStuff.Server.Commands;
-using LendStuff.Server.Models;
+﻿using BoardGame.API.CommandsAndQueries;
+using BoardGame.API.Helpers;
+using BoardGame.DataAccess.Models;
+using BoardGame.DataAccess.Repository;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using MediatR;
 
-namespace LendStuff.Server.Handlers;
+namespace BoardGame.API.Handlers;
 
 public class AddGameHandler : IRequestHandler<AddGameCommand, ServiceResponse<BoardGameDto>>
 {
 	private readonly UnitOfWork _unitOfWork;
-	private readonly IRepository<BoardGame> _boardGameRepository;
+	private readonly IRepository<BoardGame.DataAccess.Models.BoardGame> _boardGameRepository;
 
-	public AddGameHandler(UnitOfWork unitOfWork, IRepository<BoardGame> boardGameRepository)
+	public AddGameHandler(UnitOfWork unitOfWork, BoardGame.DataAccess.Repository.IRepository<BoardGame.DataAccess.Models.BoardGame> boardGameRepository)
 	{
 		_unitOfWork = unitOfWork;
 		_boardGameRepository = boardGameRepository;
@@ -43,9 +41,9 @@ public class AddGameHandler : IRequestHandler<AddGameCommand, ServiceResponse<Bo
 		return new ServiceResponse<BoardGameDto>() { Message = "BoardGame not added", Success = false };
 	}
 
-	private async Task<BoardGame> ConvertDtoToBoardGame(BoardGameDto dtoToConvert)
+	private async Task<BoardGame.DataAccess.Models.BoardGame> ConvertDtoToBoardGame(BoardGameDto dtoToConvert)
 	{
-		return new BoardGame
+		return new BoardGame.DataAccess.Models.BoardGame
 		{
 			Available = dtoToConvert.Available,
 			BggLink = dtoToConvert.BggLink,

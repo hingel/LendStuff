@@ -1,12 +1,11 @@
-﻿using LendStuff.DataAccess.Models;
-using LendStuff.Server.Models;
+﻿using BoardGame.DataAccess.Models;
 using LendStuff.Shared.DTOs;
 
-namespace LendStuff.DataAccess.Services;
+namespace BoardGame.API.Helpers;
 
 public static class DtoConvert
 {
-	public static BoardGameDto ConvertBoardGameToDto(BoardGame boardGame)
+	public static BoardGameDto ConvertBoardGameToDto(BoardGame.DataAccess.Models.BoardGame boardGame)
 	{
 		return new BoardGameDto()
 		{

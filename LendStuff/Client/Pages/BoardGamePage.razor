@@ -68,7 +68,7 @@ else
 		if (usersOwningBoardGameResult != null && usersOwningBoardGameResult.Success)
 		{
 			UserOwningBoardGame = usersOwningBoardGameResult.Data!.Where(g => g.UserName != userAuthState.User.Identity!.Name);
-			var listgame = UserOwningBoardGame.Where(u => u.BoardGameDtos.Where(b => b.BoardGameDto.Id == CurrentBoardGameDto.Id).Any(b => b.ForLending));
+			var listgame = UserOwningBoardGame.Where(u => u.BoardGameDtos.Where(b => b.BoardGameDtoId == CurrentBoardGameDto.Id).Any(b => b.ForLending));
 		}
 
 		await base.OnInitializedAsync();

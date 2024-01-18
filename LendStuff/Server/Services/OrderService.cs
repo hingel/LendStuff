@@ -1,25 +1,20 @@
-﻿using Duende.IdentityServer.Models;
-using LendStuff.DataAccess.Models;
+﻿using LendStuff.DataAccess.Models;
 using LendStuff.DataAccess.Repositories.Interfaces;
 using LendStuff.Server.Models;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace LendStuff.DataAccess.Services;
+namespace LendStuff.Server.Services;
 
 public class OrderService
 {
 	private readonly IRepository<Order> _orderRepository;
-	private readonly UnitOfWork _unitOfWork;
 	private readonly UserManager<ApplicationUser> _userManager;
 	private readonly IRepository<InternalMessage> _messageRepository;
-	public OrderService(IRepository<Order> orderRepository, UnitOfWork unitOfWork,
-		UserManager<ApplicationUser> userManager, IRepository<InternalMessage> messageRepository)
+	public OrderService(IRepository<Order> orderRepository, UserManager<ApplicationUser> userManager, IRepository<InternalMessage> messageRepository)
 	{
 		_orderRepository = orderRepository;
-		_unitOfWork = unitOfWork;
 		_userManager = userManager;
 		_messageRepository = messageRepository;
 	}
@@ -82,15 +77,15 @@ public class OrderService
 
 	public async Task<ServiceResponse<string>> AddOrder(OrderDto newOrderDto)
 	{
-		//newOrderDto.LentDate = DateTime.UtcNow; //TODO Bara för test ta bort
-		//newOrderDto.ReturnDate = DateTime.UtcNow.AddDays(7); //TODO: Bara för test ta bort
 		var newOrder = await ConvertDtoToOrder(newOrderDto);
-		
+
+		//TODO: Måste ske API-anrop till den andra servern. Kolla hur det görs.
+
 		if (!newOrder.BoardGame.Available)
 		{
 			return new ServiceResponse<string>()
 			{
-				Message = $"{newOrder.BoardGame.Title} is not available for lending",
+				Message =  "fix this", //$"/*{newOrder. BoardGame.Title}*/ is not available for lending",
 				Success = false
 			};
 		}
@@ -134,7 +129,7 @@ public class OrderService
 	{
 		return new Order()
 		{
-			BoardGame = (await _unitOfWork.BoardGameRepository.FindByKey(b => b.Id == newOrder.BoardGameId)).FirstOrDefault(),
+			BoardGameId = newOrder.BoardGameId, // (await _unitOfWork.BoardGameRepository.FindByKey(b => b.Id == newOrder.BoardGameId)).FirstOrDefault(), //måste hämt
 			BorrowerId = newOrder.BorrowerUserId,
 			LentDate = newOrder.LentDate,
 			Owner = await _userManager.FindByNameAsync(newOrder.OwnerUserName),

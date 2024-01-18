@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LendStuff.Server.Models;
 using LendStuff.Shared;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 
 namespace LendStuff.DataAccess.Models;
 
@@ -20,7 +15,7 @@ public class Order
 	[Required]
 	public string BorrowerId { get; set; }
 	[Required]
-	public BoardGame BoardGame { get; set; }
+	public string BoardGameId { get; set; }
 	[Required]
 	public DateTime LentDate { get; set; }
 	[Required]

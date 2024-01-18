@@ -19,14 +19,14 @@ public class OrderRepository : IRepository<Order>
 		return await _context
 			.Orders
 			.Include(o => o.Owner)
-			.Include(o => o.BoardGame).ToArrayAsync();
+			.Include(o => o.BoardGameId).ToArrayAsync();
 	}
 
 	public async Task<IEnumerable<Order>> FindByKey(Func<Order, bool> findFunc)
 	{
 		return _context.Orders
 			.Include(o => o.Owner)
-			.Include(o => o.BoardGame)
+			.Include(o => o.BoardGameId)
 			.Include(o => o.OrderMessages)
 			.Where(findFunc);
 	}
