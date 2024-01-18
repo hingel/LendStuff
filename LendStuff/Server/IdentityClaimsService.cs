@@ -50,7 +50,7 @@ public class IdentityClaimsService : IProfileService
 	public async Task IsActiveAsync(IsActiveContext context)
 	{
 		var userId = context.Subject.GetSubjectId();
-		var user = _userManager.FindByIdAsync(userId);
+		var user = await _userManager.FindByIdAsync(userId);
 		context.IsActive = user != null;
 	}
 }

@@ -129,7 +129,7 @@ public class MessageService
 			MessageId = messageDto.MessageId, // == null ? 0 : messageDto.MessageId,
 			Message = messageDto.Message,
 			SentFromUserName = messageDto.SentFromUserName,
-			SentToUser = await _userManager.FindByNameAsync(messageDto.SentToUserName),
+			SentToUser = (await _userManager.FindByNameAsync(messageDto.SentToUserName))!,
 			IsRead = messageDto.IsRead
 		};
 	}

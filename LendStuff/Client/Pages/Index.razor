@@ -60,14 +60,14 @@
 		{
 			var userResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + $"getById?id={_userId}");
 
-			if (userResponse.Success)
+			if (userResponse!.Success)
 				_currentUserDto = userResponse.Data;
 
 			var boardGameResponse = await HttpClient.GetFromJsonAsync<ServiceResponse<UserBoardGameDto[]>>(HttpClient.BaseAddress + $"getUsersGames?id={_userId}");
 
-			if (boardGameResponse.Success)
+			if (boardGameResponse!.Success)
 			{
-				_currentUserDto.BoardGameDtos = boardGameResponse.Data.ToList();
+				_currentUserDto!.BoardGameDtos = boardGameResponse.Data!.ToList();
 			}
 		}
 

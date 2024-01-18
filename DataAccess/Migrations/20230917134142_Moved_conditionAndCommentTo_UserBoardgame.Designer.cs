@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LendStuff.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230724170606_updated-ordermodel")]
-    partial class Updatedordermodel
+    [Migration("20230917134142_Moved_conditionAndCommentTo_UserBoardgame")]
+    partial class Moved_conditionAndCommentTo_UserBoardgame
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -240,12 +240,14 @@ namespace LendStuff.DataAccess.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BorrowerId")
-                        .HasColumnType("nvarchar(450)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("LentDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("OwnerId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("ReturnDate")
@@ -257,8 +259,6 @@ namespace LendStuff.DataAccess.Migrations
                     b.HasKey("OrderId");
 
                     b.HasIndex("BoardGameId");
-
-                    b.HasIndex("BorrowerId");
 
                     b.HasIndex("OwnerId");
 
@@ -277,6 +277,12 @@ namespace LendStuff.DataAccess.Migrations
                     b.Property<string>("BoardGameId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Condition")
+                        .HasColumnType("int");
 
                     b.Property<bool>("ForLending")
                         .HasColumnType("bit");
@@ -371,12 +377,6 @@ namespace LendStuff.DataAccess.Migrations
 
                     b.Property<string>("BggLink")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Condition")
-                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -561,17 +561,13 @@ namespace LendStuff.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LendStuff.Server.Models.ApplicationUser", "Borrower")
-                        .WithMany()
-                        .HasForeignKey("BorrowerId");
-
                     b.HasOne("LendStuff.Server.Models.ApplicationUser", "Owner")
                         .WithMany()
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("BoardGame");
-
-                    b.Navigation("Borrower");
 
                     b.Navigation("Owner");
                 });

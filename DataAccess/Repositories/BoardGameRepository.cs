@@ -15,7 +15,7 @@ public class BoardGameRepository: IRepository<BoardGame>
 
 	public async Task<IEnumerable<BoardGame>> GetAll()
 	{
-		return _context.BoardGames;
+		return await _context.BoardGames.ToArrayAsync();
 	}
 
 	public async Task<IEnumerable<BoardGame>> FindByKey(Func<BoardGame, bool> findFunc)
@@ -42,7 +42,7 @@ public class BoardGameRepository: IRepository<BoardGame>
 		return $"{test.Entity.Title} {test.Entity.Id} removed";
 	}
 
-	public async Task<BoardGame> Update(BoardGame item)
+	public async Task<BoardGame?> Update(BoardGame item)
 	{
 		//objektet som ska uppdateras:
 		var toUpdate = await _context.BoardGames.FirstOrDefaultAsync(b => b.Id == item.Id);

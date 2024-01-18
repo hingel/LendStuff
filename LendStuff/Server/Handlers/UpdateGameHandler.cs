@@ -1,46 +1,44 @@
 ﻿using LendStuff.DataAccess.Models;
-using LendStuff.DataAccess.Repositories;
-using LendStuff.DataAccess.Repositories.Interfaces;
 using LendStuff.DataAccess.Services;
 using LendStuff.Server.Commands;
 using LendStuff.Server.Models;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using MediatR;
+using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 
 namespace LendStuff.Server.Handlers;
 
-public class AddGameHandler : IRequestHandler<AddGameCommand, ServiceResponse<BoardGameDto>>
+public class UpdateGameHandler : IRequestHandler<UpdateGameCommand, ServiceResponse<BoardGameDto>>
 {
 	private readonly UnitOfWork _unitOfWork;
-	private readonly IRepository<BoardGame> _boardGameRepository;
 
-	public AddGameHandler(UnitOfWork unitOfWork, IRepository<BoardGame> boardGameRepository)
+	public UpdateGameHandler(UnitOfWork unitOfWork)
 	{
 		_unitOfWork = unitOfWork;
-		_boardGameRepository = boardGameRepository;
 	}
 
-	public async Task<ServiceResponse<BoardGameDto>> Handle(AddGameCommand request, CancellationToken cancellationToken)
+	public async Task<ServiceResponse<BoardGameDto>> Handle(UpdateGameCommand request, CancellationToken cancellationToken)
 	{
-		if (!(await _boardGameRepository.FindByKey(b => b.Title.ToLower() == request.BoardGameToAdd.Title.ToLower())).Any())
+		var result = await _unitOfWork.BoardGameRepository.Update(await ConvertDtoToBoardGame(request.GameToUpdate));
+
+		if (result is null)
 		{
-			var response = await _unitOfWork.BoardGameRepository.AddItem(await ConvertDtoToBoardGame(request.BoardGameToAdd));
-
-			if (response is not null)
+			return new ServiceResponse<BoardGameDto>()
 			{
-				await _unitOfWork.SaveChanges();
-
-				return new ServiceResponse<BoardGameDto>()
-				{
-					Data = DtoConvert.ConvertBoardGameToDto(response),
-					Message = "BoardGame added",
-					Success = true
-				};
-			}
+				Message = "Boardgame not updated.",
+				Success = false
+			};
 		}
 
-		return new ServiceResponse<BoardGameDto>() { Message = "BoardGame not added", Success = false };
+		var saveResult = await _unitOfWork.SaveChanges();
+
+		return new ServiceResponse<BoardGameDto>()
+		{
+			Data = DtoConvert.ConvertBoardGameToDto(result),
+			Message = "Boardgame updated.",
+			Success = true
+		};
 	}
 
 	private async Task<BoardGame> ConvertDtoToBoardGame(BoardGameDto dtoToConvert)
@@ -56,7 +54,6 @@ public class AddGameHandler : IRequestHandler<AddGameCommand, ServiceResponse<Bo
 			Title = dtoToConvert.Title
 		};
 	}
-
 	private async Task<List<Genre>> FindGenres(List<string> genreStrings)
 	{
 		var listOfGenres = new List<Genre>();
@@ -67,7 +64,7 @@ public class AddGameHandler : IRequestHandler<AddGameCommand, ServiceResponse<Bo
 				await _unitOfWork.GenreRepository.FindByKey(g => g.Name.ToLower().Equals(genre.ToLower())); //TODO: mer check på detta. Kapa tomutrymme etc.
 			//Eller ge förslag på när användaren skriver i de ord som är liknande.
 
-			if (search.Any())
+			if (search.Count() > 0)
 			{
 				listOfGenres.AddRange(search);
 				continue;
@@ -75,10 +72,8 @@ public class AddGameHandler : IRequestHandler<AddGameCommand, ServiceResponse<Bo
 
 			//Här skapas en ny genre om den inte redan finns.
 			listOfGenres.Add(await _unitOfWork.GenreRepository.AddItem(new Genre() { Name = genre }));
-			await _unitOfWork.SaveChanges();
 		}
 
 		return listOfGenres;
-
 	}
 }

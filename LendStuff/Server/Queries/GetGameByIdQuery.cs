@@ -4,4 +4,4 @@ using MediatR;
 
 namespace LendStuff.Server.Queries;
 
-public record GetAllGamesQuery() : IRequest<ServiceResponse<IEnumerable<BoardGameDto>>>;
+public record GetGameByIdQuery(string Id) : IRequest<ServiceResponse<BoardGameDto>>;

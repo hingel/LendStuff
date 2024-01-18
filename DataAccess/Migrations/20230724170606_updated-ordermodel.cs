@@ -5,7 +5,7 @@
 namespace LendStuff.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class updatedordermodel : Migration
+    public partial class Updatedordermodel : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

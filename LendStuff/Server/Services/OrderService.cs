@@ -164,7 +164,7 @@ public class OrderService
 					IsRead = messageDto.IsRead,
 					MessageSent = messageDto.MessageSent,
 					SentFromUserName = messageDto.SentFromUserName,
-					SentToUser = await _userManager.FindByNameAsync(messageDto.SentToUserName)
+					SentToUser = (await _userManager.FindByNameAsync(messageDto.SentToUserName))!
 				});
 
 				listWithMessages.Add(newAddedMessage);
@@ -194,7 +194,7 @@ public class OrderService
 			IsRead = messageToFind.IsRead,
 			MessageSent = messageToFind.MessageSent,
 			SentFromUserName = messageToFind.SentFromUserName,
-			SentToUser = await _userManager.FindByNameAsync(messageToFind.SentToUserName)
+			SentToUser = (await _userManager.FindByNameAsync(messageToFind.SentToUserName))!
 		});
 		
 		return newMessage;
@@ -211,7 +211,7 @@ public class OrderService
 				o.BorrowerId,
 			LentDate = o.LentDate,
 			OrderId = o.OrderId,
-			OwnerUserName = o.Owner.UserName,
+			OwnerUserName = o.Owner.UserName!,
 			ReturnDate = o.ReturnDate,
 			Status = o.Status,
 			OrderMessageDtos = o.OrderMessages.Select(ConvertMessageToDto).ToList()
@@ -224,10 +224,10 @@ public class OrderService
 		return new MessageDto()
 		{
 			MessageId = messageToConvert.MessageId,
-			Message = messageToConvert.Message,
+			Message = messageToConvert.Message!,
 			MessageSent = messageToConvert.MessageSent,
-			SentFromUserName = messageToConvert.SentFromUserName,
-			SentToUserName = messageToConvert.SentToUser.UserName,
+			SentFromUserName = messageToConvert.SentFromUserName!,
+			SentToUserName = messageToConvert.SentToUser.UserName!,
 			IsRead = messageToConvert.IsRead
 		};
 	}

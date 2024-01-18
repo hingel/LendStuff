@@ -3,22 +3,37 @@ using LendStuff.Server.Commands;
 using LendStuff.Server.Queries;
 using LendStuff.Shared.DTOs;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LendStuff.Server.Extensions;
 
 public static class WebApplicationExtensions
 {
-
 	public static WebApplication MapBoardGameEndPoints(this WebApplication app)
 	{
 		app.MapGet("/allGames", GetAllGamesHandler).RequireCors("myCorsSpec"); //.AllowAnonymous(); //p => p.RequireUserName("c@cr.se")); //TODO: lägg till detta senare.
 		app.MapPost("/addGame", AddGameHandler).RequireAuthorization();
-		app.MapPatch("/updateGame", UpdateGameHandler).RequireAuthorization();
-		app.MapDelete("/deleteGame", async (BoardGameService brepo, string idToDelete) => await brepo.DeleteBoardGame(idToDelete)).RequireAuthorization("admin_access");
-		app.MapGet("/getGameByTitle", async (BoardGameService service, string title) => await service.FindByTitle(title));
-		app.MapGet("/getGameById", async (BoardGameService service, string id) => await service.FindById(id));
+		app.MapPatch("/updateGame", async (IMediator mediator, BoardGameDto boardGameToUpdate) =>
+		{
+			var response = await mediator.Send(new UpdateGameCommand(boardGameToUpdate));
+			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+		}).RequireAuthorization();
+		app.MapDelete("/deleteGame", async (IMediator mediator, string idToDelete) =>
+		{
+			var response = await mediator.Send(new DeleteBoardGameCommand(idToDelete));
+			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+		}).RequireAuthorization("admin_access");
+		app.MapGet("/getGameByTitle", async (IMediator mediator, string title) =>
+		{
+			var response = await mediator.Send(new GetGameByTitleRequest(title));
+			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+
+		});
+		app.MapGet("/getGameById", async (IMediator mediator, string id) =>
+		{
+			var response = await mediator.Send(new GetGameByIdQuery(id));
+			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
+		});
 		return app;
 	}
 
@@ -57,40 +72,16 @@ public static class WebApplicationExtensions
 		return app;
 	}
 
-	//Gamla sättet:
-	//private static async Task<IResult> GetAllGamesHandler(BoardGameService brepo)
-	//{
-	//	var response = await brepo.GetAll();
-	//	return response.Success ? Results.Ok(response) : Results.BadRequest(response);
-	//}
-
-	//Med mediator
 	private static async Task<IResult> GetAllGamesHandler(IMediator mediator)
 	{
 		var response = await mediator.Send(new GetAllGamesQuery());
 		return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 	}
 
-	//Gammla sättet:
-	//private static async Task<IResult> AddGameHandler(BoardGameService brepo, BoardGameDto toAdd)
-	//{
-	//	var response = await brepo.AddTitle(toAdd);
-
-	//	return response.Success ? Results.Ok(response) : Results.BadRequest(response);
-	//}
 	private static async Task<IResult> AddGameHandler(IMediator mediator, BoardGameDto toAdd)
 	{
 		var response = await mediator.Send(new AddGameCommand(toAdd));
 
 		return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 	}
-
-	private static async Task<IResult> UpdateGameHandler(BoardGameService brepo, BoardGameDto newToUpdate)
-	{
-		var response = await brepo.UpdateBoardGame(newToUpdate);
-
-		return response.Success ? Results.Ok(response) : Results.BadRequest(response);
-	}
-
-
 }

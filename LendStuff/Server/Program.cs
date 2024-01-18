@@ -50,7 +50,7 @@ options =>
 });
 //TODO: Vilken typ av roll genererare är aktiv?
 
-//JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("role"); //Ståd nedan
+//JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("role"); //Står nedan
 
 builder.Services.AddAuthentication()
 	.AddIdentityServerJwt();
@@ -72,13 +72,12 @@ builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
 builder.Services.AddScoped<IRepository<InternalMessage>, InternalMessageRepository>();
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<BoardGameService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<MessageService>();
 
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 //builder.Services.AddScoped<IProfileService, IdentityClaimsService>(); //Detta är tillagd för test med rollerna och namn.
-JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("role"); //Behövdes för att den inte ska mapp om rollen igen eller liknande.
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("role"); //Behövdes för att den inte ska mapp om rollen igen eller liknande. Som alternativ till det på rad: 44-50
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -119,6 +118,8 @@ app.MapMessageEndPoints();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
+
+//app.MapPost("/hej", (IHttpContextAccessor httpContextAccessor) => httpContextAccessor.HttpContext?.User.IsInRole("admin"));
 
 //app.MapPost("/fillData/{userName}", async ([FromServices] IProfileService claimsService, [FromServices] RoleManager<IdentityRole> rolemgt, [FromServices] UserManager<ApplicationUser> usrMngr, string userName) =>
 //{

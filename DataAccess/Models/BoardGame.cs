@@ -13,8 +13,6 @@ public class BoardGame
 	public int ReleaseYear { get; set; }
 	[Required]
 	public string Description { get; set; } = string.Empty;
-	public int Condition { get; set; }
-	public string? Comment { get; set; } = string.Empty;
 	public bool Available { get; set; }
 	public List<Genre>? Genres { get; set; } = new ();
 

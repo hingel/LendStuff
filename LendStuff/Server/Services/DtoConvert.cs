@@ -1,7 +1,6 @@
 ﻿using LendStuff.DataAccess.Models;
 using LendStuff.Server.Models;
 using LendStuff.Shared.DTOs;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LendStuff.DataAccess.Services;
 
@@ -13,8 +12,6 @@ public static class DtoConvert
 		{
 			Available = boardGame.Available,
 			BggLink = boardGame.BggLink,
-			Comment = boardGame.Comment,
-			Condition = boardGame.Condition,
 			Description = boardGame.Description,
 			Genres = boardGame.Genres.Select(g => g.Name).ToList(),
 			Id = boardGame.Id,
@@ -31,7 +28,4 @@ public static class DtoConvert
 			ForLending = userBoardGame.ForLending,
 		};
 	}
-
-
-
 }
