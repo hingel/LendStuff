@@ -1,4 +1,5 @@
 ﻿using BoardGame.DataAccess.Models;
+using LendStuff.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardGame.DataAccess.Repository;

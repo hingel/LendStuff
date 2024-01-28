@@ -1,6 +1,7 @@
 ﻿using BoardGame.DataAccess;
 using BoardGame.DataAccess.Models;
 using BoardGame.DataAccess.Repository;
+using LendStuff.Shared;
 
 namespace BoardGame.API.Helpers;
 

@@ -1,7 +1,5 @@
 ﻿using LendStuff.Server.Services;
 using LendStuff.Shared.DTOs;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace LendStuff.Server.Extensions;
 
@@ -32,13 +30,13 @@ public static class WebApplicationExtensions
 		return app;
 	}
 
-	public static WebApplication MapMessageEndPoints(this WebApplication app)
-	{
-		//TODO: lägg till getAll. Men vet inte om den kommer att användas.
-		app.MapPost("/addMessage", async (MessageService service, MessageDto newMessage) => await service.AddMessage(newMessage)).RequireAuthorization();
-		 app.MapGet("/getUsersMessages", async (MessageService service, string name) => await service.GetUserMessages(name)).RequireAuthorization();
-		app.MapDelete("/deleteMessage", async (MessageService service, int id) => await service.DeleteMessage(id)).RequireAuthorization();
-		app.MapPatch("/updateMessage", async (MessageService service, MessageDto messageToUpdate) => await service.UpdateMessage(messageToUpdate)).RequireAuthorization();
-		return app;
-	}
+	//public static WebApplication MapMessageEndPoints(this WebApplication app)
+	//{
+	//	//TODO: lägg till getAll. Men vet inte om den kommer att användas.
+	//	app.MapPost("/addMessage", async (MessageService service, MessageDto newMessage) => await service.AddMessage(newMessage)).RequireAuthorization();
+	//	 app.MapGet("/getUsersMessages", async (MessageService service, string name) => await service.GetUserMessages(name)).RequireAuthorization();
+	//	app.MapDelete("/deleteMessage", async (MessageService service, int id) => await service.DeleteMessage(id)).RequireAuthorization();
+	//	app.MapPatch("/updateMessage", async (MessageService service, MessageDto messageToUpdate) => await service.UpdateMessage(messageToUpdate)).RequireAuthorization();
+	//	return app;
+	//}
 }

@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
-
-namespace BoardGame.DataAccess.Repository;
+﻿namespace LendStuff.Shared;
 
 public interface IRepository<T>
 {

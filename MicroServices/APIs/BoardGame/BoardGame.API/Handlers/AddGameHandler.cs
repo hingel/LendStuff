@@ -1,7 +1,6 @@
 ﻿using BoardGame.API.CommandsAndQueries;
 using BoardGame.API.Helpers;
 using BoardGame.DataAccess.Models;
-using BoardGame.DataAccess.Repository;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using MediatR;
@@ -13,7 +12,7 @@ public class AddGameHandler : IRequestHandler<AddGameCommand, ServiceResponse<Bo
 	private readonly UnitOfWork _unitOfWork;
 	private readonly IRepository<BoardGame.DataAccess.Models.BoardGame> _boardGameRepository;
 
-	public AddGameHandler(UnitOfWork unitOfWork, BoardGame.DataAccess.Repository.IRepository<BoardGame.DataAccess.Models.BoardGame> boardGameRepository)
+	public AddGameHandler(UnitOfWork unitOfWork, IRepository<BoardGame.DataAccess.Models.BoardGame> boardGameRepository)
 	{
 		_unitOfWork = unitOfWork;
 		_boardGameRepository = boardGameRepository;

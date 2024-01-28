@@ -1,4 +1,4 @@
-﻿namespace BoardGame.DataAccess.Repository;
+﻿namespace LendStuff.Shared;
 
 public interface IEntity
 {

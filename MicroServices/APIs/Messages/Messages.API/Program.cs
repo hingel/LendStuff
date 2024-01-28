@@ -1,25 +1,24 @@
-using BoardGame.API.Extensions;
-using BoardGame.DataAccess;
-using BoardGame.DataAccess.Models;
-using BoardGame.DataAccess.Repository;
 using LendStuff.Shared;
+using Messages.API.Extensions;
+using Messages.DataAccess;
+using Messages.DataAccess.Models;
+using Messages.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<BoardGameDbContext>(options =>
+builder.Services.AddDbContext<MessageDbContext>(options =>
 	options.UseSqlServer(connectionString));
 
 builder.Services.AddMediatR(o => o.RegisterServicesFromAssembly(typeof(Program).Assembly));
+builder.Services.AddScoped<IRepository<InternalMessage>, InternalMessageRepository>();
 
-builder.Services.AddScoped<IRepository<BoardGame.DataAccess.Models.BoardGame>, BoardGameRepository>();
-builder.Services.AddScoped<IRepository<Genre>, GenreRepository>();
 
 var app = builder.Build();
 
 
-
-app.MapBoardGameEndPoints();
+app.MapMessageEndPoints();
 
 app.Run();

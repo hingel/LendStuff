@@ -1,4 +1,4 @@
-﻿using BoardGame.DataAccess.Repository;
+﻿using LendStuff.Shared;
 
 namespace BoardGame.DataAccess.Models;
 
