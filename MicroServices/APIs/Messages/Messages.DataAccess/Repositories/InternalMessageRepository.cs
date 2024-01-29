@@ -1,5 +1,4 @@
-﻿
-using LendStuff.Shared;
+﻿using LendStuff.Shared;
 using Messages.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +22,7 @@ public class InternalMessageRepository : IRepository<InternalMessage>
 
 	public async Task<IEnumerable<InternalMessage>> FindByKey(Func<InternalMessage, bool> findFunc)
 	{
-		return _context.InternalMessages
+		return await _context.InternalMessages
 			//.Include(m => m.SentToUser)
 			.Where(findFunc).ToListAsync();
 	}

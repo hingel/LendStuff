@@ -1,6 +1,4 @@
 ﻿using LendStuff.DataAccess.Models;
-using LendStuff.DataAccess.Repositories.Interfaces;
-using LendStuff.Server.Models;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using Microsoft.AspNetCore.Identity;
@@ -75,30 +73,7 @@ public class OrderService
 		};
 	}
 
-	public async Task<ServiceResponse<string>> AddOrder(OrderDto newOrderDto)
-	{
-		var newOrder = await ConvertDtoToOrder(newOrderDto);
 
-		//TODO: Måste ske API-anrop till den andra servern. Kolla hur det görs.
-
-		if (!newOrder.BoardGame.Available)
-		{
-			return new ServiceResponse<string>()
-			{
-				Message =  "fix this", //$"/*{newOrder. BoardGame.Title}*/ is not available for lending",
-				Success = false
-			};
-		}
-
-		var result = await _orderRepository.AddItem(newOrder);
-
-		return new ServiceResponse<string>()
-		{
-			Data = $"Order with nr: {result.OrderId} added",
-			Message = $"Order with nr: {result.OrderId} added",
-			Success = true
-		};
-	}
 
 	public async Task<ServiceResponse<OrderDto>> UpdateOrder(OrderDto updatedOrderDto)
 	{
@@ -124,23 +99,6 @@ public class OrderService
 			Success = true
 		};
 	}
-
-	private async Task<Order> ConvertDtoToOrder(OrderDto newOrder)
-	{
-		return new Order()
-		{
-			BoardGameId = newOrder.BoardGameId, // (await _unitOfWork.BoardGameRepository.FindByKey(b => b.Id == newOrder.BoardGameId)).FirstOrDefault(), //måste hämt
-			BorrowerId = newOrder.BorrowerUserId,
-			LentDate = newOrder.LentDate,
-			Owner = await _userManager.FindByNameAsync(newOrder.OwnerUserName),
-			ReturnDate = newOrder.ReturnDate,
-			Status = newOrder.Status,
-			//OrderMessages = await FindMessages(newOrder.OrderMessageDtos) //Kopplat till Funktion 1:
-			OrderMessages = await Task.WhenAll(newOrder.OrderMessageDtos.Select(FindOneMessage)), //Kopplat till Funktion 2:
-			OrderId = newOrder.OrderId
-		};
-	}
-
 
 	//Funktion 1:
 	private async Task<List<InternalMessage>> FindMessages(List<MessageDto> messageDtosToFind)
@@ -193,37 +151,5 @@ public class OrderService
 		});
 		
 		return newMessage;
-	}
-
-
-	private OrderDto ConvertOrderToDto(Order o)
-	{
-		return new OrderDto()
-		{
-			BoardGameId =
-				o.BoardGame.Id,
-			BorrowerUserId =
-				o.BorrowerId,
-			LentDate = o.LentDate,
-			OrderId = o.OrderId,
-			OwnerUserName = o.Owner.UserName!,
-			ReturnDate = o.ReturnDate,
-			Status = o.Status,
-			OrderMessageDtos = o.OrderMessages.Select(ConvertMessageToDto).ToList()
-		};
-	}
-
-	//TODO: Denna ska flyttas ihop till DtoConvertServicen, förkommer två ggr. Och i MessageService.
-	private MessageDto ConvertMessageToDto(InternalMessage messageToConvert)
-	{
-		return new MessageDto()
-		{
-			MessageId = messageToConvert.MessageId,
-			Message = messageToConvert.Message!,
-			MessageSent = messageToConvert.MessageSent,
-			SentFromUserName = messageToConvert.SentFromUserName!,
-			SentToUserName = messageToConvert.SentToUser.UserName!,
-			IsRead = messageToConvert.IsRead
-		};
 	}
 }

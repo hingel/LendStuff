@@ -1,6 +1,5 @@
 ﻿using LendStuff.DataAccess.Models;
 using LendStuff.DataAccess.Repositories.Interfaces;
-using LendStuff.Server.Models;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using Microsoft.AspNetCore.Identity;
