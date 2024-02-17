@@ -1,0 +1,92 @@
+version: '3.4'
+
+networks:
+  boardgame:
+  message:
+  order:
+
+services:
+  boardgame.api:
+    image: ${DOCKER_REGISTRY-}boardgameapi
+    build:
+      context: .
+      dockerfile: MicroServices/APIs/BoardGame/BoardGame.API/Dockerfile
+    networks:
+        - boardgame
+    depends_on:
+        - boardgame.db
+    environment:
+        - DB_HOST=boardgame.db
+        - DB_DATABASE=BoardGameDb
+        - DB_USER=sa
+        - DB_MSSQL_SA_PASSWORD=Pwd123!?1
+   
+  boardgame.db:
+    container_name: boardgame.db
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    networks:
+        - boardgame
+    ports:
+        - "7000:1433"
+    environment:
+        - ACCEPT_EULA=Y
+        - SA_PASSWORD=Pwd123!?1
+        - MSSQL_PID=Developer 
+
+  messages.api:
+    image: ${DOCKER_REGISTRY-}messagesapi
+    build:
+      context: .
+      dockerfile: MicroServices/APIs/Messages/Messages.API/Dockerfile
+    networks: 
+        - message
+    depends_on:
+        - message.db      
+    environment:
+        - DB_HOST=message.db
+        - DB_DATABASE=MessageDb
+        - DB_USER=sa
+        - DB_MSSQL_SA_PASSWORD=Pwd123!?1
+
+  message.db:
+    container_name: message.db
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    networks:
+        - message
+    ports:
+        - "7000:1433"
+    environment:
+        - ACCEPT_EULA=Y
+        - SA_PASSWORD=Pwd123!?1
+        - MSSQL_PID=Developer
+
+
+  order.api:
+    image: ${DOCKER_REGISTRY-}orderapi
+    build:
+      context: .
+      dockerfile: MicroServices/APIs/Order/Order.API/Dockerfile
+    networks: 
+        - order
+    depends_on:
+        - order.db      
+    environment:
+        - DB_HOST=order.db
+        - DB_DATABASE=OrderDb
+        - DB_USER=sa
+        - DB_MSSQL_SA_PASSWORD=Pwd123!?1
+
+  order.db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    networks:
+        - order
+    ports:
+        - "7000:1433"
+    environment:
+        - ACCEPT_EULA=Y
+        - SA_PASSWORD=Pwd123!?1
+        - MSSQL_PID=Developer
+    
+  
+
+

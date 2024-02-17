@@ -4,13 +4,14 @@ namespace LendStuff.Shared.DTOs;
 
 public class MessageDto
 {	
-	public int MessageId { get; set; }
+	public Guid MessageId { get; init; }
 	[Required]
 	[StringLength(400, ErrorMessage = "To long message. Max 400 characters.")]
 	public string Message { get; set; } = string.Empty;
 	public DateTime MessageSent { get; set; } = DateTime.UtcNow;
-	public string SentFromUserName { get; set; } = string.Empty;
 	[Required]
-	public string SentToUserName { get; set; } = string.Empty;
+	public Guid SentFromUserId { get; set; }
+	[Required]
+	public Guid SentToUserId{ get; set; }
 	public bool IsRead { get; set; } = false;
 }

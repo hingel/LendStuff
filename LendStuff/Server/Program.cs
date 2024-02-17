@@ -1,17 +1,13 @@
-using Duende.IdentityServer.Services;
-using LendStuff.Server.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
-using LendStuff.DataAccess;
 using LendStuff.DataAccess.Models;
 using LendStuff.DataAccess.Repositories;
-using LendStuff.DataAccess.Repositories.Interfaces;
-using LendStuff.DataAccess.Services;
 using LendStuff.Server.Extensions;
 using LendStuff.Shared;
 using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
-using System.Reflection;
+using LendStuff.DataAccess.Data;
+using LendStuff.Server.Services;
 
 //using Microsoft.AspNetCore.Mvc;
 
@@ -65,15 +61,8 @@ builder.Services.AddAuthorizationBuilder()
 
 builder.Services.AddMediatR(o => o.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
-builder.Services.AddScoped<IRepository<BoardGame>, BoardGameRepository>(); //Kan jag ha den injectad och även ingå i UnitofWork? Jepp, det är ok.
 builder.Services.AddScoped<IRepository<ApplicationUser>, UserRepository>();
-//builder.Services.AddScoped<IRepository<Genre>, GenreRepository>();
-builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
-builder.Services.AddScoped<IRepository<InternalMessage>, InternalMessageRepository>();
-builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<OrderService>();
-builder.Services.AddScoped<MessageService>();
 
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 //builder.Services.AddScoped<IProfileService, IdentityClaimsService>(); //Detta är tillagd för test med rollerna och namn.
@@ -110,10 +99,7 @@ app.UseIdentityServer();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapBoardGameEndPoints();
 app.MapUserEndPoints();
-app.MapOrderEndPoints();
-app.MapMessageEndPoints();
 
 app.MapRazorPages();
 app.MapControllers();

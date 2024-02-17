@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>7996e432-99c0-4125-a292-488d56d78146</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..\..\..</DockerfileContext>
+    <DockerComposeProjectPath>..\..\..\..\docker-compose.dcproj</DockerComposeProjectPath>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FastEndpoints" Version="5.22.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="AddOrder\" />
+	  <Folder Include="GetOrderById\" />
+	  <Folder Include="UpdateOrder\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\..\LendStuff\Shared\LendStuff.Shared.csproj" />
+	  <ProjectReference Include="..\Order.DataAccess\Order.DataAccess.csproj" />
+	</ItemGroup>
+
+</Project>

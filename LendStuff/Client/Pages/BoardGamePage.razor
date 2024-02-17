@@ -42,7 +42,7 @@ else
 }
 @code {
 	[Parameter]
-	public string Id { get; set; }
+	public Guid Id { get; set; }
 
 	public BoardGameDto CurrentBoardGameDto;
 	public IEnumerable<UserDto> UserOwningBoardGame = new List<UserDto>();
@@ -68,7 +68,7 @@ else
 		if (usersOwningBoardGameResult != null && usersOwningBoardGameResult.Success)
 		{
 			UserOwningBoardGame = usersOwningBoardGameResult.Data!.Where(g => g.UserName != userAuthState.User.Identity!.Name);
-			var listgame = UserOwningBoardGame.Where(u => u.BoardGameDtos.Where(b => b.BoardGameDto.Id == CurrentBoardGameDto.Id).Any(b => b.ForLending));
+			//var listgame = UserOwningBoardGame.Where(u => u.BoardGameDtos.Where(b => b.BoardGameDtoId == CurrentBoardGameDto.Id).Any(b => b.ForLending));
 		}
 
 		await base.OnInitializedAsync();
@@ -83,20 +83,20 @@ else
 		var newRequstDto = new MessageDto()
 		{
 			Message = $"{userInfo.User.Identity.Name} wants to borrow {CurrentBoardGameDto.Title} from you. Please send a response if game is available or not.",
-			SentFromUserName = $"{userInfo.User.Identity.Name}",
-			SentToUserName = userDto.UserName
+			// SentFromUserName = $"{userInfo.User.Identity.Name}",
+			// SentToUserName = userDto.UserName
 		};
 		//TODO: Borde komma en fråga om man verkligen vill skicka? Ok eller bekräftelse
 
 		var newOrderDto = new OrderDto()
 		{
-			OwnerUserName = userDto.UserName,
-			BorrowerUserId = userInfo.User.Claims.ToArray()[2].Value,
+		//	OwnerUserName = userDto.UserName,
+			//BorrowerUserId = userInfo.User.Claims.ToArray()[2].Value,
 			BoardGameId = Id,
 			LentDate = DateTime.UtcNow,
 			ReturnDate = DateTime.UtcNow.AddDays(21),
 			Status = OrderStatus.Inquiry,
-			OrderMessageDtos = new List<MessageDto>(){newRequstDto}
+		//	OrderMessageDtos = new List<MessageDto>(){newRequstDto}
 		};
 
 		var response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "postOrder", newOrderDto);

@@ -1,28 +1,22 @@
 ﻿using LendStuff.DataAccess.Models;
-using LendStuff.DataAccess.Repositories.Interfaces;
-using LendStuff.Server.Models;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using static Duende.IdentityServer.Models.IdentityResources;
 
-namespace LendStuff.DataAccess.Services;
+namespace LendStuff.Server.Services;
 
 public class UserService
 {
 	private readonly IRepository<ApplicationUser> _userRepository;
 	private readonly UserManager<ApplicationUser> _userManager;
-	private readonly IRepository<BoardGame> _boardGamerepo;
 
-	public UserService(IRepository<ApplicationUser> userRepository, UserManager<ApplicationUser> userManager, IRepository<BoardGame> boardGameRepo)
+	public UserService(IRepository<ApplicationUser> userRepository, UserManager<ApplicationUser> userManager)
 	{
 		_userRepository = userRepository;
 		_userManager = userManager;
-		_boardGamerepo = boardGameRepo;
 	}
 
-	public async Task<ServiceResponse<IEnumerable<UserBoardGameDto>>> GetUsersGames(string id)
+	public async Task<ServiceResponse<IEnumerable<string>>> GetUsersGames(string id)
 	{ 
 		Func<ApplicationUser, bool> filterFunc = (u) => u.Id == id;
 		
@@ -30,23 +24,21 @@ public class UserService
 
 		if (result.FirstOrDefault() is null)
 		{
-			return new ServiceResponse<IEnumerable<UserBoardGameDto>>()
+			return new ServiceResponse<IEnumerable<string>>()
 			{
 				Message = "Not found",
 				Success = false
 			};
 		}
 
-		return new ServiceResponse<IEnumerable<UserBoardGameDto>>()
+		return new ServiceResponse<IEnumerable<string>>()
 		{
-			Data = result.FirstOrDefault().CollectionOfBoardGames.Select(DtoConvert.ConvertUserBoardGameToDto),
+			Data = result.FirstOrDefault().CollectionOfBoardGameIds, //.Select(DtoConvert.ConvertUserBoardGameToDto),
 			Message = "BoardGames found",
 			Success = true
 		};
 	}
 
-
-	//Behövs denna? För admin kanske?
 	public async Task<ServiceResponse<UserDto>> FindUserById(string id)
 	{
 		Func<ApplicationUser, bool> filterFunc = (u) => u.Id == id;
@@ -62,7 +54,7 @@ public class UserService
 					UserName = result.UserName,
 					Rating = result.Rating,
 					Email = result.Email,
-					MessageDtos = result.Messages.Select(ConvertMessageToDto),
+					//MessageDtos = result.Messages.Select(ConvertMessageToDto),
 					//TODO: Fyll på ytterligare info här:
 				},
 				Message = "User found",
@@ -80,56 +72,56 @@ public class UserService
 
 	//Denna metod borde kanske inte finnas? Eller iaf kommer det en DTO från frontend.
 	//TODO Detta funkat inte som tänkt i nuläget. 
-	public async Task<ServiceResponse<string>> UpdateBoardGameUserCollection(BoardGameDto boardGameDto, string userId)
-	{
-		var userToUpdate = (await _userRepository.FindByKey(u => u.Id == userId)).FirstOrDefault();
-		var boardGame = (await _boardGamerepo.FindByKey(b => b.Id == boardGameDto.Id)).FirstOrDefault();
+	//public async Task<ServiceResponse<string>> UpdateBoardGameUserCollection(BoardGameDto boardGameDto, string userId)
+	//{
+	//	var userToUpdate = (await _userRepository.FindByKey(u => u.Id == userId)).FirstOrDefault();
+	//	//var boardGame = (await _boardGamerepo.FindByKey(b => b.Id == boardGameDto.Id)).FirstOrDefault();
 		
-		if (userToUpdate is null || boardGame is null)
-		{
-			return new ServiceResponse<string>()
-			{
-				Message = "User not found",
-				Success = false
-			};
-		}
+	//	if (userToUpdate is null || boardGame is null)
+	//	{
+	//		return new ServiceResponse<string>()
+	//		{
+	//			Message = "User not found",
+	//			Success = false
+	//		};
+	//	}
 
-		if (userToUpdate.CollectionOfBoardGames.All(ub => ub.BoardGame.Id != boardGameDto.Id))
-		{
-			userToUpdate.CollectionOfBoardGames.Add(new UserBoardGame()
-			{
-				BoardGame = boardGame,
-				ForLending = true
-			});
-		}
-		else
-		{
-			var ub = userToUpdate.CollectionOfBoardGames.FirstOrDefault(ub => ub.BoardGame.Id == boardGame.Id);
-			userToUpdate.CollectionOfBoardGames.Remove(ub);
-		}
+	//	if (userToUpdate.CollectionOfBoardGames.All(ub => ub.BoardGame.Id != boardGameDto.Id))
+	//	{
+	//		userToUpdate.CollectionOfBoardGames.Add(new UserBoardGame()
+	//		{
+	//			BoardGame = boardGame,
+	//			ForLending = true
+	//		});
+	//	}
+	//	else
+	//	{
+	//		var ub = userToUpdate.CollectionOfBoardGames.FirstOrDefault(ub => ub.BoardGame.Id == boardGame.Id);
+	//		userToUpdate.CollectionOfBoardGames.Remove(ub);
+	//	}
 		
-		var result = await _userRepository.Update(userToUpdate);
+	//	var result = await _userRepository.Update(userToUpdate);
 
-		return new ServiceResponse<string>()
-		{
-			Message = "Board games added hopefully",
-			Success = true
-		};
-	}
+	//	return new ServiceResponse<string>()
+	//	{
+	//		Message = "Board games added hopefully",
+	//		Success = true
+	//	};
+	//}
 
-	public async Task<ServiceResponse<IEnumerable<UserDto>>> GetUsersOwningCertainBoardGame(string boardGameId)
-	{
-		Func<ApplicationUser, bool> filterFunc = (u) => u.CollectionOfBoardGames.Any(b => b.BoardGame.Id == boardGameId);
+	//public async Task<ServiceResponse<IEnumerable<UserDto>>> GetUsersOwningCertainBoardGame(string boardGameId)
+	//{
+	//	Func<ApplicationUser, bool> filterFunc = (u) => u.CollectionOfBoardGames.Any(b => b.BoardGame.Id == boardGameId);
 
-		var result = await _userRepository.FindByKey(filterFunc);
+	//	var result = await _userRepository.FindByKey(filterFunc);
 
-		return new ServiceResponse<IEnumerable<UserDto>>()
-		{
-			Data = result.Select(ConvertAppUserToDto),
-			Message = "Users boardgames",
-			Success = true
-		};
-	}
+	//	return new ServiceResponse<IEnumerable<UserDto>>()
+	//	{
+	//		Data = result.Select(ConvertAppUserToDto),
+	//		Message = "Users boardgames",
+	//		Success = true
+	//	};
+	//}
 
 	private UserDto ConvertAppUserToDto(ApplicationUser user)
 	{
@@ -156,7 +148,7 @@ public class UserService
                     UserName = result.UserName,
 					Rating = result.Rating,
 					Email = result.Email,
-					MessageDtos = result.Messages.Select(ConvertMessageToDto),
+					//MessageDtos = result.Messages.Select(ConvertMessageToDto),
 					//TODO: Fyll på ytterligare info här:
                 },
                 Message = "User found",
@@ -171,15 +163,15 @@ public class UserService
         };
     }
 
-    private MessageDto ConvertMessageToDto(InternalMessage messageToConvert)
-    {
-        return new MessageDto()
-        {
-			Message = messageToConvert.Message,
-			IsRead = messageToConvert.IsRead,
-			MessageSent = messageToConvert.MessageSent,
-			SentFromUserName = messageToConvert.SentFromUserName,
-			SentToUserName = messageToConvert.SentToUser.UserName
-        };
-    }
+   // private MessageDto ConvertMessageToDto(InternalMessage messageToConvert)
+   // {
+   //     return new MessageDto()
+   //     {
+			//Message = messageToConvert.Message,
+			//IsRead = messageToConvert.IsRead,
+			//MessageSent = messageToConvert.MessageSent,
+			//SentFromUserName = messageToConvert.SentFromUserName,
+			//SentToUserName = messageToConvert.SentToUser.UserName
+   //     };
+   // }
 }

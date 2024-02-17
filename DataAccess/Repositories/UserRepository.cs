@@ -1,5 +1,6 @@
-﻿using LendStuff.DataAccess.Repositories.Interfaces;
-using LendStuff.Server.Models;
+﻿using LendStuff.DataAccess.Data;
+using LendStuff.DataAccess.Models;
+using LendStuff.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace LendStuff.DataAccess.Repositories;
@@ -20,9 +21,7 @@ public class UserRepository : IRepository<ApplicationUser>
 	public async Task<IEnumerable<ApplicationUser>> FindByKey(Func<ApplicationUser, bool> findFunc)
 	{
 		var result = _context.Users
-			.Include(u => u.CollectionOfBoardGames)
-			.ThenInclude(ub => ub.BoardGame)
-			.Include(u => u.Messages)
+			.Include(u => u.CollectionOfBoardGameIds)
 			.Where(findFunc);
 		
 		return result;
@@ -35,8 +34,7 @@ public class UserRepository : IRepository<ApplicationUser>
 		throw new NotImplementedException(); ;
 	}
 
-	//Denna metod ligger egentligen i ApplicationUserService
-	public async Task<string> Delete(string id)
+	public Task<string> Delete(Guid id)
 	{
 		throw new NotImplementedException();
 	}

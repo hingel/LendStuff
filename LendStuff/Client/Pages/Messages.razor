@@ -9,7 +9,7 @@
 @attribute [Authorize]
 
 <h3>Messages</h3>
-
+@* 
 <div class="container row">
 	<div class="container col-md-3">
 		<h5>Contacts</h5>
@@ -51,7 +51,7 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div> *@
 
 <br/>
 <br/>
@@ -60,7 +60,7 @@
 	@if (ActiveMessageDto != null)
 	{
 		<div class="container">
-			Sent from: @ActiveMessageDto.SentFromUserName,
+			Sent from: @ActiveMessageDto.SentFromUserId,
 			DateSent: @ActiveMessageDto.MessageSent.ToShortDateString()
 		</div>
 
@@ -70,7 +70,7 @@
 				<ValidationSummary/>
 				<div class="form-control">
 					<p>Send Message to:</p>
-						<InputText @bind-Value="ActiveMessageDto.SentToUserName"></InputText>
+						@* <InputText @bind-Value="ActiveMessageDto.SentToUserId"></InputText> *@
 						<p>Body:</p>
 						<InputTextArea @bind-Value="ActiveMessageDto.Message"></InputTextArea>
 					</div>
@@ -140,30 +140,30 @@
 	{
 		var listToReturn = new List<string>();
 
-		foreach (var message in responseData)
-		{
-			if (message.SentFromUserName != SenderName && listToReturn.All(m => m != message.SentFromUserName))
-				listToReturn.Add(message.SentFromUserName);
+		// foreach (var message in responseData)
+		// {
+		// 	if (message.SentFromUserName != SenderName && listToReturn.All(m => m != message.SentFromUserName))
+		// 		listToReturn.Add(message.SentFromUserName);
 			
 
-			if (message.SentToUserName != SenderName && listToReturn.All(m => m != message.SentToUserName))
-				listToReturn.Add(message.SentToUserName);
-		}
+		// 	if (message.SentToUserName != SenderName && listToReturn.All(m => m != message.SentToUserName))
+		// 		listToReturn.Add(message.SentToUserName);
+		// }
 
 		return listToReturn;
 	}
 
 	private void SelectActiveReceiver(string name)
 	{
-		ActiveSenderMessages = ListOfMessagesDtos.Where(m => m.SentFromUserName == name || m.SentToUserName == name).ToList();
-		ActiveMessageDto = new MessageDto() {SentToUserName = name, Message = "Enter text...", SentFromUserName = SenderName};
+		// ActiveSenderMessages = ListOfMessagesDtos.Where(m => m.SentFromUserName == name || m.SentToUserName == name).ToList();
+		// ActiveMessageDto = new MessageDto() {SentToUserName = name, Message = "Enter text...", SentFromUserName = SenderName};
 		
 		ReceiverName = name;
 	}
 
 	private async Task SendMessage()
 	{
-		ActiveMessageDto.SentFromUserName = SenderName;
+	//	ActiveMessageDto.SentFromUserName = SenderName;
 
 		var response = await HttpClient.PostAsJsonAsync(HttpClient.BaseAddress + "addMessage", ActiveMessageDto);
 		var result = await response.Content.ReadFromJsonAsync<ServiceResponse<string>>();

@@ -76,31 +76,31 @@
 
 	private async Task ChangeCollection(BoardGameDto boardGame)
 	{
-		if (_currentUserDto.BoardGameDtos.All(b => b.BoardGameDto.Id != boardGame.Id))
-		{
-			var response = await HttpClient.PatchAsJsonAsync(HttpClient.BaseAddress + $"updateBoardGameToUser?id={_userId}", boardGame);
+		// if (_currentUserDto.BoardGameDtos.All(b => b.BoardGameDtoId != boardGame.Id))
+		// {
+		// 	var response = await HttpClient.PatchAsJsonAsync(HttpClient.BaseAddress + $"updateBoardGameToUser?id={_userId}", boardGame);
 
-			if (response.IsSuccessStatusCode)
-			{
-				var resultText = await response.Content.ReadFromJsonAsync<ServiceResponse<string>>();
-				Console.WriteLine(resultText.Message + "Boardgame added.");
-			}
-		}
-		else
-		{
-			var response = await HttpClient.PatchAsJsonAsync(HttpClient.BaseAddress + $"updateBoardGameToUser?id={_userId}", boardGame);
+		// 	if (response.IsSuccessStatusCode)
+		// 	{
+		// 		var resultText = await response.Content.ReadFromJsonAsync<ServiceResponse<string>>();
+		// 		Console.WriteLine(resultText.Message + "Boardgame added.");
+		// 	}
+		// }
+		// else
+		// {
+		// 	var response = await HttpClient.PatchAsJsonAsync(HttpClient.BaseAddress + $"updateBoardGameToUser?id={_userId}", boardGame);
 
-			if (response.IsSuccessStatusCode)
-			{
-				var resultText = await response.Content.ReadFromJsonAsync<ServiceResponse<string>>();
-				Console.WriteLine(resultText.Message + "Boardgame removed.");
-			}
+		// 	if (response.IsSuccessStatusCode)
+		// 	{
+		// 		var resultText = await response.Content.ReadFromJsonAsync<ServiceResponse<string>>();
+		// 		Console.WriteLine(resultText.Message + "Boardgame removed.");
+		// 	}
 			
-		}
+		// }
 	}
 
 	private bool InCollection(BoardGameDto boardGameExists)
 	{
-		return _currentUserDto.BoardGameDtos.Any(b => b.BoardGameDto.Id == boardGameExists.Id);
+		return _currentUserDto.BoardGameDtos.Any(); //b => b.BoardGameDtoId == boardGameExists.Id);
 	}
 }
