@@ -2,7 +2,6 @@
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using Order.API.Helpers;
-using Order.DataAccess.Repositories;
 
 namespace Order.API.GetAnUserOrders;
 
@@ -14,7 +13,7 @@ public class Handler(IRepository<DataAccess.Models.Order> repository) : Endpoint
 {
 	public override void Configure()
 	{
-		Get("/");
+		Get("/{userId}");
 		AllowAnonymous();
 	}
 

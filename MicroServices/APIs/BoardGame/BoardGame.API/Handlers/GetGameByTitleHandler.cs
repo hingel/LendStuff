@@ -1,6 +1,5 @@
 ﻿using BoardGame.API.CommandsAndQueries;
 using BoardGame.API.Helpers;
-using BoardGame.DataAccess.Repository;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using MediatR;
@@ -9,9 +8,9 @@ namespace BoardGame.API.Handlers;
 
 public class GetGameByTitleHandler : IRequestHandler<GetGameByTitleRequest, ServiceResponse<IEnumerable<BoardGameDto>>>
 {
-	private readonly BoardGameRepository _repository;
+	private readonly IRepository<DataAccess.Models.BoardGame> _repository;
 
-	public GetGameByTitleHandler(BoardGameRepository repository)
+	public GetGameByTitleHandler(IRepository<DataAccess.Models.BoardGame> repository)
 	{
 		_repository = repository;
 	}

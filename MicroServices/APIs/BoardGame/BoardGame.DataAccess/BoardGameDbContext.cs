@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoardGame.DataAccess;
 
-public class BoardGameDbContext : DbContext
+public class BoardGameDbContext(DbContextOptions<BoardGameDbContext> options) : DbContext(options)
 {
 	public DbSet<UserBoardGame> UserBoardGames { get; set; } = null!;
 	public DbSet<Models.BoardGame> BoardGames { get; set; } = null!;

@@ -2,7 +2,7 @@
 
 namespace Order.DataAccess;
 
-public class OrderDbContext : DbContext
+public class OrderDbContext(DbContextOptions<OrderDbContext> options) : DbContext(options)
 {
 	public DbSet<Models.Order> Orders { get; set; } = null!;
 }

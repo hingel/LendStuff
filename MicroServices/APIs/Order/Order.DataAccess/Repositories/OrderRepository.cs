@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Order.DataAccess.Repositories;
 
-public class OrderRepository : IRepository<Order.DataAccess.Models.Order>
+public class OrderRepository : IRepository<Models.Order>
 {
 	private readonly OrderDbContext _context;
 

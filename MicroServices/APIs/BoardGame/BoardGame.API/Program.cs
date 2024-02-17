@@ -1,4 +1,5 @@
 using BoardGame.API.Extensions;
+using BoardGame.API.Helpers;
 using BoardGame.DataAccess;
 using BoardGame.DataAccess.Models;
 using BoardGame.DataAccess.Repository;
@@ -15,10 +16,10 @@ builder.Services.AddMediatR(o => o.RegisterServicesFromAssembly(typeof(Program).
 
 builder.Services.AddScoped<IRepository<BoardGame.DataAccess.Models.BoardGame>, BoardGameRepository>();
 builder.Services.AddScoped<IRepository<Genre>, GenreRepository>();
+builder.Services.AddScoped<UnitOfWork>();
+
 
 var app = builder.Build();
-
-
 
 app.MapBoardGameEndPoints();
 

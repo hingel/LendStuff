@@ -15,7 +15,7 @@ public class Handler(IRepository<DataAccess.Models.Order> repository) : Endpoint
 {
 	public override void Configure()
 	{
-		Get("/");
+		Get("/{orderId}");
 		AllowAnonymous();
 	}
 

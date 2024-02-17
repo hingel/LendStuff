@@ -9,9 +9,9 @@ namespace BoardGame.API.Handlers;
 
 public class GetGameByIdHandler : IRequestHandler<GetGameByIdQuery, ServiceResponse<BoardGameDto>>
 {
-	private readonly BoardGameRepository _repository;
+	private readonly IRepository<DataAccess.Models.BoardGame> _repository;
 
-	public GetGameByIdHandler(BoardGameRepository repository)
+	public GetGameByIdHandler(IRepository<DataAccess.Models.BoardGame> repository)
 	{
 		_repository = repository;
 	}

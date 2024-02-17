@@ -11,9 +11,9 @@ public class GetAllGamesHandler : IRequestHandler<GetAllGamesQuery, ServiceRespo
 {
 	private readonly IRepository<DataAccess.Models.BoardGame> _boardGameRepository;
 
-	public GetAllGamesHandler(IRepository<DataAccess.Models.BoardGame> boardgameRepository)
+	public GetAllGamesHandler(IRepository<DataAccess.Models.BoardGame> boardGameRepository)
 	{
-		_boardGameRepository = boardgameRepository; //TODO: Detta borde då gå direkt mot databasen tror jag när det är CQRS.
+		_boardGameRepository = boardGameRepository; //TODO: Detta borde då gå direkt mot databasen tror jag när det är CQRS.
 	}
 	public async Task<ServiceResponse<IEnumerable<BoardGameDto>>> Handle(GetAllGamesQuery request, CancellationToken cancellationToken)
 	{
