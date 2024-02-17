@@ -39,7 +39,7 @@
 		</div>
 
 		<p>Order messages:</p>
-
+@* 
 		<div class="" id="MessageAccordion">
 			<Virtualize Items="CurrentOrder.OrderMessageDtos" Context="messageDto">
 				<div class="accordion-item">
@@ -80,7 +80,7 @@
 				</div>
 				<button class="btn btn-primary">Send Message</button>
 			</EditForm>
-		
+		 *@
 		@*
 			* Knapp för att ändra status på ordern: 
 		*@
@@ -125,7 +125,7 @@ else
 
 	private async Task GetUserInfo()
 	{
-		var resultOwner = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + $"getUserByUserName?userName={CurrentOrder.OwnerUserName}");
+		var resultOwner = await HttpClient.GetFromJsonAsync<ServiceResponse<UserDto>>(HttpClient.BaseAddress + $"getUserByUserName?userName={CurrentOrder.OwnerUserId}");
 
 		if (resultOwner.Success)
 			Owner = resultOwner.Data;
@@ -142,21 +142,21 @@ else
 		var userInfo = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 		var currentUserName = userInfo.User.Identity.Name;
 
-		NewMessageDto.SentFromUserName = currentUserName; //Detta ska vara den aktiva användaren.
+		//NewMessageDto. = currentUserName; //Detta ska vara den aktiva användaren.
 
-		//Välja namnet som inte är currentUser
-		if (Owner.UserName == currentUserName)
-		{
-			NewMessageDto.SentToUserName = Borrower.UserName;
-		}
-		else
-		{
-			NewMessageDto.SentToUserName = Owner.UserName;
-		}
+		// //Välja namnet som inte är currentUser
+		// if (Owner.UserName == currentUserName)
+		// {
+		// 	NewMessageDto.SentToUserName = Borrower.UserName;
+		// }
+		// else
+		// {
+		// 	NewMessageDto.SentToUserName = Owner.UserName;
+		// }
 
 		NewMessageDto.IsRead = false;
 
-		CurrentOrder.OrderMessageDtos.Add(NewMessageDto);
+		//CurrentOrder.OrderMessageDtos.Add(NewMessageDto);
 
 		var response = await HttpClient.PatchAsJsonAsync(HttpClient.BaseAddress + "updateOrder", CurrentOrder);
 

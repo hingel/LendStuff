@@ -23,10 +23,10 @@ public class Handler(IRepository<DataAccess.Models.Order> repository) : Endpoint
 
 		//TODO: Måste ske API-anrop till den andra servern. Kolla hur det görs.
 
-		if (!newOrder.BoardGame.Available)
-		{
-			await SendAsync(new Response("fix this", false, OrderDtoConverter.ConvertOrderToDto(newOrder)), 200 , ct);
-		}
+		//if (!newOrder.BoardGame.Available)
+		//{
+		//	await SendAsync(new Response("fix this", false, OrderDtoConverter.ConvertOrderToDto(newOrder)), 200 , ct);
+		//}
 
 		var result = await repository.AddItem(newOrder);
 

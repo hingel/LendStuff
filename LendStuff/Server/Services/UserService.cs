@@ -1,5 +1,4 @@
 ﻿using LendStuff.DataAccess.Models;
-using LendStuff.DataAccess.Repositories.Interfaces;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using Microsoft.AspNetCore.Identity;
@@ -55,7 +54,7 @@ public class UserService
 					UserName = result.UserName,
 					Rating = result.Rating,
 					Email = result.Email,
-					MessageDtos = result.Messages.Select(ConvertMessageToDto),
+					//MessageDtos = result.Messages.Select(ConvertMessageToDto),
 					//TODO: Fyll på ytterligare info här:
 				},
 				Message = "User found",
@@ -149,7 +148,7 @@ public class UserService
                     UserName = result.UserName,
 					Rating = result.Rating,
 					Email = result.Email,
-					MessageDtos = result.Messages.Select(ConvertMessageToDto),
+					//MessageDtos = result.Messages.Select(ConvertMessageToDto),
 					//TODO: Fyll på ytterligare info här:
                 },
                 Message = "User found",
@@ -164,15 +163,15 @@ public class UserService
         };
     }
 
-    private MessageDto ConvertMessageToDto(InternalMessage messageToConvert)
-    {
-        return new MessageDto()
-        {
-			Message = messageToConvert.Message,
-			IsRead = messageToConvert.IsRead,
-			MessageSent = messageToConvert.MessageSent,
-			SentFromUserName = messageToConvert.SentFromUserName,
-			SentToUserName = messageToConvert.SentToUser.UserName
-        };
-    }
+   // private MessageDto ConvertMessageToDto(InternalMessage messageToConvert)
+   // {
+   //     return new MessageDto()
+   //     {
+			//Message = messageToConvert.Message,
+			//IsRead = messageToConvert.IsRead,
+			//MessageSent = messageToConvert.MessageSent,
+			//SentFromUserName = messageToConvert.SentFromUserName,
+			//SentToUserName = messageToConvert.SentToUser.UserName
+   //     };
+   // }
 }

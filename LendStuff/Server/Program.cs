@@ -62,9 +62,7 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services.AddMediatR(o => o.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 builder.Services.AddScoped<IRepository<ApplicationUser>, UserRepository>();
-builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
 builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<OrderService>();
 
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 //builder.Services.AddScoped<IProfileService, IdentityClaimsService>(); //Detta är tillagd för test med rollerna och namn.
@@ -102,7 +100,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapUserEndPoints();
-app.MapOrderEndPoints();
 
 app.MapRazorPages();
 app.MapControllers();

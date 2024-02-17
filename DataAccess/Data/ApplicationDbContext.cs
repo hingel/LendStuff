@@ -8,7 +8,6 @@ namespace LendStuff.DataAccess.Data
 {
 	public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
 	{
-		public DbSet<Order> Orders { get; set; }
 
 		public ApplicationDbContext(
 			DbContextOptions options,

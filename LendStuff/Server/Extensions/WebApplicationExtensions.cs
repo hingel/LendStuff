@@ -18,25 +18,4 @@ public static class WebApplicationExtensions
         app.MapGet("/getUserByUserName", async (UserService service, string userName) => await service.FindUserByName(userName)).RequireAuthorization();
 		return app;
     }
-
-	public static WebApplication MapOrderEndPoints(this WebApplication app)
-	{
-		app.MapGet("/getOrders", async (OrderService service) => await service.GetAllOrders()); //.RequireAuthorization("admin_access"); //TODO: Lägga till admin access
-		app.MapGet("/allUserOrders", async (OrderService service, string userDtoId) => await service.GetAllUserOrders(userDtoId)).RequireAuthorization();
-		app.MapPost("/postOrder", async (OrderService service, OrderDto newOrderDto) => await service.AddOrder(newOrderDto)).RequireAuthorization();
-		app.MapPatch("/updateOrder", async (OrderService service, OrderDto orderToUpdate) => await service.UpdateOrder(orderToUpdate)).RequireAuthorization();
-		app.MapDelete("/deleteOrder", async (OrderService service, string orderToDelete) => await service.DeleteOrder(orderToDelete)).RequireAuthorization("admin_access");
-		app.MapGet("/getByOrderId", async (OrderService service, int orderId) => await service.GetOrderById(orderId)).RequireAuthorization();
-		return app;
-	}
-
-	//public static WebApplication MapMessageEndPoints(this WebApplication app)
-	//{
-	//	//TODO: lägg till getAll. Men vet inte om den kommer att användas.
-	//	app.MapPost("/addMessage", async (MessageService service, MessageDto newMessage) => await service.AddMessage(newMessage)).RequireAuthorization();
-	//	 app.MapGet("/getUsersMessages", async (MessageService service, string name) => await service.GetUserMessages(name)).RequireAuthorization();
-	//	app.MapDelete("/deleteMessage", async (MessageService service, int id) => await service.DeleteMessage(id)).RequireAuthorization();
-	//	app.MapPatch("/updateMessage", async (MessageService service, MessageDto messageToUpdate) => await service.UpdateMessage(messageToUpdate)).RequireAuthorization();
-	//	return app;
-	//}
 }

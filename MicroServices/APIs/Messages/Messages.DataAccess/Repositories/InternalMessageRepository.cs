@@ -22,9 +22,7 @@ public class InternalMessageRepository : IRepository<InternalMessage>
 
 	public async Task<IEnumerable<InternalMessage>> FindByKey(Func<InternalMessage, bool> findFunc)
 	{
-		return await _context.InternalMessages
-			//.Include(m => m.SentToUser)
-			.Where(findFunc).ToListAsync();
+		return _context.InternalMessages.Where(findFunc);
 	}
 
 	public async Task<InternalMessage> AddItem(InternalMessage item)

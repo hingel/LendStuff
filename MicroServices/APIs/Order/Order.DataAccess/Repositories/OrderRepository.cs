@@ -42,6 +42,7 @@ public class OrderRepository : IRepository<Order.DataAccess.Models.Order>
 		if (todelete is not null)
 		{
 			var result = _context.Orders.Remove(todelete);
+			await _context.SaveChangesAsync();
 			return $"Order: {result.Entity.OrderId} removed";
 		}
 

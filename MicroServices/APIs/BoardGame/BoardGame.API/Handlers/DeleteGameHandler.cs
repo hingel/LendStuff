@@ -16,7 +16,7 @@ public class DeleteGameHandler : IRequestHandler<DeleteBoardGameCommand, Service
 	}
 	public async Task<ServiceResponse<string>> Handle(DeleteBoardGameCommand request, CancellationToken cancellationToken)
 	{
-		var result = await _unitOfWork.BoardGameRepository.Delete(request.BoardGameId);
+		var result = await _unitOfWork.BoardGameRepository.Delete(request.Id);
 		var saveResult = await _unitOfWork.SaveChanges();
 
 		return new ServiceResponse<string>()
