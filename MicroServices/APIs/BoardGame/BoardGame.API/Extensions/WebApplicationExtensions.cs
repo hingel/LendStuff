@@ -9,26 +9,26 @@ public static class WebApplicationExtensions
 	public static WebApplication MapBoardGameEndPoints(this WebApplication app)
 	{
 		app.MapGet("/allGames", GetAllGamesHandler); //.RequireCors("myCorsSpec"); //.AllowAnonymous(); //p => p.RequireUserName("c@cr.se")); //TODO: lägg till detta senare.
-		app.MapPost("/addGame", AddGameHandler).RequireAuthorization();
+		app.MapPost("/addGame", AddGameHandler); //.RequireAuthorization();
 		app.MapPatch("/updateGame", async (IMediator mediator, BoardGameDto boardGameToUpdate) =>
 		{
 			var response = await mediator.Send(new UpdateGameCommand(boardGameToUpdate));
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 		}).RequireAuthorization();
-		app.MapDelete("/deleteGame", async (IMediator mediator, Guid idToDelete) =>
+		app.MapDelete("/deleteGame", async (IMediator mediator, string idToDelete) =>
 		{
-			var response = await mediator.Send(new DeleteBoardGameCommand(idToDelete));
+			var response = await mediator.Send(new DeleteBoardGameCommand(Guid.Parse(idToDelete)));
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
-		}).RequireAuthorization("admin_access");
+		}); //.RequireAuthorization("admin_access");
 		app.MapGet("/getGameByTitle", async (IMediator mediator, string title) =>
 		{
 			var response = await mediator.Send(new GetGameByTitleRequest(title));
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 
 		});
-		app.MapGet("/getGameById", async (IMediator mediator, Guid id) =>
+		app.MapGet("/getGameById", async (IMediator mediator, string id) =>
 		{
-			var response = await mediator.Send(new GetGameByIdQuery(id));
+			var response = await mediator.Send(new GetGameByIdQuery(Guid.Parse(id)));
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 		});
 		return app;

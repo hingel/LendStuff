@@ -4,6 +4,7 @@ networks:
   boardgame:
   message:
   order:
+  server:
 
 services:
   boardgame.api:
@@ -54,12 +55,11 @@ services:
     networks:
         - message
     ports:
-        - "7000:1433"
+        - "7001:1433"
     environment:
         - ACCEPT_EULA=Y
         - SA_PASSWORD=Pwd123!?1
         - MSSQL_PID=Developer
-
 
   order.api:
     image: ${DOCKER_REGISTRY-}orderapi
@@ -77,16 +77,42 @@ services:
         - DB_MSSQL_SA_PASSWORD=Pwd123!?1
 
   order.db:
+    container_name: order.db
     image: mcr.microsoft.com/mssql/server:2019-latest
     networks:
         - order
     ports:
-        - "7000:1433"
+        - "7002:1433"
     environment:
         - ACCEPT_EULA=Y
         - SA_PASSWORD=Pwd123!?1
         - MSSQL_PID=Developer
     
-  
+  lendstuff.server:
+    image: ${DOCKER_REGISTRY-}lendstuffserver
+    build:
+      context: .
+      dockerfile: LendStuff/Server/Dockerfile
+    networks:
+        - server
+    depends_on:
+        - user.db
+    environment:
+        - DB_HOST=user.db
+        - DB_DATABASE=UserDb
+        - DB_USER=sa
+        - DB_MSSQL_SA_PASSWORD=Pwd123!?1
 
+  user.db:
+    container_name: user.db
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    networks:
+        - server
+    ports:
+        - "7003:1433"
+    environment:
+        - ACCEPT_EULA=Y
+        - SA_PASSWORD=Pwd123!?1
+        - MSSQL_PID=Developer
+  
 

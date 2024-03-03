@@ -6,7 +6,8 @@
       "serviceActions": {
         "boardgame.api": "StartDebugging",
         "messages.api": "StartDebugging",
-        "order.api": "StartDebugging"
+        "order.api": "StartDebugging",
+        "lendstuff.server": "StartDebugging"
       }
     }
   }
