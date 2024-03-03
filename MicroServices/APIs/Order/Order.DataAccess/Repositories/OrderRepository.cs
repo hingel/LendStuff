@@ -16,7 +16,7 @@ public class OrderRepository : IRepository<Models.Order>
 	public async Task<IEnumerable<Models.Order>> FindByKey(Func<Models.Order, bool> findFunc)
 	{
 		return await _context
-			.Orders.Include(o => o.BoardGameId).ToArrayAsync();
+			.Orders.Where(findFunc).AsQueryable().ToListAsync();
 	}
 
 
@@ -27,7 +27,7 @@ public class OrderRepository : IRepository<Models.Order>
 
 	public async Task<Models.Order> AddItem(Models.Order item)
 	{
-		await _context.Orders.AddAsync(item);
+		_context.Orders.Add(item);
 
 		await _context.SaveChangesAsync();
 
