@@ -15,9 +15,9 @@ public static class WebApplicationExtensions
 			var response = await mediator.Send(new UpdateGameCommand(boardGameToUpdate));
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 		}).RequireAuthorization();
-		app.MapDelete("/deleteGame", async (IMediator mediator, Guid idToDelete) =>
+		app.MapDelete("/deleteGame", async (IMediator mediator, string idToDelete) =>
 		{
-			var response = await mediator.Send(new DeleteBoardGameCommand(idToDelete));
+			var response = await mediator.Send(new DeleteBoardGameCommand(Guid.Parse(idToDelete)));
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 		}); //.RequireAuthorization("admin_access");
 		app.MapGet("/getGameByTitle", async (IMediator mediator, string title) =>
@@ -26,9 +26,9 @@ public static class WebApplicationExtensions
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 
 		});
-		app.MapGet("/getGameById", async (IMediator mediator, Guid id) =>
+		app.MapGet("/getGameById", async (IMediator mediator, string id) =>
 		{
-			var response = await mediator.Send(new GetGameByIdQuery(id));
+			var response = await mediator.Send(new GetGameByIdQuery(Guid.Parse(id)));
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
 		});
 		return app;
