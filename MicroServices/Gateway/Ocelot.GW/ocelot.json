@@ -1,0 +1,67 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/boardgame/allgames",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "boardgame.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/allgames"
+    },
+    {
+      "UpstreamPathTemplate": "/boardgame/getgamebytitle?title={title}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "boardgame.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/getgamebytitle/{title}"
+    },
+    {
+      "UpstreamPathTemplate": "/boardgame/getgamebyid?id={id}",
+      "UpstreamHttpMethod": [ "Get, Delete" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "boardgame.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/getgamebyid/{id}"
+    },
+    {
+      "UpstreamPathTemplate": "/boardgame/deleteGame/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "boardgame.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/deleteGame/{id}"
+    },
+    {
+      "UpstreamPathTemplate": "/boardgame/addgame",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "boardgame.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/addgame"
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl" :  "http://localhost:5000"
+  }
+}
