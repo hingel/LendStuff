@@ -2,6 +2,8 @@
 
 namespace BoardGame.DataAccess.Models;
 
+
+//TODO: Denna klass får implementeras senare
 public class UserBoardGame : IEntity
 {
 	public Guid Id { get; init; }

@@ -16,4 +16,5 @@ public class BoardGameDto //Gör om till record?
 	public bool Available { get; set; }
 	public List<string> Genres { get; set; } = new(); //Testa att ha detta som en lisa med strängar enbart.
 	public string? BggLink { get; set; } = string.Empty;
+    public Guid OwnerId { get; set; }
 }

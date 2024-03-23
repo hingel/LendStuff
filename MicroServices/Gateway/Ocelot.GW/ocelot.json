@@ -119,43 +119,43 @@
         }
       ],
       "DownstreamPathTemplate": "/getuserorders/{userId}"
-    },
-    {
-      "UpstreamPathTemplate": "/users/getUsersGames/{id}",
-      "UpstreamHttpMethod": [ "Get" ],
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "lendstuff.server",
-          "Port": 8080
-        }
-      ],
-      "DownstreamPathTemplate": "/getUsersGames/{id}"
-    },
-    {
-      "UpstreamPathTemplate": "/users/getUserById/{id}",
-      "UpstreamHttpMethod": [ "Get" ],
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "lendstuff.server",
-          "Port": 8080
-        }
-      ],
-      "DownstreamPathTemplate": "/getUserById/{id}"
-    },
-    {
-      "UpstreamPathTemplate": "/users/getuserbyusername/{username}",
-      "UpstreamHttpMethod": [ "Get" ],
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "lendstuff.server",
-          "Port": 8080
-        }
-      ],
-      "DownstreamPathTemplate": "/getUserByUserName/{username}"
-    }
+    //},
+    //{
+    //  "UpstreamPathTemplate": "/users/getUsersGames/{id}",
+    //  "UpstreamHttpMethod": [ "Get" ],
+    //  "DownstreamScheme": "http",
+    //  "DownstreamHostAndPorts": [
+    //    {
+    //      "Host": "lendstuff.server",
+    //      "Port": 8080
+    //    }
+    //  ],
+    //  "DownstreamPathTemplate": "/getUsersGames/{id}"
+    //},
+    //{
+    //  "UpstreamPathTemplate": "/users/getUserById/{id}",
+    //  "UpstreamHttpMethod": [ "Get" ],
+    //  "DownstreamScheme": "http",
+    //  "DownstreamHostAndPorts": [
+    //    {
+    //      "Host": "lendstuff.server",
+    //      "Port": 8080
+    //    }
+    //  ],
+    //  "DownstreamPathTemplate": "/getUserById/{id}"
+    //},
+    //{
+    //  "UpstreamPathTemplate": "/users/getuserbyusername/{username}",
+    //  "UpstreamHttpMethod": [ "Get" ],
+    //  "DownstreamScheme": "http",
+    //  "DownstreamHostAndPorts": [
+    //    {
+    //      "Host": "lendstuff.server",
+    //      "Port": 8080
+    //    }
+    //  ],
+    //  "DownstreamPathTemplate": "/getUserByUserName/{username}"
+    //}
   ],
   "GlobalConfiguration": {
     "BaseUrl": "http://localhost:5000"

@@ -5,7 +5,7 @@ namespace BoardGame.API.Helpers;
 
 public static class DtoConvert
 {
-	public static BoardGameDto ConvertBoardGameToDto(BoardGame.DataAccess.Models.BoardGame boardGame)
+	public static BoardGameDto ConvertBoardGameToDto(DataAccess.Models.BoardGame boardGame)
 	{
 		return new BoardGameDto()
 		{
@@ -15,7 +15,9 @@ public static class DtoConvert
 			Genres = boardGame.Genres.Select(g => g.Name).ToList(),
 			Id = boardGame.Id,
 			ReleaseYear = boardGame.ReleaseYear,
-			Title = boardGame.Title
+			Title = boardGame.Title,
+			OwnerId = boardGame.OwnerId,
+			
 		};
 	}
 
