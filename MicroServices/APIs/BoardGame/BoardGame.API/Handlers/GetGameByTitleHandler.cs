@@ -16,7 +16,10 @@ public class GetGameByTitleHandler : IRequestHandler<GetGameByTitleRequest, Serv
 	}
 	public async Task<ServiceResponse<IEnumerable<BoardGameDto>>> Handle(GetGameByTitleRequest request, CancellationToken cancellationToken)
 	{
-		var result = await _repository.FindByKey((game => game.Title.ToLower().Contains(request.Title.ToLower())));
+
+        var searchWord = request.Title.ToLowerInvariant().Split([' ', ',', '.']);
+
+		var result = await _repository.FindByKey(game => searchWord.Any(word => game.Title.ToLowerInvariant().Split([' ', ',', '.']).Contains(word)));
 
 		return new ServiceResponse<IEnumerable<BoardGameDto>>
 		{

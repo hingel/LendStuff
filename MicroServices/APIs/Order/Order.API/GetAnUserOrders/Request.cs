@@ -13,7 +13,7 @@ public class Handler(IRepository<DataAccess.Models.Order> repository) : Endpoint
 {
 	public override void Configure()
 	{
-		Get("/byUser/{userId}");
+		Get("/getuserorders/{userId}");
 		AllowAnonymous();
 	}
 

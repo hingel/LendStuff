@@ -1,6 +1,5 @@
 ﻿using BoardGame.API.CommandsAndQueries;
 using BoardGame.API.Helpers;
-using BoardGame.DataAccess.Repository;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using MediatR;

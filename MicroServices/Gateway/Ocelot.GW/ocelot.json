@@ -1,0 +1,163 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/boardgame/allgames",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "boardgame.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/allgames"
+    },
+    {
+      "UpstreamPathTemplate": "/boardgame/getgamebytitle?title={title}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "boardgame.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/getgamebytitle/{title}"
+    },
+    {
+      "UpstreamPathTemplate": "/boardgame/getgamebyid?id={id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "boardgame.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/getgamebyid/{id}"
+    },
+    {
+      "UpstreamPathTemplate": "/boardgame/deleteGame/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "boardgame.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/deleteGame/{id}"
+    },
+    {
+      "UpstreamPathTemplate": "/boardgame/addgame",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "boardgame.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/addgame"
+    },
+    {
+      "UpstreamPathTemplate": "/messages/{id}",
+      "UpstreamHttpMethod": [ "Get", "Delete" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "messages.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/messages/{id}"
+    },
+    {
+      "UpstreamPathTemplate": "/messages",
+      "UpstreamHttpMethod": [ "Post", "Patch" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "messages.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/messages"
+    },
+    {
+      "UpstreamPathTemplate": "/order",
+      "UpstreamHttpMethod": [ "Post", "Patch" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "order.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/"
+    },
+    {
+      "UpstreamPathTemplate": "/order/{orderid}",
+      "UpstreamHttpMethod": [ "Delete", "Get" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "order.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/{orderid}"
+    },
+    {
+      "UpstreamPathTemplate": "/order/getuserorders/{userid}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "lendstuff.server",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/getuserorders/{userId}"
+    },
+    {
+      "UpstreamPathTemplate": "/users/getUsersGames/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "lendstuff.server",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/getUsersGames/{id}"
+    },
+    {
+      "UpstreamPathTemplate": "/users/getUserById/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "lendstuff.server",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/getUserById/{id}"
+    },
+    {
+      "UpstreamPathTemplate": "/users/getuserbyusername/{username}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "lendstuff.server",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/getUserByUserName/{username}"
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:5000"
+  }
+}

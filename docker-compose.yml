@@ -5,8 +5,25 @@ networks:
   message:
   order:
   server:
+  gateway:
 
 services:
+  ocelot.gw:
+    image: ${DOCKER_REGISTRY-}ocelotgw
+    build:
+      context: .
+      dockerfile: MicroServices/Gateway/Ocelot.GW/Dockerfile
+    networks:
+        - gateway
+    depends_on:
+        - boardgame.api
+        - messages.api
+        - order.api
+        - lendstuff.server
+    ports:
+        - "5000:8080" 
+        - "5000:8081" 
+
   boardgame.api:
     image: ${DOCKER_REGISTRY-}boardgameapi
     build:
@@ -14,6 +31,7 @@ services:
       dockerfile: MicroServices/APIs/BoardGame/BoardGame.API/Dockerfile
     networks:
         - boardgame
+        - gateway 
     depends_on:
         - boardgame.db
     environment:
@@ -41,6 +59,7 @@ services:
       dockerfile: MicroServices/APIs/Messages/Messages.API/Dockerfile
     networks: 
         - message
+        - gateway
     depends_on:
         - message.db      
     environment:
@@ -68,6 +87,7 @@ services:
       dockerfile: MicroServices/APIs/Order/Order.API/Dockerfile
     networks: 
         - order
+        - gateway 
     depends_on:
         - order.db      
     environment:
@@ -95,6 +115,7 @@ services:
       dockerfile: LendStuff/Server/Dockerfile
     networks:
         - server
+        - gateway
     depends_on:
         - user.db
     environment:
@@ -115,4 +136,3 @@ services:
         - SA_PASSWORD=Pwd123!?1
         - MSSQL_PID=Developer
   
-
