@@ -15,8 +15,8 @@ public class OrderRepository : IRepository<Models.Order>
 	
 	public async Task<IEnumerable<Models.Order>> FindByKey(Func<Models.Order, bool> findFunc)
 	{
-		return await _context
-			.Orders.Where(findFunc).AsQueryable().ToListAsync();
+		return _context
+			.Orders.Where(findFunc);
 	}
 
 
@@ -37,11 +37,11 @@ public class OrderRepository : IRepository<Models.Order>
 
 	public async Task<string> Delete(Guid id)
 	{
-		var todelete = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
+		var toDelete = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
 
-		if (todelete is not null)
+		if (toDelete is not null)
 		{
-			var result = _context.Orders.Remove(todelete);
+			var result = _context.Orders.Remove(toDelete);
 			await _context.SaveChangesAsync();
 			return $"Order: {result.Entity.OrderId} removed";
 		}
@@ -65,7 +65,7 @@ public class OrderRepository : IRepository<Models.Order>
 					propertyInfo.SetValue(toUpdate, propertyInfo.GetValue(item));
 				}
 
-				var result = await _context.SaveChangesAsync();
+				await _context.SaveChangesAsync();
 			}
 
 			return toUpdate;
