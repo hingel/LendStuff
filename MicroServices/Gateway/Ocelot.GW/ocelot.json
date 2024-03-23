@@ -59,6 +59,30 @@
         }
       ],
       "DownstreamPathTemplate": "/addgame"
+    },
+    {
+      "UpstreamPathTemplate": "/messages/{id}",
+      "UpstreamHttpMethod": [ "Get", "Delete" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "messages.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/messages/{id}"
+    },
+    {
+      "UpstreamPathTemplate": "/messages",
+      "UpstreamHttpMethod": [ "Post", "Patch" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "messages.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/messages"
     }
   ],
   "GlobalConfiguration": {
