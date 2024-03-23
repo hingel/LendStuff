@@ -46,7 +46,7 @@
           "Port": 8080
         }
       ],
-      "DownstreamPathTemplate": "/deleteGame/{id}",
+      "DownstreamPathTemplate": "/deleteGame/{id}"
     },
     {
       "UpstreamPathTemplate": "/boardgame/addgame",
