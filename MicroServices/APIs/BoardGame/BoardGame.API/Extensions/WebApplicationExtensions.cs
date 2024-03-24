@@ -7,9 +7,9 @@ namespace BoardGame.API.Extensions;
 public static class WebApplicationExtensions
 {
 	public static WebApplication MapBoardGameEndPoints(this WebApplication app)
-	{
-		app.MapGet("/allGames", GetAllGamesHandler); //.RequireCors("myCorsSpec"); //.AllowAnonymous(); //p => p.RequireUserName("c@cr.se")); //TODO: lägg till detta senare.
-		app.MapPost("/addGame", AddGameHandler); //.RequireAuthorization();
+    {
+        app.MapGet("/allGames", GetAllGamesHandler); //.RequireCors("myCorsSpec"); //.AllowAnonymous();
+		app.MapPost("/addGame", AddGameHandler).RequireAuthorization();
 		app.MapPatch("/updateGame", async (IMediator mediator, BoardGameDto boardGameToUpdate) =>
 		{
 			var response = await mediator.Send(new UpdateGameCommand(boardGameToUpdate));
@@ -19,7 +19,7 @@ public static class WebApplicationExtensions
 		{
 			var response = await mediator.Send(new DeleteBoardGameCommand(Guid.Parse(idToDelete)));
 			return response.Success ? Results.Ok(response) : Results.BadRequest(response);
-		}); //.RequireAuthorization("admin_access");
+		}).RequireAuthorization("admin_access");
 		app.MapGet("/getGameByTitle/{title}", async (IMediator mediator, string title) =>
 		{
 			var response = await mediator.Send(new GetGameByTitleRequest(title));

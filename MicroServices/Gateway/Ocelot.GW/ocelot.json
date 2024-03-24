@@ -34,7 +34,11 @@
           "Port": 8080
         }
       ],
-      "DownstreamPathTemplate": "/getgamebyid/{id}"
+      "DownstreamPathTemplate": "/getgamebyid/{id}",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Basic",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/boardgame/deleteGame/{id}",
@@ -46,7 +50,11 @@
           "Port": 8080
         }
       ],
-      "DownstreamPathTemplate": "/deleteGame/{id}"
+      "DownstreamPathTemplate": "/deleteGame/{id}",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Basic",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/boardgame/addgame",
@@ -58,7 +66,11 @@
           "Port": 8080
         }
       ],
-      "DownstreamPathTemplate": "/addgame"
+      "DownstreamPathTemplate": "/addgame",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Basic",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/messages/{id}",
@@ -70,7 +82,11 @@
           "Port": 8080
         }
       ],
-      "DownstreamPathTemplate": "/messages/{id}"
+      "DownstreamPathTemplate": "/messages/{id}",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Basic",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/messages",
@@ -82,7 +98,11 @@
           "Port": 8080
         }
       ],
-      "DownstreamPathTemplate": "/messages"
+      "DownstreamPathTemplate": "/messages",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Basic",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/order",
@@ -94,7 +114,11 @@
           "Port": 8080
         }
       ],
-      "DownstreamPathTemplate": "/"
+      "DownstreamPathTemplate": "/",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Basic",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/order/{orderid}",
@@ -106,7 +130,11 @@
           "Port": 8080
         }
       ],
-      "DownstreamPathTemplate": "/{orderid}"
+      "DownstreamPathTemplate": "/{orderid}",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Basic",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/order/getuserorders/{userid}",
@@ -118,32 +146,28 @@
           "Port": 8080
         }
       ],
-      "DownstreamPathTemplate": "/getuserorders/{userId}"
-    //},
-    //{
-    //  "UpstreamPathTemplate": "/users/getUsersGames/{id}",
-    //  "UpstreamHttpMethod": [ "Get" ],
-    //  "DownstreamScheme": "http",
-    //  "DownstreamHostAndPorts": [
-    //    {
-    //      "Host": "lendstuff.server",
-    //      "Port": 8080
-    //    }
-    //  ],
-    //  "DownstreamPathTemplate": "/getUsersGames/{id}"
-    //},
-    //{
-    //  "UpstreamPathTemplate": "/users/getUserById/{id}",
-    //  "UpstreamHttpMethod": [ "Get" ],
-    //  "DownstreamScheme": "http",
-    //  "DownstreamHostAndPorts": [
-    //    {
-    //      "Host": "lendstuff.server",
-    //      "Port": 8080
-    //    }
-    //  ],
-    //  "DownstreamPathTemplate": "/getUserById/{id}"
-    //},
+      "DownstreamPathTemplate": "/getuserorders/{userId}",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Basic",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/users/test",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/test",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Basic",
+        "AllowedScopes": []
+      }
+    }
     //{
     //  "UpstreamPathTemplate": "/users/getuserbyusername/{username}",
     //  "UpstreamHttpMethod": [ "Get" ],

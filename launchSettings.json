@@ -8,7 +8,8 @@
         "messages.api": "StartDebugging",
         "order.api": "StartDebugging",
         "lendstuff.server": "StartDebugging",
-        "ocelot.gw": "StartDebugging"
+        "ocelot.gw": "StartDebugging",
+        "user.api": "StartDebugging"
       }
     }
   }

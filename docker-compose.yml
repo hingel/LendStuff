@@ -106,5 +106,32 @@ services:
         - ACCEPT_EULA=Y
         - SA_PASSWORD=Pwd123!?1
         - MSSQL_PID=Developer
-   
-  
+
+  user.api:
+    image: ${DOCKER_REGISTRY-}userapi
+    build:
+      context: .
+      dockerfile: MicroServices/APIs/User/User.API/Dockerfile
+    networks:
+        - user
+        - gateway
+    depends_on:
+        - user.db
+    environment:
+        - DB_HOST=user.db
+        - DB_DATABASE=UrderDb
+        - DB_USER=sa
+        - DB_MSSQL_SA_PASSWORD=Pwd123!?1
+
+  user.db:
+    container_name: user.db
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    networks:
+        - user
+    ports:
+        - "7003:1433"
+    environment:
+        - ACCEPT_EULA=Y
+        - SA_PASSWORD=Pwd123!?1
+        - MSSQL_PID=Developer
+
