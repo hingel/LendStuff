@@ -9,7 +9,7 @@ builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("ocelot.json")
     .AddEnvironmentVariables();
 
-var authenticationProviderKey = "MyKey";
+var authenticationProviderKey = "Basic";
 
 builder.Services.AddAuthentication(options =>
 {
