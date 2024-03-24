@@ -10,7 +10,11 @@
           "Port": 8080
         }
       ],
-      "DownstreamPathTemplate": "/allgames"
+      "DownstreamPathTemplate": "/allgames",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "MyKey",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/boardgame/getgamebytitle?title={title}",
@@ -119,31 +123,31 @@
         }
       ],
       "DownstreamPathTemplate": "/getuserorders/{userId}"
-    //},
-    //{
-    //  "UpstreamPathTemplate": "/users/getUsersGames/{id}",
-    //  "UpstreamHttpMethod": [ "Get" ],
-    //  "DownstreamScheme": "http",
-    //  "DownstreamHostAndPorts": [
-    //    {
-    //      "Host": "lendstuff.server",
-    //      "Port": 8080
-    //    }
-    //  ],
-    //  "DownstreamPathTemplate": "/getUsersGames/{id}"
-    //},
-    //{
-    //  "UpstreamPathTemplate": "/users/getUserById/{id}",
-    //  "UpstreamHttpMethod": [ "Get" ],
-    //  "DownstreamScheme": "http",
-    //  "DownstreamHostAndPorts": [
-    //    {
-    //      "Host": "lendstuff.server",
-    //      "Port": 8080
-    //    }
-    //  ],
-    //  "DownstreamPathTemplate": "/getUserById/{id}"
-    //},
+    },
+    {
+      "UpstreamPathTemplate": "/users/login/{username}",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/login/{username}"
+    },
+    {
+      "UpstreamPathTemplate": "/users/test",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/test"
+    }
     //{
     //  "UpstreamPathTemplate": "/users/getuserbyusername/{username}",
     //  "UpstreamHttpMethod": [ "Get" ],

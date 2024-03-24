@@ -8,7 +8,7 @@ public static class WebApplicationExtensions
 {
 	public static WebApplication MapBoardGameEndPoints(this WebApplication app)
 	{
-		app.MapGet("/allGames", GetAllGamesHandler); //.RequireCors("myCorsSpec"); //.AllowAnonymous(); //p => p.RequireUserName("c@cr.se")); //TODO: lägg till detta senare.
+		app.MapGet("/allGames", GetAllGamesHandler).RequireAuthorization(); //.RequireCors("myCorsSpec"); //.AllowAnonymous(); //p => p.RequireUserName("c@cr.se")); //TODO: lägg till detta senare.
 		app.MapPost("/addGame", AddGameHandler); //.RequireAuthorization();
 		app.MapPatch("/updateGame", async (IMediator mediator, BoardGameDto boardGameToUpdate) =>
 		{

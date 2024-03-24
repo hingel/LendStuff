@@ -4,11 +4,28 @@ using BoardGame.DataAccess;
 using BoardGame.DataAccess.Models;
 using BoardGame.DataAccess.Repository;
 using LendStuff.Shared;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+builder.Services.AddAuthorization();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.Authority = $"https://{builder.Configuration["Auth0:Domain"]}/";
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidAudience = builder.Configuration["Auth0:Audience"],
+        ValidIssuer = $"https://{builder.Configuration["Auth0:Domain"]}/",
+        ValidateLifetime = true
+    };
+});
 
 var host = Environment.GetEnvironmentVariable("DB_HOST");
 var database = Environment.GetEnvironmentVariable("DB_DATABASE");
@@ -36,6 +53,9 @@ if (app.Environment.IsDevelopment())
 		context.Database.Migrate();
 	}
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapBoardGameEndPoints();
 
