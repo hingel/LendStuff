@@ -3,6 +3,7 @@ using Messages.API.Extensions;
 using Messages.DataAccess;
 using Messages.DataAccess.Models;
 using Messages.DataAccess.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 

@@ -2,6 +2,7 @@
 using LendStuff.Shared.DTOs;
 using LendStuff.Shared;
 using Order.API.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Order.API.GetOrderById;
 
@@ -14,8 +15,8 @@ public class Handler(IRepository<DataAccess.Models.Order> repository) : Endpoint
 	public override void Configure()
 	{
 		Get("/{orderId}");
-		AllowAnonymous();
-	}
+        AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
+    }
 
 	public override async Task HandleAsync(Request req, CancellationToken ct)
 	{

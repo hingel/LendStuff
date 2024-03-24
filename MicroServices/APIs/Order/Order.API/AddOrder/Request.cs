@@ -1,6 +1,7 @@
 ﻿using FastEndpoints;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Order.API.Helpers;
 
 namespace Order.API.AddOrder;
@@ -14,8 +15,9 @@ public class Handler(IRepository<DataAccess.Models.Order> repository) : Endpoint
 	public override void Configure()
 	{
 		Post("/");
-		AllowAnonymous();
-	}
+        AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
+        //AllowAnonymous();
+    }
 
 	public override async Task HandleAsync(Request req, CancellationToken ct)
 	{

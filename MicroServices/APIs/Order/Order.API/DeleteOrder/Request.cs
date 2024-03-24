@@ -1,5 +1,6 @@
 ﻿using FastEndpoints;
 using LendStuff.Shared;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Order.API.DeleteOrder;
 
@@ -12,7 +13,7 @@ public class Handler(IRepository<DataAccess.Models.Order> repository) : Endpoint
 	public override void Configure()
 	{
 		Delete("/{orderId}");
-		AllowAnonymous();
+        AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
 	}
 
 	public override async Task HandleAsync(Request req, CancellationToken ct)
