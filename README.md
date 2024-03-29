@@ -1,7 +1,5 @@
 # Lendstudd
 
-En app för att kunna låna saker av andra användare.
+En app för att kunna låna saker av andra användare, i nuläget är det utformat mot brädspel.
 
-I branchen Development består appen av en monolit med blazor web assembly. Men hemsida som fungerar bra.
-
-Men jag ville göra om detta till en micro service. Har därför skapat en gren som heter development_microservice. Där jag bestämde mig för att göra om allting. Detta är nu enbart en backend server med ocelot gateway.
+Detta startade som ett blazor projekt men som jag sedan jobbat vidare med till en microservice. Nu är det enbart en backend server Ocelot Gateway. MinimalApi endpoints och i ett projekt Fastendpoints.
