@@ -3,13 +3,13 @@ using LendStuff.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Order.API.Helpers;
 using Order.DataAccess;
 using Order.DataAccess.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthorization();
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -36,7 +36,9 @@ builder.Services.AddDbContext<OrderDbContext>(options => options.UseSqlServer(co
 
 builder.Services.AddScoped<IRepository<Order.DataAccess.Models.Order>, OrderRepository>();
 
+builder.Services.AddScoped<ClientFactory>();
 builder.Services.AddFastEndpoints();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
@@ -52,8 +54,6 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.UseFastEndpoints();
-
 
 app.Run();

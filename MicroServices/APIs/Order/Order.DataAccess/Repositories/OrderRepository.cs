@@ -11,14 +11,12 @@ public class OrderRepository : IRepository<Models.Order>
 	{
 		_context = context;
 	}
-
 	
 	public async Task<IEnumerable<Models.Order>> FindByKey(Func<Models.Order, bool> findFunc)
 	{
 		return _context
 			.Orders.Where(findFunc);
 	}
-
 
 	async Task<IEnumerable<Models.Order>> IRepository<Models.Order>.GetAll()
 	{
@@ -32,7 +30,6 @@ public class OrderRepository : IRepository<Models.Order>
 		await _context.SaveChangesAsync();
 
 		return item;
-
 	}
 
 	public async Task<string> Delete(Guid id)

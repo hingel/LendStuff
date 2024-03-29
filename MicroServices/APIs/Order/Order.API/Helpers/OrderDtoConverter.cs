@@ -1,39 +1,30 @@
-﻿using LendStuff.Shared.DTOs;
+﻿using LendStuff.Shared;
+using LendStuff.Shared.DTOs;
 
 namespace Order.API.Helpers;
 
 public static class OrderDtoConverter
 {
-	public static async Task<DataAccess.Models.Order> ConvertDtoToOrder(OrderDto newOrder)
+	public static async Task<DataAccess.Models.Order> ConvertDtoToOrder(OrderDto orderDto)
 	{
-		return new DataAccess.Models.Order()
+		var order = new DataAccess.Models.Order
 		{
-			BoardGameId = newOrder.BoardGameId, // (await _unitOfWork.BoardGameRepository.FindByKey(b => b.Id == newOrder.BoardGameId)).FirstOrDefault(), //måste hämt
-			BorrowerId = newOrder.BorrowerUserId,
-			LentDate = newOrder.LentDate,
-			OwnerId = newOrder.OwnerUserId,
-			ReturnDate = newOrder.ReturnDate,
-			Status = newOrder.Status,
-			//OrderMessages = await FindMessages(newOrder.OrderMessageDtos) //Kopplat till Funktion 1:
-			OrderMessages = newOrder.OrderMessageGuids, //Kopplat till Funktion 2:
-			OrderId = newOrder.OrderId
+			BoardGameId = orderDto.BoardGameId,
+			BorrowerId = orderDto.BorrowerUserId,
+			LentDate = orderDto.LentDate ?? DateTime.Now,
+			OwnerId = orderDto.OwnerUserId,
+			ReturnDate = orderDto.ReturnDate ?? DateTime.Now,
+			Status = orderDto.Status ?? OrderStatus.Inquiry,
+			OrderId = orderDto.OrderId ?? Guid.NewGuid()
 		};
-	}
+
+		order.OrderMessagesGuid.AddRange(orderDto.OrderMessageGuids);
+
+        return order;
+    }
 
 	public static OrderDto ConvertOrderToDto(DataAccess.Models.Order o)
 	{
-		return new OrderDto()
-		{
-			BoardGameId =
-				o.BoardGameId,
-			BorrowerUserId =
-				o.BorrowerId,
-			LentDate = o.LentDate,
-			OrderId = o.OrderId,
-			OwnerUserId = o.OwnerId,
-			ReturnDate = o.ReturnDate,
-			Status = o.Status,
-			OrderMessageGuids  = o.OrderMessages.ToList()
-		};
+		return new OrderDto(o.OrderId, o.OwnerId, o.BorrowerId, o.BoardGameId, o.LentDate, o.ReturnDate, o.Status, o.OrderMessagesGuid.ToArray());
 	}
 }
