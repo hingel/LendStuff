@@ -20,13 +20,4 @@ public static class DtoConvert
 			
 		};
 	}
-
-	public static UserBoardGameDto ConvertUserBoardGameToDto(UserBoardGame userBoardGame)
-	{
-		return new UserBoardGameDto()
-		{
-			BoardGameDto = ConvertBoardGameToDto(userBoardGame.BoardGame),
-			ForLending = userBoardGame.ForLending,
-		};
-	}
 }

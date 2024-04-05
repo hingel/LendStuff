@@ -5,7 +5,7 @@ namespace Order.API.Helpers;
 
 public static class OrderDtoConverter
 {
-	public static async Task<DataAccess.Models.Order> ConvertDtoToOrder(OrderDto orderDto)
+	public static DataAccess.Models.Order ConvertDtoToOrder(OrderDto orderDto)
 	{
 		var order = new DataAccess.Models.Order
 		{

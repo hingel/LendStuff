@@ -3,20 +3,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoardGame.DataAccess.Repository;
 
-public class BoardGameRepository(BoardGameDbContext context) : IRepository<Models.BoardGame>
+public class BoardGameRepository(BoardGameDbContext context) : IBoardGameRepository
 {
     public async Task<IEnumerable<Models.BoardGame>> GetAll()
 	{
 		return await context.BoardGames.ToArrayAsync();
 	}
 
-	public async Task<IEnumerable<Models.BoardGame>> FindByKey(Func<Models.BoardGame, bool> findFunc)
-	{
-		var result = context.BoardGames.Include(b => b.Genres).Where(findFunc);
-
-		return result;
-	}
-
+    public async Task<Models.BoardGame?> GetById(Guid id)
+    {
+        return await context.BoardGames.Include(b => b.Genres).FirstOrDefaultAsync(b => b.Id == id);
+    }
+	
 	public async Task<Models.BoardGame> AddItem(Models.BoardGame item)
 	{
 		var result = await context.BoardGames.AddAsync(item);
@@ -57,4 +55,16 @@ public class BoardGameRepository(BoardGameDbContext context) : IRepository<Model
 
 		return toUpdate;
 	}
+
+    public async Task<IEnumerable<Models.BoardGame>> GetByUserId(Guid userId)
+    {
+        return await context.BoardGames.Include(b => b.Genres).Where(b => b.OwnerId == userId).ToArrayAsync();
+    }
+
+    public async Task<IEnumerable<Models.BoardGame>> GetByTitle(string searchWord)
+    {
+        var searchWords = searchWord.Split([' ', ',', '.']);
+
+        return await context.BoardGames.Where(b => searchWords.Contains(b.Title.ToLower())).ToArrayAsync();
+    }
 }

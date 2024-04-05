@@ -3,71 +3,64 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Order.DataAccess.Repositories;
 
-public class OrderRepository : IRepository<Models.Order>
+public class OrderRepository(OrderDbContext context) : IOrderRepository
 {
-	private readonly OrderDbContext _context;
-
-	public OrderRepository(OrderDbContext context)
-	{
-		_context = context;
-	}
-	
-	public async Task<IEnumerable<Models.Order>> FindByKey(Func<Models.Order, bool> findFunc)
-	{
-		return _context
-			.Orders.Where(findFunc);
-	}
-
 	async Task<IEnumerable<Models.Order>> IRepository<Models.Order>.GetAll()
-	{
-		throw new NotImplementedException();
-	}
+    {
+        return await context.Orders.ToArrayAsync();
+    }
 
-	public async Task<Models.Order> AddItem(Models.Order item)
-	{
-		_context.Orders.Add(item);
+    public async Task<Models.Order?> GetById(Guid id)
+    {
+        return await context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
+    }
 
-		await _context.SaveChangesAsync();
+    public async Task<Models.Order> AddItem(Models.Order item)
+	{
+		context.Orders.Add(item);
+
+		await context.SaveChangesAsync();
 
 		return item;
 	}
 
 	public async Task<string> Delete(Guid id)
 	{
-		var toDelete = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
+		var toDelete = await context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
 
 		if (toDelete is not null)
 		{
-			var result = _context.Orders.Remove(toDelete);
-			await _context.SaveChangesAsync();
+			var result = context.Orders.Remove(toDelete);
+			await context.SaveChangesAsync();
 			return $"Order: {result.Entity.OrderId} removed";
 		}
 
 		return $"Order {id} not found";
 	}
 	
-	public async Task<Models.Order> Update(Models.Order item)
+	public async Task<Models.Order?> Update(Models.Order item)
 	{
-		var toUpdate = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId.Equals(item.OrderId));
+		var toUpdate = await context.Orders.FirstOrDefaultAsync(o => o.OrderId.Equals(item.OrderId));
 
-		if (toUpdate is not null)
-		{
-			var propetyList = typeof(Models.Order).GetProperties();
+        if (toUpdate is null) return null;
 
-			foreach (var propertyInfo in propetyList)
-			{
-				//TODO: Kan behövas null check
-				if (!propertyInfo.GetValue(item).Equals(propertyInfo.GetValue(toUpdate)))
-				{
-					propertyInfo.SetValue(toUpdate, propertyInfo.GetValue(item));
-				}
+        var properties = typeof(Models.Order).GetProperties();
 
-				await _context.SaveChangesAsync();
-			}
+        foreach (var propertyInfo in properties)
+        {
+            if (!propertyInfo.GetValue(item)!.Equals(propertyInfo.GetValue(toUpdate)))
+            {
+                propertyInfo.SetValue(toUpdate, propertyInfo.GetValue(item));
+            }
 
-			return toUpdate;
-		}
+            await context.SaveChangesAsync();
+        }
 
-		return null;
-	}
+        return toUpdate;
+    }
+
+    public async Task<IEnumerable<Models.Order>> GetByUserId(Guid userId)
+    {
+        return await context.Orders.Where(o => o.BorrowerId == userId || o.OwnerId == userId).ToArrayAsync();
+    }
 }

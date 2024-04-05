@@ -6,23 +6,18 @@ using MediatR;
 
 namespace BoardGame.API.Handlers;
 
-public class GetGameByIdHandler : IRequestHandler<GetGameByIdQuery, ServiceResponse<BoardGameDto>>
+public class GetGameByIdHandler(IRepository<DataAccess.Models.BoardGame> repository)
+    : IRequestHandler<GetGameByIdQuery, ServiceResponse<BoardGameDto>>
 {
-	private readonly IRepository<DataAccess.Models.BoardGame> _repository;
+    public async Task<ServiceResponse<BoardGameDto>> Handle(GetGameByIdQuery request, CancellationToken cancellationToken)
+    {
+        var result = await repository.GetById(request.Id);
 
-	public GetGameByIdHandler(IRepository<DataAccess.Models.BoardGame> repository)
-	{
-		_repository = repository;
-	}
-	public async Task<ServiceResponse<BoardGameDto>> Handle(GetGameByIdQuery request, CancellationToken cancellationToken)
-	{
-		var result = await _repository.FindByKey((game => game.Id == request.Id));
-
-		if (result.Any())
+		if (result != null)
 		{
 			return new ServiceResponse<BoardGameDto>()
 			{
-				Data = result.Select(DtoConvert.ConvertBoardGameToDto).First(),
+				Data = DtoConvert.ConvertBoardGameToDto(result),
 				Message = $"Boardgame found.",
 				Success = true
 			};

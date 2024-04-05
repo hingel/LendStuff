@@ -4,49 +4,40 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Messages.DataAccess.Repositories;
 
-public class InternalMessageRepository : IRepository<InternalMessage>
+public class InternalMessageRepository(MessageDbContext context) : IMessageRepository
 {
-	private readonly MessageDbContext _context;
-
-	public InternalMessageRepository(MessageDbContext context)
-	{
-		_context = context;
-	}
-
-
-	//Denna metoden borde ju typ aldrig användas?!
 	public async Task<IEnumerable<InternalMessage>> GetAll()
 	{
-		return await _context.InternalMessages.ToArrayAsync();
+		return await context.InternalMessages.ToArrayAsync();
 	}
 
-	public async Task<IEnumerable<InternalMessage>> FindByKey(Func<InternalMessage, bool> findFunc)
-	{
-		return _context.InternalMessages.Where(findFunc);
-	}
+    public async Task<InternalMessage?> GetById(Guid id)
+    {
+        return await context.InternalMessages.FirstOrDefaultAsync(m => m.Id == id);
+    }
 
-	public async Task<InternalMessage> AddItem(InternalMessage item)
+    public async Task<IEnumerable<InternalMessage>> GetByUserId(Guid userId)
+    {
+        return await context.InternalMessages.Where(m => m.SentFromUserId == userId || m.SentToUserId == userId)
+            .ToArrayAsync();
+    }
+    public async Task<InternalMessage> AddItem(InternalMessage item)
 	{
-		var result = await _context.InternalMessages.AddAsync(item);
+		var result = await context.InternalMessages.AddAsync(item);
 
-		await _context.SaveChangesAsync();
+		await context.SaveChangesAsync();
 
 		return result.Entity;
 	}
-
-	public Task<string> Delete(Guid id)
+	
+	public async Task<string> Delete(Guid id)
 	{
-		throw new NotImplementedException();
-	}
-
-	public async Task<string> Delete(string id)
-	{
-		var toDelete = await _context.InternalMessages.FirstOrDefaultAsync(m => m.Id.ToString() == id);
+		var toDelete = await context.InternalMessages.FirstOrDefaultAsync(m => m.Id == id);
 
 		if (toDelete is not null)
 		{
-			var result = _context.InternalMessages.Remove(toDelete);
-			await _context.SaveChangesAsync();
+			var result = context.InternalMessages.Remove(toDelete);
+			await context.SaveChangesAsync();
 			return $"Message with ID: {result.Entity.Id} deleted";
 		}
 
@@ -55,28 +46,22 @@ public class InternalMessageRepository : IRepository<InternalMessage>
 
 	public async Task<InternalMessage?> Update(InternalMessage item)
 	{
-		var toUpdate = await _context.InternalMessages.FirstOrDefaultAsync(m => m.Id == item.Id); //Måste jag även inkludera  properties klasser?
+		var toUpdate = await context.InternalMessages.FirstOrDefaultAsync(m => m.Id == item.Id); //Måste jag även inkludera  properties klasser?
 
-		if (toUpdate is not null)
-		{
-			var listOfProperties = typeof(InternalMessage).GetProperties();
+        if (toUpdate is null) return null;
 
-			foreach (var property in listOfProperties)
-			{
-				if (!property.GetValue(item)!.Equals(property.GetValue(toUpdate)))
-				{
-					property.SetValue(toUpdate, property.GetValue(item));
-				}
-			}
+        var listOfProperties = typeof(InternalMessage).GetProperties();
 
-			await _context.SaveChangesAsync();
+        foreach (var property in listOfProperties)
+        {
+            if (!property.GetValue(item)!.Equals(property.GetValue(toUpdate)))
+            {
+                property.SetValue(toUpdate, property.GetValue(item));
+            }
+        }
 
-			return toUpdate;
+        await context.SaveChangesAsync();
 
-		}
-
-		return null;
-
-	}
-
+        return toUpdate;
+    }
 }

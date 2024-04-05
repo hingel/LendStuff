@@ -19,8 +19,8 @@ public class Handler(IRepository<DataAccess.Models.Order> repository) : Endpoint
     }
 
 	public override async Task HandleAsync(Request req, CancellationToken ct)
-	{
-		var result = (await repository.FindByKey(o => o.OrderId == req.OrderId)).FirstOrDefault();
+    {
+        var result = await repository.GetById(req.OrderId);
 
 		if (result is null)
 		{
@@ -28,6 +28,6 @@ public class Handler(IRepository<DataAccess.Models.Order> repository) : Endpoint
 			return;
 		}
 		
-		await SendAsync(new Response("All orders", true, OrderDtoConverter.ConvertOrderToDto(result)), 200, ct);
+		await SendAsync(new Response($"Order with id: { req.OrderId }", true, OrderDtoConverter.ConvertOrderToDto(result)), 200, ct);
 	}
 }

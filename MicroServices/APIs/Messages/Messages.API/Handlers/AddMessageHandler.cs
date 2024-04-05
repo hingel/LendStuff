@@ -10,9 +10,14 @@ public class AddMessageHandler(IRepository<InternalMessage> repository) : IReque
 {
 	public async Task<ServiceResponse<string>> Handle(AddMessageCommand request, CancellationToken cancellationToken)
 	{
-		var result = await repository.FindByKey(m => m.Id == request.NewMessageDto.MessageId && m.Id == request.NewMessageDto.SentToUserId);
+		//TODO: Detta måste uppdateras
+		//Först kolla om meddelande redan finns: Leta upp meddelande från användaren och mottagare och sortera efter skapat. Kolla om texten i meddelandet är det samma.
+		//Sen kolla om användaren som ska skickas till finns
+		//Annars spara ner meddelandet
 
-		if (result.Any())
+        var result = await repository.GetById(request.NewMessageDto.MessageId);
+
+		if (result != null && result.Id == request.NewMessageDto.SentToUserId)
 		{
 			await repository.Update(MessageDtoConverter.ConvertDtoToMessage(request.NewMessageDto));
 
@@ -23,9 +28,6 @@ public class AddMessageHandler(IRepository<InternalMessage> repository) : IReque
 			};
 		}
 
-		//TODO:
-		//måste kolla med UserManager APIet:
-		//Göra anrop till interna apiet.
 		//var resultPerson = await _userManager.FindByNameAsync(newMessageDto.SentToUserName);
 		//if (resultPerson is not null)
 		//{

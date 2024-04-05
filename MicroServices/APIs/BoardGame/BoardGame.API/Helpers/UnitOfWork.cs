@@ -1,14 +1,12 @@
 ﻿using BoardGame.DataAccess;
-using BoardGame.DataAccess.Models;
 using BoardGame.DataAccess.Repository;
-using LendStuff.Shared;
 
 namespace BoardGame.API.Helpers;
 
 public class UnitOfWork : IDisposable
 {
-	private IRepository<BoardGame.DataAccess.Models.BoardGame> _boardGameRepository;
-	private IRepository<Genre> _genreRepository;
+	private IBoardGameRepository _boardGameRepository;
+	private IGenreRepository _genreRepository;
 	private readonly BoardGameDbContext _context;
 	
 	public UnitOfWork(BoardGameDbContext context)
@@ -16,7 +14,7 @@ public class UnitOfWork : IDisposable
 		_context = context;
 	}
 
-	public IRepository<BoardGame.DataAccess.Models.BoardGame> BoardGameRepository
+	public IBoardGameRepository BoardGameRepository
 	{
 		get
 		{
@@ -28,7 +26,7 @@ public class UnitOfWork : IDisposable
 		}
 	}
 
-	public IRepository<Genre> GenreRepository
+	public IGenreRepository GenreRepository
 	{
 		get
 		{
@@ -45,10 +43,6 @@ public class UnitOfWork : IDisposable
 		return await _context.SaveChangesAsync();
 	}
 
-
-	//TODO: Fråga niklas om Dispose
-	//Ska repositories ärva IDispose också?
-	//Behövs den om Unit of Work är injectad?
 	public void Dispose()
 	{
 		_context.Dispose();

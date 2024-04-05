@@ -20,7 +20,7 @@ public class Handler(IRepository<DataAccess.Models.Order> repository) : Endpoint
 
 	public override async Task HandleAsync(Request req, CancellationToken ct)
 	{
-		var updatedOrder = await OrderDtoConverter.ConvertDtoToOrder(req.updatedOrderDto);
+		var updatedOrder = OrderDtoConverter.ConvertDtoToOrder(req.updatedOrderDto);
 
 		var result = await repository.Update(updatedOrder);
 		
