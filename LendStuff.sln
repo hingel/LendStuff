@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LendStuff.Client", "LendStuff\Client\LendStuff.Client.csproj", "{579DCE1D-4BD9-45E1-9DDC-B3E80BF8D1FA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LendStuff.Shared", "LendStuff\Shared\LendStuff.Shared.csproj", "{CF72B7CD-0494-4CF0-90C3-E1679363B737}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MicroServices", "MicroServices", "{412FF80B-1F17-41DC-A1E6-59A9AFBF9AD9}"
@@ -35,9 +33,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ocelot.GW", "MicroServices\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "User", "User", "{52DE0F58-7DBB-4E82-9A25-DB80662BC058}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User.API", "MicroServices\APIs\User\User.API\User.API.csproj", "{1B7A8612-55E8-4571-A73C-EDEAC71ED5D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User.API", "MicroServices\APIs\User\User.API\User.API.csproj", "{1B7A8612-55E8-4571-A73C-EDEAC71ED5D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User.DataAccess", "MicroServices\APIs\User\User.DataAccess\User.DataAccess.csproj", "{9A40526C-20EE-4ED0-A80F-0EEBF329FE12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User.DataAccess", "MicroServices\APIs\User\User.DataAccess\User.DataAccess.csproj", "{9A40526C-20EE-4ED0-A80F-0EEBF329FE12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +43,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{579DCE1D-4BD9-45E1-9DDC-B3E80BF8D1FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{579DCE1D-4BD9-45E1-9DDC-B3E80BF8D1FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{579DCE1D-4BD9-45E1-9DDC-B3E80BF8D1FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{579DCE1D-4BD9-45E1-9DDC-B3E80BF8D1FA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CF72B7CD-0494-4CF0-90C3-E1679363B737}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CF72B7CD-0494-4CF0-90C3-E1679363B737}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF72B7CD-0494-4CF0-90C3-E1679363B737}.Release|Any CPU.ActiveCfg = Release|Any CPU

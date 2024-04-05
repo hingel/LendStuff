@@ -3,8 +3,8 @@
 public interface IRepository<T>
 {
 	Task<IEnumerable<T>> GetAll();
-	Task<IEnumerable<T>> FindByKey(Func<T, bool> findFunc);
+	Task<T?> GetById(Guid id);
 	Task<T> AddItem(T item);
 	Task<string> Delete(Guid id);
-	Task<T> Update(T item);
+	Task<T?> Update(T item);
 }

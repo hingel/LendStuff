@@ -17,10 +17,21 @@ public class Handler(IRepository<DataAccess.Models.Order> repository) : Endpoint
 	}
 
 	public override async Task HandleAsync(Request req, CancellationToken ct)
-	{
-		var result = await repository.Delete(req.OrderId);
+    {
+        var currentOrder = await repository.GetById(req.OrderId);
 
+		if( currentOrder is null)
+        {
+            await SendAsync(new Response("Deleted", true), 200, ct);
+            return;
+        }
 
+        if (currentOrder.Status == OrderStatus.Active)
+        {
+            await SendAsync(new Response("Can not delete", false), 404 ,cancellation: ct);
+        }
+
+        var result = await repository.Delete(req.OrderId);
 		await SendAsync(new Response(result, true), 200, ct);
 	}
 }

@@ -39,39 +39,38 @@ public class UpdateGameHandler : IRequestHandler<UpdateGameCommand, ServiceRespo
 		};
 	}
 
-	private async Task<DataAccess.Models.BoardGame> ConvertDtoToBoardGame(BoardGameDto dtoToConvert)
-	{
-		return new DataAccess.Models.BoardGame
-		{
-			Available = dtoToConvert.Available,
-			BggLink = dtoToConvert.BggLink,
-			Description = dtoToConvert.Description,
-			Genres = await FindGenres(dtoToConvert.Genres),
-			Id = Guid.NewGuid(),
-			ReleaseYear = dtoToConvert.ReleaseYear,
-			Title = dtoToConvert.Title
-		};
-	}
-	private async Task<List<Genre>> FindGenres(List<string> genreStrings)
-	{
-		var listOfGenres = new List<Genre>();
+    public async Task<DataAccess.Models.BoardGame> ConvertDtoToBoardGame(BoardGameDto dtoToConvert)
+    {
+        return new DataAccess.Models.BoardGame
+        {
+            Available = dtoToConvert.Available,
+            BggLink = dtoToConvert.BggLink,
+            Description = dtoToConvert.Description,
+            Genres = await FindGenres(dtoToConvert.Genres),
+            Id = Guid.NewGuid(),
+            ReleaseYear = dtoToConvert.ReleaseYear,
+            Title = dtoToConvert.Title
+        };
+    }
 
-		foreach (var genre in genreStrings)
-		{
-			var search =
-				await _unitOfWork.GenreRepository.FindByKey(g => g.Name.ToLower().Equals(genre.ToLower())); //TODO: mer check på detta. Kapa tomutrymme etc.
-			//Eller ge förslag på när användaren skriver i de ord som är liknande.
+    public async Task<List<Genre>> FindGenres(List<string> genreStrings)
+    {
+        var listOfGenres = new List<Genre>();
 
-			if (search.Count() > 0)
-			{
-				listOfGenres.AddRange(search);
-				continue;
-			}
+        foreach (var genre in genreStrings)
+        {
+            var search = await _unitOfWork.GenreRepository.GetByName(genre.Trim());  //TODO: Kanske borde hämta alla o kontrollera dem?
 
-			//Här skapas en ny genre om den inte redan finns.
-			listOfGenres.Add(await _unitOfWork.GenreRepository.AddItem(new Genre() { Name = genre }));
-		}
+            if (search.Any())
+            {
+                listOfGenres.AddRange(search);
+                continue;
+            }
 
-		return listOfGenres;
-	}
+            listOfGenres.Add(await _unitOfWork.GenreRepository.AddItem(new Genre { Name = genre.Trim().ToLowerInvariant() }));
+            await _unitOfWork.SaveChanges();
+        }
+
+        return listOfGenres;
+    }
 }

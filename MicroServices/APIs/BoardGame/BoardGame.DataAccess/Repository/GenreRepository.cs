@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoardGame.DataAccess.Repository;
 
-public class GenreRepository : IRepository<Genre>
+public class GenreRepository : IGenreRepository
 {
 	private readonly BoardGameDbContext _context;
 	public GenreRepository(BoardGameDbContext context)
@@ -17,13 +17,11 @@ public class GenreRepository : IRepository<Genre>
 		return await _context.Genres.ToArrayAsync();
 	}
 
-	public async Task<IEnumerable<Genre>> FindByKey(Func<Genre, bool> findFunc)
-	{
-		//Måste jag ha en koll om det finns något öht?
-
-		return _context.Genres.Where(findFunc);
-	}
-
+    public async Task<Genre?> GetById(Guid id)
+    {
+        return await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
+    }
+	
 	public async Task<Genre> AddItem(Genre item)
 	{
 		var result = await _context.Genres.AddAsync(item);
@@ -64,4 +62,9 @@ public class GenreRepository : IRepository<Genre>
 
 		return toUpdate;
 	}
+
+    public async Task<IEnumerable<Genre>> GetByName(string name)
+    {
+        return await _context.Genres.Where(g => g.Name.ToLower() == name.ToLower()).ToArrayAsync();
+    }
 }

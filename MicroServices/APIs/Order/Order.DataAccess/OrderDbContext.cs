@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Order.DataAccess;
 
@@ -17,6 +16,6 @@ public class OrderDbContext(DbContextOptions<OrderDbContext> options) : DbContex
 		modelBuilder.Entity<Models.Order>(o => o.Property(p => p.LentDate).IsRequired());
 		modelBuilder.Entity<Models.Order>(o => o.Property(p => p.ReturnDate).IsRequired());
 		modelBuilder.Entity<Models.Order>(o => o.Property(p => p.Status).IsRequired());
-		modelBuilder.Entity<Models.Order>(o => o.Property(p => p.OrderMessages).IsRequired());
+		modelBuilder.Entity<Models.Order>(o => o.Property(p => p.OrderMessagesGuid).IsRequired());
 	}
 }

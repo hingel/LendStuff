@@ -6,32 +6,36 @@ using Order.API.Helpers;
 
 namespace Order.API.AddOrder;
 
-public record Request(OrderDto OrderDto);
+public record Request(Guid OwnerUserId, Guid BorrowerUserId, Guid BoardGameId);
 
 public record Response(string Message, bool Success, OrderDto? OrderDto);
 
-public class Handler(IRepository<DataAccess.Models.Order> repository) : Endpoint<Request, Response>
+public class Handler(IRepository<DataAccess.Models.Order> repository, ClientFactory clientFactory)  : Endpoint<Request, Response>
 {
 	public override void Configure()
 	{
 		Post("/");
         AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
-        //AllowAnonymous();
     }
 
 	public override async Task HandleAsync(Request req, CancellationToken ct)
 	{
-		var newOrder = await OrderDtoConverter.ConvertDtoToOrder(req.OrderDto);
+        var result = await clientFactory.Call(req.BoardGameId);
 
-		//TODO: Måste ske API-anrop till den andra servern. Kolla hur det görs.
+        if (!result!.Available) await SendAsync(new Response("Boardgame not available", false, null), cancellation: ct);
 
-		//if (!newOrder.BoardGame.Available)
-		//{
-		//	await SendAsync(new Response("fix this", false, OrderDtoConverter.ConvertOrderToDto(newOrder)), 200 , ct);
-		//}
+        var newOrder = new DataAccess.Models.Order
+        {
+            OwnerId = result.OwnerId,
+            BoardGameId = result.Id,
+            BorrowerId = req.BorrowerUserId,
+            LentDate = DateTime.Now,
+            ReturnDate = DateTime.Now.AddDays(21),
+            Status = OrderStatus.Inquiry
+        };
 
-		var result = await repository.AddItem(newOrder);
+        var response = await repository.AddItem(newOrder);
 
-		await SendAsync(new Response($"Order with nr: {result.OrderId} added", true, null), cancellation: ct);
-	}
+        await SendAsync(new Response($"Order with nr: {response.OrderId} added", true, OrderDtoConverter.ConvertOrderToDto(response)), cancellation: ct);
+    }
 }
