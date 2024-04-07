@@ -34,7 +34,7 @@ var connectionString = $"Data Source={host};Initial Catalog={database};User ID={
 
 builder.Services.AddDbContext<OrderDbContext>(options => options.UseSqlServer(connectionString));
 
-builder.Services.AddScoped<IRepository<Order.DataAccess.Models.Order>, OrderRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 builder.Services.AddScoped<ClientFactory>();
 builder.Services.AddFastEndpoints();

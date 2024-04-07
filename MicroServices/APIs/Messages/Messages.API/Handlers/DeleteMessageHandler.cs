@@ -2,10 +2,11 @@
 using MediatR;
 using Messages.API.CommandsAndQueries;
 using Messages.DataAccess.Models;
+using Messages.DataAccess.Repositories;
 
 namespace Messages.API.Handlers;
 
-public class DeleteMessageHandler(IRepository<InternalMessage> repository) : IRequestHandler<DeleteMessageCommand, ServiceResponse<string>>
+public class DeleteMessageHandler(IMessageRepository repository) : IRequestHandler<DeleteMessageCommand, ServiceResponse<string>>
 {
 	public async Task<ServiceResponse<string>> Handle(DeleteMessageCommand request, CancellationToken cancellationToken)
 	{

@@ -4,7 +4,7 @@ namespace User.DataAccess;
 
 public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(options)
 {
-    public DbSet<Models.User> Users = null!;
+    public DbSet<Models.User> Users { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

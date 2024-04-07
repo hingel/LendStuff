@@ -68,8 +68,6 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/test", () => "Hello!").RequireAuthorization();
-
 app.MapPost("newUser", async (UserDbContext userDbContext, UserDto newUser) =>
 {
     var user = await userDbContext.Users.FirstOrDefaultAsync(u =>
@@ -86,7 +84,7 @@ app.MapPost("newUser", async (UserDbContext userDbContext, UserDto newUser) =>
     return new ServiceResponse<UserDto> { Data = DtoConverters.UserToDto(userToAdd), Message = $"User added{userToAdd.Id}", Success = true };
 });
 
-app.MapPost("/delete/{userId}", async (string userId, UserDbContext userDbContext, IBus bus, HttpContext httpContext) =>
+app.MapDelete("/{userId}", async (string userId, UserDbContext userDbContext, IBus bus, HttpContext httpContext) =>
 {
     var activeUserName = httpContext.User.Identity?.Name;
     var userToDelete = await userDbContext.Users.FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));

@@ -1,5 +1,6 @@
 ﻿using BoardGame.API.CommandsAndQueries;
 using BoardGame.API.Helpers;
+using BoardGame.DataAccess.Repository;
 using LendStuff.Shared;
 using MediatR;
 
@@ -9,7 +10,7 @@ public class DeleteGameHandler : IRequestHandler<DeleteBoardGameCommand, Service
 {
 	private readonly UnitOfWork _unitOfWork;
 
-	public DeleteGameHandler(IRepository<DataAccess.Models.BoardGame> repository, UnitOfWork unitOfWork)
+	public DeleteGameHandler(IBoardGameRepository repository, UnitOfWork unitOfWork)
 	{
 		_unitOfWork = unitOfWork;
 	}

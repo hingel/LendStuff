@@ -42,7 +42,7 @@ builder.Services.AddDbContext<MessageDbContext>(options =>
 	options.UseSqlServer(connectionString));
 
 builder.Services.AddMediatR(o => o.RegisterServicesFromAssembly(typeof(Program).Assembly));
-builder.Services.AddScoped<IRepository<InternalMessage>, InternalMessageRepository>();
+builder.Services.AddScoped<IMessageRepository, InternalMessageRepository>();
 
 builder.Services.AddMassTransit(c =>
 {
