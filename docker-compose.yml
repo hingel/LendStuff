@@ -7,6 +7,7 @@ networks:
   user:
   gateway:
   orderboardgame:
+  masstransitmq:
 
 services:
   ocelot.gw:
@@ -33,6 +34,7 @@ services:
         - boardgame
         - gateway
         - orderboardgame 
+        - masstransitmq 
     depends_on:
         - boardgame.db
     environment:
@@ -90,6 +92,7 @@ services:
         - order
         - gateway
         - orderboardgame
+        - masstransitmq 
     depends_on:
         - order.db      
     environment:
@@ -118,6 +121,7 @@ services:
     networks:
         - user
         - gateway
+        - masstransitmq  
     depends_on:
         - user.db
     environment:
@@ -137,4 +141,18 @@ services:
         - ACCEPT_EULA=Y
         - SA_PASSWORD=Pwd123!?1
         - MSSQL_PID=Developer
+
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbit
+    image: masstransit/rabbitmq:latest
+    ports:      
+     - "5672:5672"
+     - "15672:15672"
+    environment:
+        - RABBITMQ_DEFAULT_USER=guest
+        - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+        - masstransitmq
+
 

@@ -1,5 +1,4 @@
-﻿using LendStuff.Shared;
-using Messages.DataAccess.Models;
+﻿using Messages.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Messages.DataAccess.Repositories;
@@ -21,6 +20,12 @@ public class InternalMessageRepository(MessageDbContext context) : IMessageRepos
         return await context.InternalMessages.Where(m => m.SentFromUserId == userId || m.SentToUserId == userId)
             .ToArrayAsync();
     }
+
+    public async Task SaveChanges()
+    {
+        await context.SaveChangesAsync();
+    }
+
     public async Task<InternalMessage> AddItem(InternalMessage item)
 	{
 		var result = await context.InternalMessages.AddAsync(item);

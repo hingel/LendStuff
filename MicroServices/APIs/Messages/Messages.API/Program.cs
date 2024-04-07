@@ -1,4 +1,6 @@
 using LendStuff.Shared;
+using MassTransit;
+using Messages.API.Consumers;
 using Messages.API.Extensions;
 using Messages.DataAccess;
 using Messages.DataAccess.Models;
@@ -27,6 +29,8 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+
+
 var host = Environment.GetEnvironmentVariable("DB_HOST");
 var database = Environment.GetEnvironmentVariable("DB_DATABASE");
 var username = Environment.GetEnvironmentVariable("DB_USER");
@@ -40,6 +44,21 @@ builder.Services.AddDbContext<MessageDbContext>(options =>
 builder.Services.AddMediatR(o => o.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddScoped<IRepository<InternalMessage>, InternalMessageRepository>();
 
+builder.Services.AddMassTransit(c =>
+{
+    c.AddConsumer<RemoveUserMessagesConsumer>();
+
+    c.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("rabbit", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 
