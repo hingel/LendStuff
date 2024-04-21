@@ -1,9 +1,10 @@
-﻿using MassTransit;
+﻿using LendStuff.Shared.Messages;
+using MassTransit;
 using Messages.DataAccess.Repositories;
 
 namespace Messages.API.Consumers;
 
-public class RemoveUserMessagesConsumer(IMessageRepository repository, IPublishEndpoint bus) : IConsumer<DeleteMessages>
+public class RemoveUserMessagesConsumer(IMessageRepository repository) : IConsumer<DeleteMessages>
 {
     public async Task Consume(ConsumeContext<DeleteMessages> context)
     {
@@ -23,6 +24,6 @@ public class RemoveUserMessagesConsumer(IMessageRepository repository, IPublishE
 
         await repository.SaveChanges();
 
-        await bus.Publish(new UserReferenceRemovedMessage(context.Message.UserId));
+       // await bus.Publish(new UserReferenceRemovedMessage(new Guid(context.Message.UserId)));
     }
 }

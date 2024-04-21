@@ -1,6 +1,5 @@
 ﻿using FastEndpoints;
 using LendStuff.Shared.DTOs;
-using LendStuff.Shared;
 using Order.API.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Order.DataAccess.Repositories;

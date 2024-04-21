@@ -1,9 +1,7 @@
 using BoardGame.API.Extensions;
 using BoardGame.API.Helpers;
 using BoardGame.DataAccess;
-using BoardGame.DataAccess.Models;
 using BoardGame.DataAccess.Repository;
-using LendStuff.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

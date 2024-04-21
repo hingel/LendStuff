@@ -9,8 +9,6 @@ public class MessageDbContext(DbContextOptions<MessageDbContext> options) : DbCo
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
-		base.OnModelCreating(modelBuilder);
-
 		modelBuilder.Entity<InternalMessage>().HasKey(p => p.Id);
 		modelBuilder.Entity<InternalMessage>(m => m.Property(p => p.Message).HasMaxLength(1000).IsRequired());
 		modelBuilder.Entity<InternalMessage>(m => m.Property(p => p.SentFromUserId).IsRequired());

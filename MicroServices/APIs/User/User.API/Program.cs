@@ -1,15 +1,11 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
+using LendStuff.Shared.Messages;
 using MassTransit;
-using Messages.API.Consumers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using User.DataAccess;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
 using User.API.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,13 +40,13 @@ builder.Services.AddMassTransit(c =>
 {
     c.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        cfg.Host("rabbit", "/", h =>
         {
             h.Username("guest");
             h.Password("guest");
         });
 
-        //cfg.ConfigureEndpoints();
+        cfg.ConfigureEndpoints(context);
     });
 });
 
@@ -84,20 +80,20 @@ app.MapPost("newUser", async (UserDbContext userDbContext, UserDto newUser) =>
     return new ServiceResponse<UserDto> { Data = DtoConverters.UserToDto(userToAdd), Message = $"User added{userToAdd.Id}", Success = true };
 });
 
-app.MapDelete("/{userId}", async (string userId, UserDbContext userDbContext, IBus bus, HttpContext httpContext) =>
+app.MapDelete("/{userId}", async (string userId, UserDbContext userDbContext, IPublishEndpoint publishEndpoint, HttpContext httpContext) =>
 {
     var activeUserName = httpContext.User.Identity?.Name;
     var userToDelete = await userDbContext.Users.FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));
 
     if (userToDelete == null ||
-        userToDelete.UserName != activeUserName ||
+        //userToDelete.UserName != activeUserName ||
         userToDelete.ActiveOrders.Count > 0) 
         return new ServiceResponse<string> {Message = "Delete of user not allowed", Success = false};
     
     userDbContext.Remove(userToDelete);
     await userDbContext.SaveChangesAsync();
 
-    await bus.Publish(new DeleteMessages(Guid.Parse(userId)));
+    await publishEndpoint.Publish(new DeleteMessages(Guid.Parse(userId)));
     return new ServiceResponse<string> { Message = $"User {userId} deleted", Success = true };
 }).RequireAuthorization();
 

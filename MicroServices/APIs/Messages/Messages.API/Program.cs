@@ -1,19 +1,15 @@
-using LendStuff.Shared;
 using MassTransit;
 using Messages.API.Consumers;
 using Messages.API.Extensions;
 using Messages.DataAccess;
-using Messages.DataAccess.Models;
 using Messages.DataAccess.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthorization();
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -28,8 +24,6 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true
     };
 });
-
-
 
 var host = Environment.GetEnvironmentVariable("DB_HOST");
 var database = Environment.GetEnvironmentVariable("DB_DATABASE");

@@ -1,5 +1,4 @@
 using FastEndpoints;
-using LendStuff.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

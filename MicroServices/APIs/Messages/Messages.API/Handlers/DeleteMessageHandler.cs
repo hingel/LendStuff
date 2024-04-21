@@ -1,7 +1,6 @@
 ﻿using LendStuff.Shared;
 using MediatR;
 using Messages.API.CommandsAndQueries;
-using Messages.DataAccess.Models;
 using Messages.DataAccess.Repositories;
 
 namespace Messages.API.Handlers;
