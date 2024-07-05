@@ -22,9 +22,9 @@ public class BoardGameRepository(BoardGameDbContext context) : IBoardGameReposit
 		return result.Entity;
 	}
 	
-	public async Task<string> Delete(Guid id)
+	public async Task<string> Delete(params Guid[] ids)
 	{
-		var result = await context.BoardGames.FirstOrDefaultAsync(b => b.Id == id);
+		var result = await context.BoardGames.FirstOrDefaultAsync(b => b.Id == ids.First());
 
 		var test = context.BoardGames.Remove(result);
 

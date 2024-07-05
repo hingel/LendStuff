@@ -30,19 +30,15 @@ public class GenreRepository : IGenreRepository
 		return result.Entity;
 	}
 
-	public async Task<string> Delete(Guid id)
+	public async Task<string> Delete(params Guid[] ids)
 	{
-		var toDelete = await _context.Genres.FirstOrDefaultAsync(g => g.Id.Equals(id));
+		var toDelete = await _context.Genres.FirstOrDefaultAsync(g => g.Id == ids.FirstOrDefault());
 
-		if (toDelete != null)
-		{
-			var result = _context.Genres.Remove(toDelete);
+        if (toDelete == null) return "Genre not found.";
+        var result = _context.Genres.Remove(toDelete);
 			
-			return $"Genre: {result.Entity.Name} deleted";
-		}
-
-		return "Genre not found.";
-	}
+        return $"Genre: {result.Entity.Name} deleted";
+    }
 
 	public async Task<Genre?> Update(Genre item)
 	{

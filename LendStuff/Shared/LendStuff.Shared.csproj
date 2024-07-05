@@ -13,4 +13,8 @@
   <ItemGroup>
     <Folder Include="DTOs\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MassTransit.Abstractions" Version="8.2.3" />
+  </ItemGroup>
 </Project>

@@ -142,7 +142,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "lendstuff.server",
+          "Host": "order.api",
           "Port": 8080
         }
       ],

@@ -24,18 +24,15 @@ public class OrderRepository(OrderDbContext context) : IOrderRepository
 		return item;
 	}
 
-	public async Task<string> Delete(Guid id)
+	public async Task<string> Delete(params Guid[] ids)
 	{
-		var toDelete = await context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
+		var toDeletes = await context.Orders.Where(o => ids.Contains(o.OrderId)).ToArrayAsync();
 
-		if (toDelete is not null)
-		{
-			var result = context.Orders.Remove(toDelete);
-			await context.SaveChangesAsync();
-			return $"Order: {result.Entity.OrderId} removed";
-		}
+        if (!toDeletes.Any()) return $"Order {string.Join(", ", ids)} not found";
 
-		return $"Order {id} not found";
+		context.Orders.RemoveRange(toDeletes);
+		await context.SaveChangesAsync();
+		return $"Order: {string.Join(", ", toDeletes.Select(td => td.OrderId))} removed";
 	}
 	
 	public async Task<Models.Order?> Update(Models.Order item)

@@ -77,7 +77,7 @@ app.MapPost("newUser", async (UserDbContext userDbContext, UserDto newUser) =>
     userDbContext.Users.Add(userToAdd);
     await userDbContext.SaveChangesAsync();
 
-    return new ServiceResponse<UserDto> { Data = DtoConverters.UserToDto(userToAdd), Message = $"User added{userToAdd.Id}", Success = true };
+    return new ServiceResponse<UserDto> { Data = DtoConverters.UserToDto(userToAdd), Message = $"User added {userToAdd.Id}", Success = true };
 });
 
 app.MapDelete("/{userId}", async (string userId, UserDbContext userDbContext, IPublishEndpoint publishEndpoint, HttpContext httpContext) =>
@@ -86,7 +86,7 @@ app.MapDelete("/{userId}", async (string userId, UserDbContext userDbContext, IP
     var userToDelete = await userDbContext.Users.FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));
 
     if (userToDelete == null ||
-        //userToDelete.UserName != activeUserName ||
+        //userToDelete.UserName != activeUserName || //måste lägga till claims för aktiv user.
         userToDelete.ActiveOrders.Count > 0) 
         return new ServiceResponse<string> {Message = "Delete of user not allowed", Success = false};
     
