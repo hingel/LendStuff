@@ -1,4 +1,5 @@
-﻿using BoardGame.DataAccess.Models;
+﻿using System.Reflection.Metadata.Ecma335;
+using BoardGame.DataAccess.Models;
 using LendStuff.Shared;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,21 +48,23 @@ public class GenreRepository : IGenreRepository
 	{
 		var toUpdate = await _context.Genres.FirstOrDefaultAsync(g => g.Id == item.Id);
 
-		if (toUpdate != null)
-		{
-			var propertyList = typeof(Genre).GetProperties();
+        if (toUpdate == null)
+        {
+            return toUpdate;
+        }
 
-			foreach (var prop in propertyList)
+        var propertyList = typeof(Genre).GetProperties();
+
+		foreach (var prop in propertyList)
+		{
+			if (prop.GetValue(item) != null && !prop.GetValue(item)!.Equals(prop.GetValue(toUpdate)))
 			{
-				if (!prop.GetValue(item).Equals(prop.GetValue(toUpdate)))
-				{
-					prop.SetValue(toUpdate, prop.GetValue(item));
-				}
+				prop.SetValue(toUpdate, prop.GetValue(item));
 			}
 		}
 
-		return toUpdate;
-	}
+        return toUpdate;
+    }
 
     public async Task<IEnumerable<Genre>> GetByName(string name)
     {
