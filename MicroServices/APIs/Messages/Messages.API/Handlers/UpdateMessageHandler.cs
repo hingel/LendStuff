@@ -4,10 +4,11 @@ using MediatR;
 using Messages.API.CommandsAndQueries;
 using Messages.API.Helpers;
 using Messages.DataAccess.Models;
+using Messages.DataAccess.Repositories;
 
 namespace Messages.API.Handlers;
 
-public class UpdateMessageHandler(IRepository<InternalMessage> repository) : IRequestHandler<UpdateMessageCommand, ServiceResponse<MessageDto>>
+public class UpdateMessageHandler(IMessageRepository repository) : IRequestHandler<UpdateMessageCommand, ServiceResponse<MessageDto>>
 {
 	public async Task<ServiceResponse<MessageDto>> Handle(UpdateMessageCommand request, CancellationToken cancellationToken)
 	{

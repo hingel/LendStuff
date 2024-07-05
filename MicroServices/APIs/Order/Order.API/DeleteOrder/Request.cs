@@ -1,6 +1,7 @@
 ﻿using FastEndpoints;
 using LendStuff.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Order.DataAccess.Repositories;
 
 namespace Order.API.DeleteOrder;
 
@@ -8,7 +9,7 @@ public record Request(Guid OrderId);
 
 public record Response(string Message, bool Success);
 
-public class Handler(IRepository<DataAccess.Models.Order> repository) : Endpoint<Request, Response>
+public class Handler(IOrderRepository repository) : Endpoint<Request, Response>
 {
 	public override void Configure()
 	{

@@ -1,8 +1,9 @@
 using FastEndpoints;
-using LendStuff.Shared;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Order.API.Consumers;
 using Order.API.Helpers;
 using Order.DataAccess;
 using Order.DataAccess.Repositories;
@@ -34,11 +35,27 @@ var connectionString = $"Data Source={host};Initial Catalog={database};User ID={
 
 builder.Services.AddDbContext<OrderDbContext>(options => options.UseSqlServer(connectionString));
 
-builder.Services.AddScoped<IRepository<Order.DataAccess.Models.Order>, OrderRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 builder.Services.AddScoped<ClientFactory>();
 builder.Services.AddFastEndpoints();
 builder.Services.AddHttpClient();
+
+builder.Services.AddMassTransit(c =>
+{
+    c.AddConsumer<DeleteOrders>();
+
+    c.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("rabbit", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 

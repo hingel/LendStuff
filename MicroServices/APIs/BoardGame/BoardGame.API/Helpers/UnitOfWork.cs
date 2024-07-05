@@ -3,24 +3,18 @@ using BoardGame.DataAccess.Repository;
 
 namespace BoardGame.API.Helpers;
 
-public class UnitOfWork : IDisposable
+public class UnitOfWork(BoardGameDbContext context) : IDisposable
 {
-	private IBoardGameRepository _boardGameRepository;
-	private IGenreRepository _genreRepository;
-	private readonly BoardGameDbContext _context;
-	
-	public UnitOfWork(BoardGameDbContext context)
-	{
-		_context = context;
-	}
+	private IBoardGameRepository? _boardGameRepository;
+	private IGenreRepository? _genreRepository;
 
-	public IBoardGameRepository BoardGameRepository
+    public IBoardGameRepository BoardGameRepository
 	{
 		get
 		{
 			if (_boardGameRepository == null)
 			{
-				_boardGameRepository = new BoardGameRepository(_context);
+				_boardGameRepository = new BoardGameRepository(context);
 			}
 			return _boardGameRepository;
 		}
@@ -32,7 +26,7 @@ public class UnitOfWork : IDisposable
 		{
 			if (_genreRepository == null)
 			{
-				_genreRepository = new GenreRepository(_context);
+				_genreRepository = new GenreRepository(context);
 			}
 			return _genreRepository;
 		}
@@ -40,11 +34,11 @@ public class UnitOfWork : IDisposable
 
 	public async Task<int> SaveChanges()
 	{
-		return await _context.SaveChangesAsync();
+		return await context.SaveChangesAsync();
 	}
 
 	public void Dispose()
 	{
-		_context.Dispose();
+		context.Dispose();
 	}
 }

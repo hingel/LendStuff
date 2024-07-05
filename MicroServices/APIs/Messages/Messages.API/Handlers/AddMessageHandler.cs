@@ -2,13 +2,14 @@
 using MediatR;
 using Messages.API.CommandsAndQueries;
 using Messages.API.Helpers;
-using Messages.DataAccess.Models;
+using Messages.DataAccess.Repositories;
 
 namespace Messages.API.Handlers;
 
-public class AddMessageHandler(IRepository<InternalMessage> repository) : IRequestHandler<AddMessageCommand, ServiceResponse<string>>
+public class AddMessageHandler(IMessageRepository repository)
+    : IRequestHandler<AddMessageCommand, ServiceResponse<string>>
 {
-	public async Task<ServiceResponse<string>> Handle(AddMessageCommand request, CancellationToken cancellationToken)
+    public async Task<ServiceResponse<string>> Handle(AddMessageCommand request, CancellationToken cancellationToken)
 	{
 		//TODO: Detta måste uppdateras
 		//Först kolla om meddelande redan finns: Leta upp meddelande från användaren och mottagare och sortera efter skapat. Kolla om texten i meddelandet är det samma.

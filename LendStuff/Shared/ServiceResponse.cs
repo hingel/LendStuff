@@ -1,8 +1,8 @@
 ﻿namespace LendStuff.Shared;
 
-public class ServiceResponse <T>
+public record ServiceResponse <T>
 {
 	public T? Data { get; set; }
-	public bool Success { get; set; }
-	public string Message { get; set; }
+	public bool Success { get; init; }
+	public string? Message { get; init; }
 }

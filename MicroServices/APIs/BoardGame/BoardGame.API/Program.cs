@@ -1,9 +1,9 @@
+using BoardGame.API.Consumers;
 using BoardGame.API.Extensions;
 using BoardGame.API.Helpers;
 using BoardGame.DataAccess;
-using BoardGame.DataAccess.Models;
 using BoardGame.DataAccess.Repository;
-using LendStuff.Shared;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -39,9 +39,25 @@ builder.Services.AddDbContext<BoardGameDbContext>(options =>
 
 builder.Services.AddMediatR(o => o.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
-builder.Services.AddScoped<IRepository<BoardGame.DataAccess.Models.BoardGame>, BoardGameRepository>();
-builder.Services.AddScoped<IRepository<Genre>, GenreRepository>();
+builder.Services.AddScoped<IBoardGameRepository, BoardGameRepository>();
+builder.Services.AddScoped<IGenreRepository, GenreRepository>();
 builder.Services.AddScoped<UnitOfWork>();
+
+builder.Services.AddMassTransit(c =>
+{
+    c.AddConsumer<SetBoardGameAvailability>();
+
+    c.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("rabbit", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 

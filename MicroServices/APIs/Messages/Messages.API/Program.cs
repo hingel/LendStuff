@@ -1,17 +1,15 @@
-using LendStuff.Shared;
+using MassTransit;
+using Messages.API.Consumers;
 using Messages.API.Extensions;
 using Messages.DataAccess;
-using Messages.DataAccess.Models;
 using Messages.DataAccess.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthorization();
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -38,8 +36,23 @@ builder.Services.AddDbContext<MessageDbContext>(options =>
 	options.UseSqlServer(connectionString));
 
 builder.Services.AddMediatR(o => o.RegisterServicesFromAssembly(typeof(Program).Assembly));
-builder.Services.AddScoped<IRepository<InternalMessage>, InternalMessageRepository>();
+builder.Services.AddScoped<IMessageRepository, InternalMessageRepository>();
 
+builder.Services.AddMassTransit(c =>
+{
+    c.AddConsumer<RemoveUserMessagesConsumer>();
+
+    c.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("rabbit", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 

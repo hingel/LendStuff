@@ -38,7 +38,7 @@ public class AddGameHandler : IRequestHandler<AddGameCommand, ServiceResponse<Bo
             };
         }
 
-        return new ServiceResponse<BoardGameDto>() { Message = "BoardGame not added", Success = false };
+        return new ServiceResponse<BoardGameDto> { Message = "BoardGame not added", Success = false };
 	}
 
 	public async Task<DataAccess.Models.BoardGame> ConvertDtoToBoardGame(BoardGameDto dtoToConvert)

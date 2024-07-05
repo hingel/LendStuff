@@ -142,7 +142,7 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "lendstuff.server",
+          "Host": "order.api",
           "Port": 8080
         }
       ],
@@ -153,8 +153,8 @@
       }
     },
     {
-      "UpstreamPathTemplate": "/users/test",
-      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/users/newUser",
+      "UpstreamHttpMethod": [ "Post" ],
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -162,24 +162,28 @@
           "Port": 8080
         }
       ],
-      "DownstreamPathTemplate": "/test",
+      "DownstreamPathTemplate": "/newUser",
+      //"AuthenticationOptions": {
+      //  "AuthenticationProviderKey": "Basic",
+      //  "AllowedScopes": []
+      //}
+    },
+    {
+      "UpstreamPathTemplate": "/users/{userId}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user.api",
+          "Port": 8080
+        }
+      ],
+      "DownstreamPathTemplate": "/{userId}",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Basic",
         "AllowedScopes": []
       }
     }
-    //{
-    //  "UpstreamPathTemplate": "/users/getuserbyusername/{username}",
-    //  "UpstreamHttpMethod": [ "Get" ],
-    //  "DownstreamScheme": "http",
-    //  "DownstreamHostAndPorts": [
-    //    {
-    //      "Host": "lendstuff.server",
-    //      "Port": 8080
-    //    }
-    //  ],
-    //  "DownstreamPathTemplate": "/getUserByUserName/{username}"
-    //}
   ],
   "GlobalConfiguration": {
     "BaseUrl": "http://localhost:5000"

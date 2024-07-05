@@ -6,4 +6,5 @@ namespace Messages.DataAccess.Repositories;
 public interface IMessageRepository : IRepository<InternalMessage>
 {
     Task<IEnumerable<InternalMessage>> GetByUserId(Guid userId);
+    Task SaveChanges();
 }

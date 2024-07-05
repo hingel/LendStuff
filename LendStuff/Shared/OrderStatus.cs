@@ -2,5 +2,5 @@
 
 public enum OrderStatus
 {
-	Inquiry = 0, Active, Terminated
+	Inquiry, Active, Terminated
 }

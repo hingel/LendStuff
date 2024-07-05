@@ -1,5 +1,4 @@
-﻿using LendStuff.Shared;
-using Messages.DataAccess.Models;
+﻿using Messages.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Messages.DataAccess.Repositories;
@@ -21,6 +20,12 @@ public class InternalMessageRepository(MessageDbContext context) : IMessageRepos
         return await context.InternalMessages.Where(m => m.SentFromUserId == userId || m.SentToUserId == userId)
             .ToArrayAsync();
     }
+
+    public async Task SaveChanges()
+    {
+        await context.SaveChangesAsync();
+    }
+
     public async Task<InternalMessage> AddItem(InternalMessage item)
 	{
 		var result = await context.InternalMessages.AddAsync(item);
@@ -30,9 +35,9 @@ public class InternalMessageRepository(MessageDbContext context) : IMessageRepos
 		return result.Entity;
 	}
 	
-	public async Task<string> Delete(Guid id)
+	public async Task<string> Delete(params Guid[] ids)
 	{
-		var toDelete = await context.InternalMessages.FirstOrDefaultAsync(m => m.Id == id);
+		var toDelete = await context.InternalMessages.FirstOrDefaultAsync(m => m.Id == ids.First());
 
 		if (toDelete is not null)
 		{
@@ -41,7 +46,7 @@ public class InternalMessageRepository(MessageDbContext context) : IMessageRepos
 			return $"Message with ID: {result.Entity.Id} deleted";
 		}
 
-		return $"Message with ID: {id} not found";
+		return $"Message with ID: {string.Join(", ", ids)} not found";
 	}
 
 	public async Task<InternalMessage?> Update(InternalMessage item)

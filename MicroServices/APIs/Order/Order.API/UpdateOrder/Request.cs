@@ -3,6 +3,7 @@ using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Order.API.Helpers;
+using Order.DataAccess.Repositories;
 
 namespace Order.API.UpdateOrder;
 
@@ -10,7 +11,7 @@ public record Request(OrderDto updatedOrderDto);
 
 public record Response(string Message, bool Success, OrderDto updatedOrder);
 
-public class Handler(IRepository<DataAccess.Models.Order> repository) : Endpoint<Request, Response>
+public class Handler(IOrderRepository repository) : Endpoint<Request, Response>
 {
 	public override void Configure()
 	{

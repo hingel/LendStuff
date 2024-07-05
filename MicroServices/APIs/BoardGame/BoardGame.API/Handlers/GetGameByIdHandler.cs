@@ -1,12 +1,13 @@
 ﻿using BoardGame.API.CommandsAndQueries;
 using BoardGame.API.Helpers;
+using BoardGame.DataAccess.Repository;
 using LendStuff.Shared;
 using LendStuff.Shared.DTOs;
 using MediatR;
 
 namespace BoardGame.API.Handlers;
 
-public class GetGameByIdHandler(IRepository<DataAccess.Models.BoardGame> repository)
+public class GetGameByIdHandler(IBoardGameRepository repository)
     : IRequestHandler<GetGameByIdQuery, ServiceResponse<BoardGameDto>>
 {
     public async Task<ServiceResponse<BoardGameDto>> Handle(GetGameByIdQuery request, CancellationToken cancellationToken)
