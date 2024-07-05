@@ -6,4 +6,5 @@ public interface IBoardGameRepository : IRepository<Models.BoardGame>
 {
     Task<IEnumerable<Models.BoardGame>> GetByUserId(Guid userId);
     Task<IEnumerable<Models.BoardGame>> GetByTitle(string searchWord);
+    Task<int> SaveChanges();
 }

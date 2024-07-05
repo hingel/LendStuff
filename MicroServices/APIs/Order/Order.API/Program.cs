@@ -1,7 +1,9 @@
 using FastEndpoints;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Order.API.Consumers;
 using Order.API.Helpers;
 using Order.DataAccess;
 using Order.DataAccess.Repositories;
@@ -38,6 +40,22 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ClientFactory>();
 builder.Services.AddFastEndpoints();
 builder.Services.AddHttpClient();
+
+builder.Services.AddMassTransit(c =>
+{
+    c.AddConsumer<DeleteOrders>();
+
+    c.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("rabbit", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 

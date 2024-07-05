@@ -7,18 +7,12 @@ using MediatR;
 
 namespace BoardGame.API.Handlers;
 
-public class UpdateGameHandler : IRequestHandler<UpdateGameCommand, ServiceResponse<BoardGameDto>>
+public class UpdateGameHandler(UnitOfWork unitOfWork)
+    : IRequestHandler<UpdateGameCommand, ServiceResponse<BoardGameDto>>
 {
-	private readonly UnitOfWork _unitOfWork;
-
-	public UpdateGameHandler(UnitOfWork unitOfWork)
+    public async Task<ServiceResponse<BoardGameDto>> Handle(UpdateGameCommand request, CancellationToken cancellationToken)
 	{
-		_unitOfWork = unitOfWork;
-	}
-
-	public async Task<ServiceResponse<BoardGameDto>> Handle(UpdateGameCommand request, CancellationToken cancellationToken)
-	{
-		var result = await _unitOfWork.BoardGameRepository.Update(await ConvertDtoToBoardGame(request.GameToUpdate));
+		var result = await unitOfWork.BoardGameRepository.Update(await ConvertDtoToBoardGame(request.GameToUpdate));
 
 		if (result is null)
 		{
@@ -29,7 +23,7 @@ public class UpdateGameHandler : IRequestHandler<UpdateGameCommand, ServiceRespo
 			};
 		}
 
-		var saveResult = await _unitOfWork.SaveChanges();
+		var saveResult = await unitOfWork.SaveChanges();
 
 		return new ServiceResponse<BoardGameDto>()
 		{
@@ -59,7 +53,7 @@ public class UpdateGameHandler : IRequestHandler<UpdateGameCommand, ServiceRespo
 
         foreach (var genre in genreStrings)
         {
-            var search = await _unitOfWork.GenreRepository.GetByName(genre.Trim());  //TODO: Kanske borde hämta alla o kontrollera dem?
+            var search = await unitOfWork.GenreRepository.GetByName(genre.Trim());  //TODO: Kanske borde hämta alla o kontrollera dem?
 
             if (search.Any())
             {
@@ -67,8 +61,8 @@ public class UpdateGameHandler : IRequestHandler<UpdateGameCommand, ServiceRespo
                 continue;
             }
 
-            listOfGenres.Add(await _unitOfWork.GenreRepository.AddItem(new Genre { Name = genre.Trim().ToLowerInvariant() }));
-            await _unitOfWork.SaveChanges();
+            listOfGenres.Add(await unitOfWork.GenreRepository.AddItem(new Genre { Name = genre.Trim().ToLowerInvariant() }));
+            await unitOfWork.SaveChanges();
         }
 
         return listOfGenres;

@@ -33,7 +33,8 @@ services:
     networks:
         - boardgame
         - gateway
-        - orderboardgame 
+        # - orderboardgame 
+        - masstransitmq
     depends_on:
         - boardgame.db
     environment:
@@ -91,7 +92,8 @@ services:
     networks: 
         - order
         - gateway
-        - orderboardgame
+        # - orderboardgame
+        - masstransitmq
     depends_on:
         - order.db      
     environment:

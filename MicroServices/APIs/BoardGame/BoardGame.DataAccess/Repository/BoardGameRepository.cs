@@ -67,4 +67,6 @@ public class BoardGameRepository(BoardGameDbContext context) : IBoardGameReposit
 
         return await context.BoardGames.Where(b => searchWords.Contains(b.Title.ToLower())).ToArrayAsync();
     }
+
+    public async Task<int> SaveChanges() => await context.SaveChangesAsync();
 }

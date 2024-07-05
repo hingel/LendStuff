@@ -94,6 +94,7 @@ app.MapDelete("/{userId}", async (string userId, UserDbContext userDbContext, IP
     await userDbContext.SaveChangesAsync();
 
     await publishEndpoint.Publish(new DeleteMessages(Guid.Parse(userId)));
+    await publishEndpoint.Publish(new DeleteOrders(Guid.Parse(userId)));
     return new ServiceResponse<string> { Message = $"User {userId} deleted", Success = true };
 }).RequireAuthorization();
 
