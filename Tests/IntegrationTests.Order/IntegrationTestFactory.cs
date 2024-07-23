@@ -43,11 +43,11 @@ public class IntegrationTestFactory<TProgram> : WebApplicationFactory<TProgram> 
             services.AddAuthentication(TestAuthHandler.SchemaName)
                 .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.SchemaName, null);
 
-            //services.AddAuthorization(options => options.AddPolicy("Test", apb =>
-            //{
-            //    apb.RequireAuthenticatedUser();
-            //    apb.AuthenticationSchemes.Add(TestAuthHandler.SchemaName);
-            //}));
+            services.AddAuthorization(options => options.AddPolicy("Test", apb =>
+            {
+                apb.RequireAuthenticatedUser();
+                apb.AuthenticationSchemes.Add(TestAuthHandler.SchemaName);
+            }));
         });
 
         

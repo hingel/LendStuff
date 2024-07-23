@@ -1,8 +1,6 @@
 ﻿using FastEndpoints;
 using LendStuff.Shared.DTOs;
 using Order.API.Helpers;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Order.DataAccess.Repositories;
 
 namespace Order.API.GetOrderById;
