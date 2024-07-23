@@ -4,7 +4,7 @@ namespace LendStuff.Shared.DTOs;
 
 public class UserBoardGameDto //Denna klass skullle egentligen ärva av boardgameDto.
 {
-	public BoardGameDto BoardGameDto { get; set; }
+    public BoardGameDto BoardGameDto { get; set; } = null!;
 
 	[Range(1, 5, ErrorMessage = "Range 1 - 5. 5 equals mint condition.")]
 	public int Condition { get; set; }

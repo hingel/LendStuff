@@ -59,13 +59,18 @@ builder.Services.AddMassTransit(c =>
 
 var app = builder.Build();
 
+app.Use((ctx, next) =>
+{
+    var test = ctx.Request.Headers.FirstOrDefault(h => h.Key == "Authorization");
+
+    return next();
+});
+
 if (app.Environment.IsDevelopment())
 {
-	using (var scope = app.Services.CreateScope())
-	{
-		var context = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
-		context.Database.Migrate();
-	}
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+    context.Database.Migrate();
 }
 
 app.UseAuthentication();
@@ -74,3 +79,5 @@ app.UseAuthorization();
 app.UseFastEndpoints();
 
 app.Run();
+
+public partial class Program { }
