@@ -1,7 +1,6 @@
 ﻿using System.Data.Common;
-using AutoFixture;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -48,16 +47,9 @@ public class IntegrationTestFactory<TProgram> : WebApplicationFactory<TProgram> 
                 apb.RequireAuthenticatedUser();
                 apb.AuthenticationSchemes.Add(TestAuthHandler.SchemaName);
             }));
-        });
 
-        
-
-        //    //även Masstransit
-
-        //    //och httpclient
-
-        //    //Vill byta ut detta när projektet startar
-
+            services.AddMassTransitTestHarness();
+    });
 
         builder.UseEnvironment("Test");
         //builder.UseEnvironment("Development");

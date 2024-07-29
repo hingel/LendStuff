@@ -36,10 +36,9 @@ var connectionString = $"Data Source={host};Initial Catalog={database};User ID={
 builder.Services.AddDbContext<OrderDbContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-
-builder.Services.AddScoped<ClientFactory>();
-builder.Services.AddFastEndpoints();
+builder.Services.AddScoped<ICallClientHttpFactory, CallClientFactory>();
 builder.Services.AddHttpClient();
+builder.Services.AddFastEndpoints();
 
 builder.Services.AddMassTransit(c =>
 {
@@ -58,13 +57,6 @@ builder.Services.AddMassTransit(c =>
 });
 
 var app = builder.Build();
-
-app.Use((ctx, next) =>
-{
-    var test = ctx.Request.Headers.FirstOrDefault(h => h.Key == "Authorization");
-
-    return next();
-});
 
 if (app.Environment.IsDevelopment())
 {
