@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace Order.API.Helpers;
 
-public class ClientFactory(IHttpClientFactory httpClientFactory, IHttpContextAccessor contextAccessor)
+public class CallClientFactory(IHttpClientFactory httpClientFactory, IHttpContextAccessor contextAccessor) : ICallClientHttpFactory
 {
     public async Task<BoardGameDto?> Call(Guid boardGameId)
     {

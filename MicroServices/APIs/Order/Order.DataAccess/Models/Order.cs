@@ -11,5 +11,5 @@ public class Order
 	public DateTime LentDate { get; set; }
 	public DateTime ReturnDate { get; set; }
 	public OrderStatus Status { get; set; }
-	public List<Guid> OrderMessagesGuid { get; } = new ();
+	public List<Guid> OrderMessageGuids { get; } = new ();
 }

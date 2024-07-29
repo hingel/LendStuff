@@ -16,6 +16,6 @@ public class OrderDbContext(DbContextOptions<OrderDbContext> options) : DbContex
 		modelBuilder.Entity<Models.Order>(o => o.Property(p => p.LentDate).IsRequired());
 		modelBuilder.Entity<Models.Order>(o => o.Property(p => p.ReturnDate).IsRequired());
 		modelBuilder.Entity<Models.Order>(o => o.Property(p => p.Status).IsRequired());
-		modelBuilder.Entity<Models.Order>(o => o.Property(p => p.OrderMessagesGuid).IsRequired());
+		modelBuilder.Entity<Models.Order>(o => o.Property(p => p.OrderMessageGuids).IsRequired());
 	}
 }

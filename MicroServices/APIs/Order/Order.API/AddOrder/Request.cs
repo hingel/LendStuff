@@ -11,17 +11,18 @@ public record Request(Guid OwnerUserId, Guid BorrowerUserId, Guid BoardGameId);
 
 public record Response(string Message, bool Success, OrderDto? OrderDto);
 
-public class Handler(IOrderRepository repository, ClientFactory clientFactory)  : Endpoint<Request, Response>
+public class Handler(IOrderRepository repository, ICallClientHttpFactory callClientFactory)  : Endpoint<Request, Response>
 {
 	public override void Configure()
 	{
 		Post("/");
         AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
+        Policies("Test");
     }
 
 	public override async Task HandleAsync(Request req, CancellationToken ct)
 	{
-        var result = await clientFactory.Call(req.BoardGameId);
+        var result = await callClientFactory.Call(req.BoardGameId);
 
         if (!result!.Available) await SendAsync(new Response("Boardgame not available", false, null), cancellation: ct);
 

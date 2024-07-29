@@ -18,13 +18,13 @@ public static class OrderDtoConverter
 			OrderId = orderDto.OrderId ?? Guid.NewGuid()
 		};
 
-		order.OrderMessagesGuid.AddRange(orderDto.OrderMessageGuids);
+		order.OrderMessageGuids.AddRange(orderDto.OrderMessageGuids);
 
         return order;
     }
 
 	public static OrderDto ConvertOrderToDto(DataAccess.Models.Order o)
 	{
-		return new OrderDto(o.OrderId, o.OwnerId, o.BorrowerId, o.BoardGameId, o.LentDate, o.ReturnDate, o.Status, o.OrderMessagesGuid.ToArray());
+		return new OrderDto(o.OrderId, o.OwnerId, o.BorrowerId, o.BoardGameId, o.LentDate, o.ReturnDate, o.Status, o.OrderMessageGuids.ToArray());
 	}
 }

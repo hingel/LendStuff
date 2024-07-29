@@ -1,14 +1,14 @@
 ﻿using FastEndpoints;
 using LendStuff.Shared.DTOs;
-using Order.API.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Order.API.Helpers;
 using Order.DataAccess.Repositories;
 
 namespace Order.API.GetOrderById;
 
 public record Request(Guid OrderId);
 
-public record Response(string Message, bool Success, OrderDto? OrderDtos);
+public record Response(string Message, bool Success, OrderDto? OrderDto);
 
 public class Handler(IOrderRepository repository) : Endpoint<Request, Response>
 {
@@ -16,7 +16,8 @@ public class Handler(IOrderRepository repository) : Endpoint<Request, Response>
 	{
 		Get("/{orderId}");
         AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
-    }
+        Policies("Test");
+	}
 
 	public override async Task HandleAsync(Request req, CancellationToken ct)
     {
